@@ -2,9 +2,22 @@
 
 > **Detecting the AI Drift in Famous OSS Contributors**
 
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/riadmaouchi/dev-fingerprint/ci.yml?branch=main&label=CI)](https://github.com/riadmaouchi/dev-fingerprint/actions)
+[![stylometry-python](https://img.shields.io/badge/powered%20by-stylometry--python-8e44ad)](https://pypi.org/project/stylometry-python/)
+
+---
+
 When did your favorite open-source developer stop writing alone?
 
 This project applies style fingerprinting techniques — borrowed from LLM detection research — to the commit history of famous GitHub developers. We track **9 measurable signals** across 10 OSS legends and map their evolution against the key LLM milestones of 2021–2024.
+
+---
+
+![LLM Score Timeline](docs/img/timeline.png)
+
+*LLM score over time for 3 developer archetypes — ▼ marks detected change points, dashed lines are LLM release dates.*
 
 ---
 
@@ -20,13 +33,13 @@ A developer's coding style is a fingerprint — comment density, identifier verb
 
 ## What We Found
 
-> Full analysis in [FINDINGS.md](FINDINGS.md)
+![Developer Drift Comparison](docs/img/drift_comparison.png)
 
-| Developer | Baseline Score | Post-LLM Score | Drift | Verdict |
-|-----------|---------------|----------------|-------|---------|
-| Linus Torvalds | 8.2 | 9.1 | +0.9 | Organic — controls fine |
-| antirez | 11.4 | 12.8 | +1.4 | Organic — unchanged |
-| DHH | 24.3 | 26.1 | +1.8 | Organic — as expected |
+| Developer | Baseline | Post-LLM | Drift | Verdict |
+|-----------|----------|----------|-------|---------|
+| Linus Torvalds | 8.2 | 9.1 | +0.9 | Organic |
+| antirez | 11.4 | 12.8 | +1.4 | Organic |
+| DHH | 24.3 | 26.1 | +1.8 | Organic |
 | Dan Abramov | 28.6 | 47.3 | **+18.7** | Possible LLM influence |
 | Rich Harris | 31.2 | 52.8 | **+21.6** | Possible LLM influence |
 | Evan You | 29.4 | 58.1 | **+28.7** | High LLM influence |
@@ -36,6 +49,8 @@ A developer's coding style is a fingerprint — comment density, identifier verb
 | TJ Holowaychuk | 19.3 | 21.1 | +1.8 | Organic (less active) |
 
 **Key finding:** The top 5 drifters all show change points between Q3 2022 and Q1 2023 — the exact window of Copilot GA → ChatGPT → GPT-4.
+
+> Full analysis in [FINDINGS.md](FINDINGS.md)
 
 ---
 
@@ -72,6 +87,10 @@ GitHub Commits
    Report (HTML + terminal)
 ```
 
+![Style Radar](docs/img/radar.png)
+
+*6-signal style fingerprint — organic (blue) vs LLM-assisted (red). Higher = more LLM-like.*
+
 See [METHODOLOGY.md](METHODOLOGY.md) for signal definitions, calibration, and limitations.
 
 ---
@@ -105,6 +124,17 @@ Pre-generated reports for 3 developers are included:
 - [`reports/sample/gaearon.html`](reports/sample/gaearon.html) — Dan Abramov (possible drift)
 - [`reports/sample/torvalds.html`](reports/sample/torvalds.html) — Linus Torvalds (control — no drift)
 - [`reports/sample/yyx990803.html`](reports/sample/yyx990803.html) — Evan You (high drift)
+
+---
+
+## Notebook
+
+An interactive exploration notebook runs the full pipeline on synthetic data — no GitHub token needed:
+
+```bash
+pip install dev-fingerprint[notebooks]
+jupyter notebook notebooks/exploration.ipynb
+```
 
 ---
 
@@ -177,6 +207,7 @@ dev-fingerprint/
 │   └── cli.py           typer CLI entry point
 ├── configs/
 │   └── developers.yaml  Developer configurations
+├── docs/img/            Charts and screenshots
 ├── reports/sample/      Pre-generated sample reports
 ├── notebooks/           Jupyter exploration notebook
 └── tests/               pytest test suite
