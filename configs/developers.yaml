@@ -1,0 +1,116 @@
+developers:
+  - github_login: torvalds
+    display_name: "Linus Torvalds"
+    primary_language: c
+    repos:
+      - torvalds/linux
+    notes: >
+      Créateur du noyau Linux et de git. Style ultra-direct, commentaires
+      rares et agressifs quand présents. A déclaré publiquement ne pas utiliser
+      d'assistants IA. Sert de contrôle négatif idéal.
+
+  - github_login: dhh
+    display_name: "David Heinemeier Hansson (DHH)"
+    primary_language: ruby
+    repos:
+      - rails/rails
+      - basecamp/hotwire-rails
+    notes: >
+      Créateur de Ruby on Rails. Très opinionated, a publiquement critiqué
+      l'adoption aveugle des LLM en développement. Bonne baseline "anti-LLM".
+
+  - github_login: antirez
+    display_name: "Salvatore Sanfilippo (antirez)"
+    primary_language: c
+    repos:
+      - antirez/redis
+      - antirez/kilo
+    notes: >
+      Créateur de Redis. Style C minimaliste, commentaires rares et poétiques.
+      A quitté le dev actif en 2020 puis est revenu. Évolution stylistique intéressante.
+
+  - github_login: gaearon
+    display_name: "Dan Abramov"
+    primary_language: javascript
+    repos:
+      - facebook/react
+      - reduxjs/redux
+      - pmndrs/valtio
+    notes: >
+      Co-créateur de Redux, contributor React majeur. A quitté Meta en 2023.
+      Très actif sur les réseaux, opinions nuancées sur l'IA.
+
+  - github_login: Rich-Harris
+    display_name: "Rich Harris"
+    primary_language: typescript
+    repos:
+      - sveltejs/svelte
+      - sveltejs/kit
+    notes: >
+      Créateur de Svelte et SvelteKit. Très productif post-2022.
+      Connnu pour son scepticisme envers certains patterns IA.
+
+  - github_login: yyx990803
+    display_name: "Evan You"
+    primary_language: typescript
+    repos:
+      - vuejs/core
+      - vitejs/vite
+    notes: >
+      Créateur de Vue.js et Vite. Productivité remarquable. A adopté
+      publiquement certains outils IA dans son workflow.
+
+  - github_login: sindresorhus
+    display_name: "Sindre Sorhus"
+    primary_language: javascript
+    repos:
+      - sindresorhus/execa
+      - sindresorhus/got
+      - sindresorhus/p-queue
+    notes: >
+      Mainteneur de 1000+ packages npm. Style très consistent et soigné.
+      La question : est-ce que cette consistance vient d'une aide IA ?
+
+  - github_login: gvanrossum
+    display_name: "Guido van Rossum"
+    primary_language: python
+    repos:
+      - python/cpython
+    notes: >
+      Créateur de Python, BDFL. Retraité 2018, rejoint Microsoft 2020.
+      Un des rares devs dont on peut tracer l'évolution sur 3 décennies.
+
+  - github_login: ry
+    display_name: "Ryan Dahl"
+    primary_language: typescript
+    repos:
+      - denoland/deno
+      - denoland/deno_std
+    notes: >
+      Créateur de Node.js puis Deno. A clairement évolué de JS vers TS/Rust.
+      Intéressant de voir si ce changement de style coïncide avec LLM adoption.
+
+  - github_login: tj
+    display_name: "TJ Holowaychuk"
+    primary_language: go
+    repos:
+      - tj/commander.js
+      - tj/apex
+    notes: >
+      Créateur d'Express, Koa, Co. A quitté JS pour Go de manière radicale.
+      Moins actif depuis 2019. Bon exemple de style pré-LLM bien établi.
+
+# LLM milestones pour annotation des graphes
+llm_milestones:
+  - date: "2021-06-29"
+    label: "Copilot Technical Preview"
+  - date: "2022-06-21"
+    label: "GitHub Copilot GA"
+  - date: "2022-11-30"
+    label: "ChatGPT Launch"
+  - date: "2023-03-14"
+    label: "GPT-4 Release"
+  - date: "2023-12-19"
+    label: "Copilot Chat GA"
+  - date: "2024-03-04"
+    label: "Claude 3 Opus"

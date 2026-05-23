@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environment
+.venv/
+
+# Test & lint caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / credentials
+.env
+*.token
+*.key
+*.secret
+github_token.txt
+
+# diskcache (local API cache — can be large, always reproducible)
+cache/
+*.db
+
+# Generated reports (HTML) — sample PNGs are committed intentionally
+reports/**/*.html
+reports/**/*.json
+!reports/sample/
+
+# IDE
+.idea/
+.vscode/
+*.swp
