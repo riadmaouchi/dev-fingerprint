@@ -9,7 +9,7 @@ description = "Detecting the AI Drift in Famous OSS Contributors"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-keywords = ["llm", "code-analysis", "github", "ai-detection", "open-source"]
+keywords = ["llm", "code-analysis", "github", "ai-detection", "open-source", "stylometry", "copilot", "developer-fingerprint", "code-stylometry", "change-point-detection"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
