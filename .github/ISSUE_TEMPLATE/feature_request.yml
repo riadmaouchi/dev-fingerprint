@@ -1,0 +1,24 @@
+name: Feature request
+description: New developer, language, signal, or output format
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Add a developer, Add a language, New LLM signal, HTML report improvement, CLI command, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      placeholder: "Which developer / language / use case is missing?"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true

@@ -7,6 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/riadmaouchi/dev-fingerprint/ci.yml?branch=main&label=CI)](https://github.com/riadmaouchi/dev-fingerprint/actions)
 [![stylometry-python](https://img.shields.io/badge/powered%20by-stylometry--python-8e44ad)](https://pypi.org/project/stylometry-python/)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/riadmaouchi/dev-fingerprint/main?labpath=notebooks%2Fexploration.ipynb)
+[![GitHub stars](https://img.shields.io/github/stars/riadmaouchi/dev-fingerprint?style=social)](https://github.com/riadmaouchi/dev-fingerprint/stargazers)
 
 ---
 
