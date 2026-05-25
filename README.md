@@ -183,17 +183,29 @@ devfp analyze your-target
 
 ---
 
-## Caveats & Limitations
+## Limitations
 
-This tool measures **style changes**, not intent. A high LLM score does not prove AI usage — it measures a drift toward patterns associated with AI-generated code (more comments, longer names, more structured commits). Alternative explanations include:
+> **This tool measures style changes, not intent. A high score does not prove AI usage.**
 
-- Code review culture changes in the project
-- Hiring new contributors with different styles
-- Personal style evolution
+**Correlation is not causation.**
+The temporal overlap with Copilot GA / ChatGPT / GPT-4 is striking — but a developer could drift for unrelated reasons: switching teams, onboarding junior contributors, adopting a new style guide, or simply maturing as an engineer. The tool flags *when* style shifted, not *why*.
 
-The temporal correlation with LLM milestones is **suggestive, not causal**.
+**The signals are proxies, not ground truth.**
+Comment density, identifier verbosity, docstring coverage — these are patterns *associated* with LLM-assisted code, not exclusive to it. A developer who decides to write better documentation in 2023 will look "more LLM-like" even if they never used a single AI tool.
 
-See [METHODOLOGY.md](METHODOLOGY.md) for full discussion.
+**Cross-language comparison is unfair.**
+Torvalds writes C, Abramov writes TypeScript. Comment density and docstring norms are radically different between languages. The raw scores are not directly comparable across developers who use different primary languages.
+
+**Sampling bias from GitHub API.**
+The tool fetches the N most recent commits from selected repos — not a random sample of all activity. A developer who reduced commit frequency post-2022 gets a different sample window than one who accelerated. This distorts the temporal baseline.
+
+**The findings table uses synthetic data.**
+The numbers in the "What We Found" table above are calibrated synthetic examples, not the output of running the tool against real GitHub history. Real results will differ — and may be less dramatic.
+
+**No ground truth exists.**
+There is no verified dataset of "developer X definitely used LLM for commit Y." The verdicts ("High LLM influence", "Organic") are interpretive labels based on score thresholds, not confirmed facts. Do not cite them as evidence of anything.
+
+See [METHODOLOGY.md](METHODOLOGY.md) for signal definitions and calibration details.
 
 ---
 
