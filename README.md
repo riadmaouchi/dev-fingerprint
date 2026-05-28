@@ -8,8 +8,11 @@
 [![stylometry-python](https://img.shields.io/badge/powered%20by-stylometry--python-8e44ad)](https://pypi.org/project/stylometry-python/)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/riadmaouchi/dev-fingerprint/main?labpath=notebooks%2Fexploration.ipynb)
 [![GitHub stars](https://img.shields.io/github/stars/riadmaouchi/dev-fingerprint?style=social)](https://github.com/riadmaouchi/dev-fingerprint/stargazers)
+[![GitHub Pages](https://img.shields.io/badge/article-GitHub%20Pages-blue?logo=github)](https://riadmaouchi.github.io/dev-fingerprint/)
 
 ---
+
+> **Full article:** [riadmaouchi.github.io/dev-fingerprint](https://riadmaouchi.github.io/dev-fingerprint/)
 
 When did your favorite open-source developer stop writing alone?
 
@@ -137,6 +140,19 @@ An interactive exploration notebook runs the full pipeline on synthetic data —
 pip install dev-fingerprint[notebooks]
 jupyter notebook notebooks/exploration.ipynb
 ```
+
+---
+
+## Figures
+
+All static figures in `docs/img/` are generated from calibrated synthetic data:
+
+```bash
+pip install matplotlib seaborn  # if not already installed
+python generate_figures.py
+```
+
+Outputs: `docs/img/timeline.png`, `docs/img/drift_comparison.png`, `docs/img/radar.png`.
 
 ---
 

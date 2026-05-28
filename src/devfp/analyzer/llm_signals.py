@@ -14,6 +14,23 @@ def _quarter(dt: datetime) -> tuple[int, int]:
     return dt.year, (dt.month - 1) // 3 + 1
 
 
+def _function_style_score(items: list[StyleMetrics]) -> float:
+    """Signal 6: inverse of average function length, normalized to [0, 1].
+
+    LLMs tend to emit short, single-purpose functions (mean ~8–15 lines).
+    Long organic functions (20–60 lines) are less common in LLM output.
+    Score = 1.0 when avg_function_length ≤ 8 lines, 0.0 when ≥ 40 lines.
+    Commits with no function data (avg_function_length == 0) are excluded.
+    """
+    lengths = [m.avg_function_length for m in items if m.avg_function_length > 0]
+    if not lengths:
+        return 0.0
+    mean_len = float(np.mean(lengths))
+    # Linear interpolation: 8 → 1.0, 40 → 0.0; clamped
+    score = 1.0 - (mean_len - 8.0) / (40.0 - 8.0)
+    return float(np.clip(score, 0.0, 1.0))
+
+
 def aggregate_quarterly(
     author: str,
     metrics_list: list[StyleMetrics],
@@ -52,7 +69,7 @@ def aggregate_quarterly(
                 commit_style_score=float(np.mean([
                     1.0 if m.has_conventional_commit else 0.0 for m in items
                 ])),
-                function_style_score=0.0,
+                function_style_score=_function_style_score(items),
                 llm_score=round(llm_score, 1),
                 n_commits=len(items),
             )

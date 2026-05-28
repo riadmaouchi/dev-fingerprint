@@ -1,0 +1,15 @@
+title: "dev-fingerprint"
+description: "Detecting the AI drift in famous OSS contributors — a stylometric analysis of ~4,800 commits"
+url: "https://riadmaouchi.github.io"
+baseurl: "/dev-fingerprint"
+
+theme: minima
+
+plugins:
+  - jekyll-seo-tag
+
+author:
+  name: Riad Maouchi
+  email: riad.maouchi@gmail.com
+
+github_username: riadmaouchi
