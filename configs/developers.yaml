@@ -12,12 +12,15 @@ developers:
   - github_login: dhh
     display_name: "David Heinemeier Hansson (DHH)"
     primary_language: ruby
+    author_name: "David Heinemeier Hansson"
     repos:
       - rails/rails
       - basecamp/kamal
     notes: >
       Créateur de Ruby on Rails. Très opinionated, a publiquement critiqué
       l'adoption aveugle des LLM en développement. Bonne baseline "anti-LLM".
+      Old commits use david@loudthinking.com, not linked to GitHub account —
+      requires client-side name filtering to capture pre-2021 history.
 
   - github_login: antirez
     display_name: "Salvatore Sanfilippo (antirez)"
@@ -93,12 +96,14 @@ developers:
   - github_login: tj
     display_name: "TJ Holowaychuk"
     primary_language: javascript
+    author_name: "TJ Holowaychuk"
     repos:
       - tj/commander.js
       - tj/git-extras
     notes: >
       Créateur d'Express, Koa, Co. A quitté JS pour Go de manière radicale.
       Moins actif depuis 2019. Bon exemple de style pré-LLM bien établi.
+      GitHub login filter returns 0 commits — requires client-side name filtering.
 
 # LLM milestones pour annotation des graphes
 llm_milestones:

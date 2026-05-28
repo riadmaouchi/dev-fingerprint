@@ -1,7 +1,8 @@
 # Findings
 
-> Real measurements from 2,923 commits across 9 developers (2018–2025).  
+> Real measurements from 3,009 commits across 9 developers (2018–2025).  
 > Year-windowed sampling: 60 commits × 8 years per developer.  
+> DHH: client-side name filtering recovers pre-2021 history (old email not linked to GitHub account).  
 > Profiles auditable in `reports/real/`. Reproduce with `python run_analysis.py`.
 
 ---
@@ -16,7 +17,7 @@
 | Evan You | 421 | 4 | 5 | 4.3 | 4.0 | −0.3 | Flat |
 | Dan Abramov | 285 | 13 | 8 | 6.1 | 5.2 | −0.8 | Flat (sparse post-2022) |
 | Sindre Sorhus | 379 | 18 | 13 | 3.7 | 1.6 | −2.1 | Flat |
-| DHH | 163 | 2 | 11 | 7.3 | 4.6 | −2.7 | Flat (no 2018–2020 data) |
+| DHH | 249 | 10 | 11 | 8.7 | 4.6 | −4.2 | Negative drift |
 | Guido van Rossum | 175 | 13 | 9 | 7.8 | 4.0 | −3.8 | Flat |
 | Linus Torvalds | 480 | 4 | 4 | 11.5 | 10.5 | −1.0 | Flat (control) |
 | TJ Holowaychuk | — | — | — | — | — | — | No attributable commits |
@@ -62,9 +63,11 @@ antirez was completely inactive on his tracked repos from 2021 to 2024, then ret
 
 175 commits across cpython. Very sparse 2018–2021 (1–15 commits/year). The negative drift reflects Guido's shift toward narrower, more focused contributions to CPython. No detectable LLM influence.
 
-### DHH — insufficient baseline
+### DHH — negative drift (−4.2)
 
-No commits found on `rails/rails` or `basecamp/kamal` for 2018–2020 via the `?author=dhh` GitHub filter. His older commits likely use an email not linked to his GitHub account. Only 2 pre-2022 quarters, making the baseline unreliable. Cannot draw conclusions.
+249 commits across 21 quarters. The GitHub `?author=dhh` filter only returns commits where the git email is linked to the account — it missed DHH's pre-2021 history, which used `david@loudthinking.com`. Client-side name filtering on `commit.author.name` ("David Heinemeier Hansson") recovered 86 additional commits across 2018–2020.
+
+With the corrected baseline of 8.7 (vs post-LLM 4.6), DHH shows a clear negative drift of −4.2. This is consistent with his public position — he has repeatedly criticised AI-assisted development and published pieces against "AI slop" in codebases. The data aligns with his stated practice.
 
 ### TJ Holowaychuk — no attributable commits
 
@@ -92,9 +95,9 @@ All scores fall in 3–12/100. The `copilot_score()` function is calibrated on c
 
 | Limitation | Impact |
 |-----------|--------|
-| Author filter via GitHub login | Misses commits with unlinked email (DHH, TJ) |
+| Author filter via GitHub login | Misses commits with unlinked email — mitigated by client-side name filtering for DHH; TJ still unreachable |
 | 60 commits/year cap | Sparse devs get good coverage; active devs get sampled |
-| Diff-level metric | Lower sensitivity than full-file analysis |
+| Diff-level metric | Lower sensitivity than full-file analysis — all scores fall in 3–12/100 range |
 | No ground truth | Cannot confirm AI usage, only measure style signals |
 | Single composite score | May average out real per-signal movement |
 

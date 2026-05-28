@@ -42,12 +42,20 @@ async def fetch_year_window(
     repos: list[str],
     year: int,
     per_year: int,
+    name_filter: str | None = None,
 ) -> list:
-    """Fetch up to per_year commits from a single calendar year."""
+    """Fetch up to per_year commits from a single calendar year.
+
+    If name_filter is set and server-side ?author=login returns fewer than
+    NAME_FILTER_THRESHOLD commits, falls back to client-side name filtering
+    (needed for developers whose git email isn't linked to their GitHub account).
+    """
     import httpx
     from datetime import datetime, timezone
     since = datetime(year, 1, 1, tzinfo=timezone.utc)
     until = datetime(year, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
+
+    NAME_FILTER_THRESHOLD = 3  # trigger client-side fallback below this count
 
     all_commits = []
     for repo_full in repos:
@@ -72,6 +80,29 @@ async def fetch_year_window(
                     await asyncio.sleep(5 * (attempt + 1))
                 else:
                     print(f"    [skip] {repo_full} — network error after 3 attempts: {e}")
+
+        # Fallback: client-side name filtering when server-side misses linked-email commits
+        if name_filter and len(all_commits) < NAME_FILTER_THRESHOLD:
+            for attempt in range(3):
+                try:
+                    async for commit in client.iter_commits_by_name(
+                        owner, repo_name, name_filter,
+                        max_commits=per_year,
+                        since=since,
+                        until=until,
+                    ):
+                        all_commits.append(commit)
+                    break
+                except httpx.HTTPStatusError as e:
+                    if e.response.status_code in (404, 451):
+                        break
+                    raise
+                except (httpx.RemoteProtocolError, httpx.ConnectError, httpx.ReadTimeout) as e:
+                    if attempt < 2:
+                        await asyncio.sleep(5 * (attempt + 1))
+                    else:
+                        print(f"    [skip name-filter] {repo_full} — {e}")
+
         if len(all_commits) >= per_year:
             break
 
@@ -89,6 +120,7 @@ async def analyze_one(
     repos: list[str],
     token: str,
     force: bool = False,
+    name_filter: str | None = None,
 ) -> dict:
     from devfp.collector.github import GitHubClient
     from devfp.collector.cache import GitHubCache
@@ -103,12 +135,14 @@ async def analyze_one(
         return _summarize(profile)
 
     print(f"\n→ {display_name} ({login})")
+    if name_filter:
+        print(f"  [name-filter] using client-side filtering: '{name_filter}'")
 
     all_commits = []
     async with GitHubClient(token=token, cache=GitHubCache()) as client:
         for year in YEARS:
             year_commits = await fetch_year_window(
-                client, login, repos, year, COMMITS_PER_YEAR
+                client, login, repos, year, COMMITS_PER_YEAR, name_filter=name_filter,
             )
             print(f"    {year}: {len(year_commits):>3} commits")
             all_commits.extend(year_commits)
@@ -205,6 +239,7 @@ async def main() -> None:
             dev.get("repos", []),
             token,
             force=args.force,
+            name_filter=dev.get("author_name"),
         )
         results.append(result)
 

@@ -18,7 +18,7 @@ Can you see when a famous open-source developer started using AI tools — just 
 
 This project applies style fingerprinting to the commit history of 9 famous GitHub developers. We track **6 measurable style signals** across 2,608 real commits (2018–2024) and compare them against LLM release milestones.
 
-**The data is real and auditable.** 2,923 commits, 9 developers, 2018–2025. All profiles in [`reports/real/`](reports/real/). Reproduce with `python run_analysis.py`.
+**The data is real and auditable.** 3,009 commits, 9 developers, 2018–2025. All profiles in [`reports/real/`](reports/real/). Reproduce with `python run_analysis.py`.
 
 ---
 
@@ -40,7 +40,7 @@ We ask: **did they change after Copilot and ChatGPT?**
 
 ![Developer Drift Comparison](docs/img/drift_comparison.png)
 
-*Real measurements from 2,608 commits. Baseline = pre-Jun 2022. Post-LLM = post-Jun 2022.*
+*Real measurements from 3,009 commits. Baseline = pre-Jun 2022. Post-LLM = post-Jun 2022.*
 
 | Developer | Commits | Baseline | Post-LLM | Drift |
 |-----------|---------|----------|----------|-------|
@@ -50,11 +50,11 @@ We ask: **did they change after Copilot and ChatGPT?**
 | Evan You | 421 | 4.3 | 4.0 | −0.3 |
 | Dan Abramov | 285 | 6.1 | 5.2 | −0.8 |
 | Sindre Sorhus | 379 | 3.7 | 1.6 | −2.1 |
-| DHH | 163 | 7.3 | 4.6 | −2.7 |
+| DHH | 249 | 8.7 | 4.6 | **−4.2** |
 | Guido van Rossum | 175 | 7.8 | 4.0 | −3.8 |
 | Linus Torvalds | 480 | 11.5 | 10.5 | −1.0 |
 
-**Key findings:** Most developers show no detectable drift. Rich Harris is the only developer with a clear, well-supported positive shift (+6.8, gradual across 4 post-LLM years, consistent across svelte and SvelteKit). Torvalds is a clean negative control (−1.0). The dramatic drifts (+20 to +28 pts) sometimes attributed to these developers in blog posts are not what we observe in real commit data.
+**Key findings:** Most developers show no detectable drift. Rich Harris is the only developer with a clear positive shift (+6.8, gradual across 4 post-LLM years, consistent across svelte and SvelteKit). DHH shows the strongest negative drift (−4.2), consistent with his public anti-AI position — his pre-2021 history was recovered via client-side name filtering after the GitHub login filter missed commits with his old email. Torvalds is a clean negative control (−1.0). The dramatic drifts (+20 to +28 pts) sometimes attributed to these developers in blog posts are not what we observe in real commit data.
 
 > Full analysis: [FINDINGS.md](FINDINGS.md)
 

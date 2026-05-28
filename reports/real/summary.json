@@ -14,11 +14,11 @@
     "login": "dhh",
     "display_name": "David Heinemeier Hansson (DHH)",
     "status": "ok",
-    "commits": 163,
-    "quarters": 13,
-    "baseline": 7.3,
+    "commits": 249,
+    "quarters": 21,
+    "baseline": 8.7,
     "post_llm": 4.6,
-    "drift": -2.7,
+    "drift": -4.2,
     "change_points": []
   },
   {

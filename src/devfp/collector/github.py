@@ -140,6 +140,55 @@ class GitHubClient:
                 break
             page += 1
 
+    async def iter_commits_by_name(
+        self,
+        owner: str,
+        repo: str,
+        name_filter: str,
+        max_commits: int = 500,
+        since: Optional[datetime] = None,
+        until: Optional[datetime] = None,
+    ) -> AsyncIterator[Commit]:
+        """Fetch commits filtered client-side by author name.
+
+        Used when the GitHub ?author=login filter misses commits because the
+        developer's git email isn't linked to their GitHub account (e.g. DHH).
+        """
+        fetched = 0
+        page = 1
+        params: dict[str, Any] = {"per_page": 100}
+        if since:
+            params["since"] = since.isoformat()
+        if until:
+            params["until"] = until.isoformat()
+
+        # Use the longest word in the name as the distinctive identifier
+        # (e.g. "Hansson" from "David Heinemeier Hansson", "Holowaychuk" from "TJ Holowaychuk")
+        # Short common words like "David" or "TJ" would produce false positives.
+        parts = name_filter.split()
+        distinctive = max(parts, key=len).lower()
+
+        while fetched < max_commits:
+            params["page"] = page
+            batch = await self._get(f"/repos/{owner}/{repo}/commits", params)
+            if not batch:
+                break
+
+            for raw in batch:
+                if fetched >= max_commits:
+                    return
+                raw_name = raw.get("commit", {}).get("author", {}).get("name", "").lower()
+                if distinctive not in raw_name:
+                    continue
+                commit = await self._enrich_commit(owner, repo, raw)
+                if commit:
+                    yield commit
+                    fetched += 1
+
+            if len(batch) < 100:
+                break
+            page += 1
+
     async def _enrich_commit(
         self, owner: str, repo: str, raw: dict[str, Any]
     ) -> Optional[Commit]:
