@@ -8,8 +8,8 @@
     "pmndrs/valtio"
   ],
   "first_commit_date": "2018-09-10T16:54:45Z",
-  "last_commit_date": "2024-08-15T00:02:29Z",
-  "total_commits_analyzed": 282,
+  "last_commit_date": "2025-12-09T18:35:15Z",
+  "total_commits_analyzed": 285,
   "score_timeline": [
     {
       "author": "gaearon",
@@ -244,7 +244,56 @@
       "function_style_score": 0.0,
       "llm_score": 0.0,
       "n_commits": 2
+    },
+    {
+      "author": "gaearon",
+      "period_start": "2025-01-01T00:00:00Z",
+      "period_end": "2025-03-31T00:00:00Z",
+      "comment_score": 0.1,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.35415,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 2.1,
+      "n_commits": 1
+    },
+    {
+      "author": "gaearon",
+      "period_start": "2025-07-01T00:00:00Z",
+      "period_end": "2025-09-30T00:00:00Z",
+      "comment_score": 0.0,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.0,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 0.0,
+      "n_commits": 1
+    },
+    {
+      "author": "gaearon",
+      "period_start": "2025-10-01T00:00:00Z",
+      "period_end": "2025-12-31T00:00:00Z",
+      "comment_score": 0.375,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.3223,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 15.0,
+      "n_commits": 1
     }
   ],
-  "change_points": []
+  "change_points": [
+    {
+      "author": "gaearon",
+      "date": "2023-04-01T00:00:00Z",
+      "metric": "llm_score",
+      "value_before": 8.7,
+      "value_after": 0.63,
+      "magnitude": 8.07,
+      "nearest_llm_event": "GPT-4 Release (2023-03)"
+    }
+  ]
 }

@@ -4,11 +4,11 @@
   "primary_language": "unknown",
   "analyzed_repos": [
     "rails/rails",
-    "basecamp/hotwire-rails"
+    "basecamp/kamal"
   ],
   "first_commit_date": "2021-10-09T15:03:05Z",
-  "last_commit_date": "2024-10-25T18:06:45Z",
-  "total_commits_analyzed": 102,
+  "last_commit_date": "2025-12-28T16:34:49Z",
+  "total_commits_analyzed": 163,
   "score_timeline": [
     {
       "author": "dhh",
@@ -66,27 +66,27 @@
       "author": "dhh",
       "period_start": "2023-04-01T00:00:00Z",
       "period_end": "2023-06-30T00:00:00Z",
-      "comment_score": 0.25,
-      "docstring_score": 0.0,
-      "verbosity_score": 0.12310000000000001,
-      "error_handling_score": 0.0,
+      "comment_score": 0.022,
+      "docstring_score": 0.019,
+      "verbosity_score": 0.1658,
+      "error_handling_score": 0.029333333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "llm_score": 7.5,
-      "n_commits": 2
+      "llm_score": 3.3,
+      "n_commits": 26
     },
     {
       "author": "dhh",
       "period_start": "2023-07-01T00:00:00Z",
       "period_end": "2023-09-30T00:00:00Z",
-      "comment_score": 0.0,
-      "docstring_score": 0.0,
-      "verbosity_score": 0.0,
-      "error_handling_score": 0.0,
+      "comment_score": 0.002,
+      "docstring_score": 0.011,
+      "verbosity_score": 0.11065,
+      "error_handling_score": 0.0454,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "llm_score": 0.0,
-      "n_commits": 1
+      "llm_score": 1.3,
+      "n_commits": 23
     },
     {
       "author": "dhh",
@@ -126,6 +126,58 @@
       "function_style_score": 0.0,
       "llm_score": 1.5,
       "n_commits": 7
+    },
+    {
+      "author": "dhh",
+      "period_start": "2025-01-01T00:00:00Z",
+      "period_end": "2025-03-31T00:00:00Z",
+      "comment_score": 0.0,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.3356,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 0.0,
+      "n_commits": 2
+    },
+    {
+      "author": "dhh",
+      "period_start": "2025-04-01T00:00:00Z",
+      "period_end": "2025-06-30T00:00:00Z",
+      "comment_score": 0.176,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.16855,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 7.5,
+      "n_commits": 2
+    },
+    {
+      "author": "dhh",
+      "period_start": "2025-07-01T00:00:00Z",
+      "period_end": "2025-09-30T00:00:00Z",
+      "comment_score": 0.0,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.125,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 0.0,
+      "n_commits": 2
+    },
+    {
+      "author": "dhh",
+      "period_start": "2025-10-01T00:00:00Z",
+      "period_end": "2025-12-31T00:00:00Z",
+      "comment_score": 0.08,
+      "docstring_score": 0.184,
+      "verbosity_score": 0.24495,
+      "error_handling_score": 0.007733333333333333,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 10.3,
+      "n_commits": 9
     }
   ],
   "change_points": []

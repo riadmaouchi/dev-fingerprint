@@ -7,6 +7,7 @@ Reads:  reports/real/*.json   (computed by run_analysis.py from GitHub API data)
 Writes: docs/img/timeline.png
         docs/img/drift_comparison.png
         docs/img/radar.png
+        docs/img/signals.png      ← per-signal trends (new)
 
 Each figure embeds a "Data collected YYYY-MM-DD" annotation for auditability.
 """
@@ -196,7 +197,8 @@ def fig_timeline(profiles: dict[str, dict], collection_date: str) -> None:
     for login, p in eligible.items():
         color = PALETTE.get(login, "#8B949E")
         for cp in p.get("change_points", []):
-            cp_x = _decimal_quarter(cp["date"] + "T00:00:00Z")
+            cp_date = cp["date"] if "T" in cp["date"] else cp["date"] + "T00:00:00Z"
+            cp_x = _decimal_quarter(cp_date)
             ax.axvline(cp_x, color=color, lw=0.6, ls=":", alpha=0.5, zorder=1)
             ax.annotate("▼", xy=(cp_x, 98), color=color,
                         fontsize=9, ha="center", va="top", zorder=4)
@@ -408,6 +410,87 @@ def fig_radar(profiles: dict[str, dict], collection_date: str) -> None:
     _save(fig, "radar.png")
 
 
+# ── Figure 4 — Per-signal trends ─────────────────────────────────────────────
+
+def fig_signals(profiles: dict[str, dict], collection_date: str) -> None:
+    """Small multiples: one panel per signal, all developers overlaid.
+
+    Reveals which specific signals drive drift (or not) without the composite
+    score masking individual movement.
+    """
+    signals = [
+        ("comment_score",       "Comment density"),
+        ("docstring_score",     "Docstring coverage"),
+        ("commit_style_score",  "Conventional commits"),
+        ("verbosity_score",     "Identifier verbosity"),
+        ("error_handling_score","Error handling"),
+    ]
+
+    # Only developers with >= 6 quarters total
+    eligible = {
+        login: p for login, p in profiles.items()
+        if len(p["score_timeline"]) >= 6
+    }
+    if not eligible:
+        print("  [SKIP] signals — not enough profiles")
+        return
+
+    fig, axes = plt.subplots(1, len(signals), figsize=(14, 4.2), sharey=False)
+    fig.patch.set_facecolor(THEME["bg"])
+
+    copilot_ga = 2022.47
+
+    for ax, (sig_key, sig_label) in zip(axes, signals):
+        _ax_style(ax, title=sig_label)
+        ax.axvline(copilot_ga, color=THEME["spine"], lw=0.8, ls="--", zorder=1)
+        ax.axhline(0, color=THEME["spine"], lw=0.4, zorder=1)
+
+        for login, p in eligible.items():
+            qs = sorted(p["score_timeline"], key=lambda q: q["period_start"])
+            xs = [_decimal_quarter(q["period_start"]) for q in qs]
+            ys = [q[sig_key] * 100 for q in qs]   # → percentage
+            color = PALETTE.get(login, "#8B949E")
+            lw = 2.2 if login == "Rich-Harris" else 1.2
+            alpha = 0.95 if login == "Rich-Harris" else 0.55
+            ax.plot(xs, ys, color=color, lw=lw, alpha=alpha,
+                    solid_capstyle="round", zorder=3)
+
+        ax.set_ylabel("% of commits", fontsize=8)
+        ax.yaxis.label.set_color(THEME["text_muted"])
+        years = list(range(2018, 2026))
+        ax.set_xticks([y for y in years if y % 2 == 0])
+        ax.set_xticklabels([str(y) for y in years if y % 2 == 0], fontsize=8)
+        ax.tick_params(labelsize=8)
+
+    # Shared legend
+    handles = [
+        plt.Line2D([0], [0], color=PALETTE.get(login, "#8B949E"),
+                   lw=2 if login == "Rich-Harris" else 1.2,
+                   label=p["display_name"].split(" (")[0][:20])
+        for login, p in sorted(eligible.items())
+    ]
+    fig.legend(handles=handles, loc="lower center", ncol=min(len(eligible), 5),
+               facecolor=THEME["surface"], edgecolor=THEME["spine"],
+               labelcolor=THEME["text_muted"], fontsize=8,
+               bbox_to_anchor=(0.5, -0.08))
+
+    fig.suptitle(
+        "Per-signal trends over time — dashed line = Copilot GA (Jun 2022)",
+        color=THEME["text_primary"], fontsize=THEME["title_size"],
+        fontweight="semibold", y=1.02,
+    )
+
+    total = sum(p.get("total_commits_analyzed", 0) for p in eligible.values())
+    axes[-1].text(
+        1.0, -0.18,
+        f"Real GitHub data  ·  collected {collection_date}  ·  {total:,} commits",
+        transform=axes[-1].transAxes, ha="right", va="bottom",
+        color=THEME["text_muted"], fontsize=7, alpha=0.7,
+    )
+
+    _save(fig, "signals.png")
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -434,6 +517,7 @@ def main() -> None:
     fig_timeline(profiles, collection_date)
     fig_drift_comparison(profiles, collection_date)
     fig_radar(profiles, collection_date)
+    fig_signals(profiles, collection_date)
 
     print("Done.")
 

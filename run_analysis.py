@@ -31,7 +31,7 @@ import yaml
 OUTPUT_DIR = Path("reports/real")
 CONFIGS_PATH = Path("configs/developers.yaml")
 
-YEARS = list(range(2018, 2025))        # 2018 – 2024 inclusive
+YEARS = list(range(2018, 2026))        # 2018 – 2025 inclusive
 COMMITS_PER_YEAR = 60                  # enough to fill a quarter (~15/quarter)
 MIN_COMMITS_FOR_ANALYSIS = 12         # skip developers with too few commits
 

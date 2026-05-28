@@ -6,8 +6,8 @@
     "torvalds/linux"
   ],
   "first_commit_date": "2018-12-27T01:37:51Z",
-  "last_commit_date": "2024-12-30T19:20:42Z",
-  "total_commits_analyzed": 420,
+  "last_commit_date": "2025-12-31T20:25:22Z",
+  "total_commits_analyzed": 480,
   "score_timeline": [
     {
       "author": "torvalds",
@@ -98,6 +98,19 @@
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
       "llm_score": 8.6,
+      "n_commits": 60
+    },
+    {
+      "author": "torvalds",
+      "period_start": "2025-10-01T00:00:00Z",
+      "period_end": "2025-12-31T00:00:00Z",
+      "comment_score": 0.142,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.33285,
+      "error_handling_score": 0.09453333333333333,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 9.8,
       "n_commits": 60
     }
   ],

@@ -7,8 +7,8 @@
     "sveltejs/kit"
   ],
   "first_commit_date": "2018-12-24T17:08:24Z",
-  "last_commit_date": "2024-12-24T14:14:56Z",
-  "total_commits_analyzed": 420,
+  "last_commit_date": "2025-12-26T16:47:32Z",
+  "total_commits_analyzed": 480,
   "score_timeline": [
     {
       "author": "Rich-Harris",
@@ -191,6 +191,19 @@
       "function_style_score": 0.0,
       "llm_score": 11.9,
       "n_commits": 58
+    },
+    {
+      "author": "Rich-Harris",
+      "period_start": "2025-10-01T00:00:00Z",
+      "period_end": "2025-12-31T00:00:00Z",
+      "comment_score": 0.159,
+      "docstring_score": 0.367,
+      "verbosity_score": 0.25939999999999996,
+      "error_handling_score": 0.02733333333333333,
+      "commit_style_score": 0.9166666666666666,
+      "function_style_score": 0.0,
+      "llm_score": 18.2,
+      "n_commits": 60
     }
   ],
   "change_points": []

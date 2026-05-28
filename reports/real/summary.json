@@ -1,13 +1,107 @@
 [
   {
+    "login": "torvalds",
+    "display_name": "Linus Torvalds",
+    "status": "ok",
+    "commits": 480,
+    "quarters": 8,
+    "baseline": 11.5,
+    "post_llm": 10.5,
+    "drift": -1.0,
+    "change_points": []
+  },
+  {
+    "login": "dhh",
+    "display_name": "David Heinemeier Hansson (DHH)",
+    "status": "ok",
+    "commits": 163,
+    "quarters": 13,
+    "baseline": 7.3,
+    "post_llm": 4.6,
+    "drift": -2.7,
+    "change_points": []
+  },
+  {
+    "login": "antirez",
+    "display_name": "Salvatore Sanfilippo (antirez)",
+    "status": "ok",
+    "commits": 240,
+    "quarters": 6,
+    "baseline": 6.1,
+    "post_llm": 14.0,
+    "drift": 7.9,
+    "change_points": []
+  },
+  {
+    "login": "gaearon",
+    "display_name": "Dan Abramov",
+    "status": "ok",
+    "commits": 285,
+    "quarters": 21,
+    "baseline": 6.1,
+    "post_llm": 5.2,
+    "drift": -0.8,
+    "change_points": [
+      {
+        "date": "2023-04",
+        "magnitude": 8.1,
+        "event": "GPT-4 Release (2023-03)"
+      }
+    ]
+  },
+  {
+    "login": "Rich-Harris",
+    "display_name": "Rich Harris",
+    "status": "ok",
+    "commits": 480,
+    "quarters": 15,
+    "baseline": 5.7,
+    "post_llm": 12.5,
+    "drift": 6.8,
+    "change_points": []
+  },
+  {
+    "login": "yyx990803",
+    "display_name": "Evan You",
+    "status": "ok",
+    "commits": 421,
+    "quarters": 9,
+    "baseline": 4.3,
+    "post_llm": 4.0,
+    "drift": -0.3,
+    "change_points": []
+  },
+  {
+    "login": "sindresorhus",
+    "display_name": "Sindre Sorhus",
+    "status": "ok",
+    "commits": 379,
+    "quarters": 31,
+    "baseline": 3.7,
+    "post_llm": 1.6,
+    "drift": -2.1,
+    "change_points": []
+  },
+  {
+    "login": "gvanrossum",
+    "display_name": "Guido van Rossum",
+    "status": "ok",
+    "commits": 175,
+    "quarters": 22,
+    "baseline": 7.8,
+    "post_llm": 4.0,
+    "drift": -3.8,
+    "change_points": []
+  },
+  {
     "login": "ry",
     "display_name": "Ryan Dahl",
     "status": "ok",
-    "commits": 292,
-    "quarters": 19,
+    "commits": 300,
+    "quarters": 22,
     "baseline": 6.5,
-    "post_llm": 7.0,
-    "drift": 0.5,
+    "post_llm": 7.4,
+    "drift": 0.8,
     "change_points": []
   },
   {

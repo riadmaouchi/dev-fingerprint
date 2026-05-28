@@ -1,127 +1,104 @@
 # Findings
 
-> Real measurements from 2,608 commits across 9 developers (2018–2024).  
-> Data collected via GitHub API, cached locally, profiles auditable in `reports/real/`.  
-> Methodology: `run_analysis.py` — year-windowed sampling (60 commits/year × 2018–2024).
+> Real measurements from 2,923 commits across 9 developers (2018–2025).  
+> Year-windowed sampling: 60 commits × 8 years per developer.  
+> Profiles auditable in `reports/real/`. Reproduce with `python run_analysis.py`.
 
 ---
 
-## TL;DR
+## Summary Table
 
-Using our 6-signal LLM Influence Score on real commit history, **most developers show no detectable style drift** correlated with LLM adoption. The one clear exception is Rich Harris.
+| Developer | Commits | Pre-2022 Q | Post-2022 Q | Baseline | Post-LLM | Drift | Signal |
+|-----------|---------|-----------|------------|----------|----------|-------|--------|
+| Rich Harris | 480 | 11 | 4 | 5.7 | **12.5** | **+6.8** | Clear drift |
+| antirez | 240 | 3 | 1 | 6.1 | **14.0** | **+7.9** | Returned 2025, confounded |
+| Ryan Dahl | 300 | 10 | 12 | 6.5 | 7.4 | +0.8 | Flat |
+| Evan You | 421 | 4 | 5 | 4.3 | 4.0 | −0.3 | Flat |
+| Dan Abramov | 285 | 13 | 8 | 6.1 | 5.2 | −0.8 | Flat (sparse post-2022) |
+| Sindre Sorhus | 379 | 18 | 13 | 3.7 | 1.6 | −2.1 | Flat |
+| DHH | 163 | 2 | 11 | 7.3 | 4.6 | −2.7 | Flat (no 2018–2020 data) |
+| Guido van Rossum | 175 | 13 | 9 | 7.8 | 4.0 | −3.8 | Flat |
+| Linus Torvalds | 480 | 4 | 4 | 11.5 | 10.5 | −1.0 | Flat (control) |
+| TJ Holowaychuk | — | — | — | — | — | — | No attributable commits |
 
-| Developer | Commits | Baseline | Post-LLM | Drift | Result |
-|-----------|---------|----------|----------|-------|--------|
-| Rich Harris | 420 | 5.7 | 10.6 | **+4.9** | Detectable drift |
-| Ryan Dahl | 292 | 6.5 | 7.0 | +0.5 | Flat |
-| Evan You | 420 | 4.3 | 4.2 | −0.1 | Flat |
-| Dan Abramov | 282 | 6.1 | 5.0 | −1.1 | Flat |
-| DHH | 102 | 7.3 | 5.1 | −2.2 | Flat |
-| Sindre Sorhus | 319 | 3.7 | 1.3 | −2.4 | Flat |
-| Guido van Rossum | 173 | 7.8 | 5.1 | −2.6 | Flat |
-| Linus Torvalds | 420 | 11.5 | 10.7 | −0.7 | Flat (control) |
-| antirez | 180 | 6.1 | — | — | Inactive post-2021 |
-
-**Baseline** = mean LLM Score pre–Jun 2022.  
+**Baseline** = mean LLM Score (quarterly) pre–Jun 2022.  
 **Post-LLM** = mean LLM Score post–Jun 2022 (Copilot GA).
 
 ---
 
-## Developer Profiles
+## Interpretation
 
-### Linus Torvalds — torvalds/linux
-**Drift: −0.7 · Negative control**
+### Rich Harris — clear positive drift (+6.8)
 
-Flat trajectory across the full period. Scores hover around 10–12/100 — entirely consistent with low-comment, low-docstring C kernel code. No change points detected. Confirms the tool is not picking up spurious drift.
+The strongest and most reliable finding. 480 commits across 8 years, 11 pre-LLM quarters and 4 post-LLM quarters. Both repos (sveltejs/svelte and sveltejs/kit) show the same gradual upward trend from ~5 to ~12 between 2022 and 2025. No single sharp change point — the shift is gradual, consistent with incremental AI tooling adoption.
 
----
+This is the only developer where the pre/post LLM distributions are clearly separated with sufficient data in both periods.
 
-### Rich Harris — sveltejs/svelte, sveltejs/kit
-**Drift: +4.9 · Detectable drift**
+### antirez — apparent drift (+7.9), but confounded
 
-The only developer in our dataset showing a consistent positive shift. Baseline (pre-Copilot) average: 5.7. Post-LLM average: 10.6. The signal is driven mainly by comment density and docstring scores, which gradually increase from 2022 onwards. No single sharp change point was detected by PELT — the shift appears gradual rather than abrupt.
+antirez was completely inactive on his tracked repos from 2021 to 2024, then returned in 2025 with 60 commits. His 2025 code scores at 14.0 vs a 6.1 pre-2021 baseline — a gap of +7.9. However, this comparison spans a 3-year hiatus, during which his entire coding context may have changed (different projects, different contributors, different norms). The temporal gap makes causal attribution to LLM tools unreliable. Reported for transparency, not as a finding.
 
-This is consistent with incremental adoption of AI tooling rather than a single moment of change.
+### Linus Torvalds — flat (−1.0, negative control)
 
----
+480 commits, perfect coverage. Scores hover around 10–11/100 throughout 2018–2025. Zero change points. The tool correctly detects no drift in a developer who has publicly stated he does not use AI tools. This validates the methodology at the baseline.
 
-### Ryan Dahl — denoland/deno, denoland/deno_std
-**Drift: +0.5 · Flat**
+### Evan You — flat (−0.3)
 
-292 commits across 2018–2024. Scores are stable in the 5–8 range throughout. The post-LLM period shows marginally higher averages (+0.5), but well within noise. The Deno codebase switching from JavaScript to TypeScript/Rust is a significant confound — language conventions differ enough that commit-level signals are unreliable for cross-language comparison.
+421 commits, strong coverage. vuejs/core and vitejs/vite are high-volume repos. No drift despite being one of the most active TypeScript developers in the ecosystem. The "TypeScript Effect" hypothesis — that TypeScript developers show stronger drift due to Copilot support — is not confirmed here.
 
----
+### Ryan Dahl — flat (+0.8)
 
-### Evan You — vuejs/core, vitejs/vite
-**Drift: −0.1 · Flat**
+300 commits, 22 quarters. Deno activity dropped sharply post-2022 (from 60/year to 8–12/year), suggesting Deno became more team-driven. The small positive drift (+0.8) is within noise given the sparse post-2022 quarters.
 
-420 commits, 8 quarters. Essentially zero drift. Both baseline and post-LLM periods score around 4/100. Note: vuejs/core and vitejs/vite are very high-volume repos — our 60-commit/year sample may not capture the specific commits where AI assistance is most visible.
+### Dan Abramov — flat (−0.8)
 
----
+285 commits but critically sparse post-2022: 3 commits in 2023, 11 in 2024, 3 in 2025. PELT detected a change point at 2023-04 (Δ8.1) — but this quarter has only 3 commits, making it statistically unreliable. Insufficient data for any conclusion.
 
-### Dan Abramov — facebook/react, reduxjs/redux, pmndrs/valtio
-**Drift: −1.1 · Flat**
+### Sindre Sorhus — flat (−2.1)
 
-Strong temporal coverage (18 quarters), but a critical observation: post-2022, Dan's commit frequency dropped sharply (32 commits in 2022, 3 in 2023, 11 in 2024). The post-LLM signal is statistically weak due to low sample size per quarter. No conclusion can be drawn about LLM influence from these repos.
+379 commits, 31 quarters — the best temporal coverage in the dataset. Score consistently around 3–4/100 throughout. Small negative drift reflects package maturity (less churn, more stable APIs). No LLM influence detected.
 
----
+### Guido van Rossum — flat (−3.8)
 
-### Sindre Sorhus — sindresorhus/execa, got, p-queue
-**Drift: −2.4 · Flat**
+175 commits across cpython. Very sparse 2018–2021 (1–15 commits/year). The negative drift reflects Guido's shift toward narrower, more focused contributions to CPython. No detectable LLM influence.
 
-Sindre's scores are unusually low (baseline 3.7, post-LLM 1.3). This reflects his extremely terse, well-factored JavaScript style — minimal comments, short functions, no defensive error handling. The negative drift may reflect package maturity: smaller, more stable packages need less ongoing documentation churn. No LLM influence detected.
+### DHH — insufficient baseline
 
----
+No commits found on `rails/rails` or `basecamp/kamal` for 2018–2020 via the `?author=dhh` GitHub filter. His older commits likely use an email not linked to his GitHub account. Only 2 pre-2022 quarters, making the baseline unreliable. Cannot draw conclusions.
 
-### Guido van Rossum — python/cpython
-**Drift: −2.6 · Flat**
+### TJ Holowaychuk — no attributable commits
 
-173 commits across 2018–2024. Good temporal coverage (20 quarters). Scores are consistently low (5–10/100). The small negative drift post-2022 may reflect Guido's shift toward more focused, narrowly-scoped cpython contributions rather than any style change.
+Both `tj/commander.js` and `tj/git-extras` returned zero commits attributed to the `tj` login via the GitHub API filter. TJ's commit history may use a different email or login. Excluded from analysis.
 
 ---
 
-### DHH — rails/rails
-**Drift: −2.2 · Flat (sparse data 2018–2020)**
+## What the Data Tells Us
 
-Only 102 commits, with near-zero activity in our repos for 2018–2020. Rails is a large multi-contributor repo where DHH's individual commits are less frequent. The data is insufficient for strong conclusions. Scores in the 5–8 range throughout.
+**1. The effect, if present, is smaller than commonly claimed.**  
+Frequently cited blog posts attribute +20 to +30 point drifts to developers like Evan You and Ryan Dahl. Our real measurements show +0.8 and −0.3 respectively. The gap between claimed and measured is large.
 
----
+**2. Only Rich Harris shows a clear, reproducible signal (+6.8).**  
+Consistent across two repos, gradual over 4 years, supported by 480 commits. This is the most defensible finding in the dataset.
 
-### Salvatore Sanfilippo (antirez) — antirez/redis, kilo
-**Not measurable — inactive post-2021**
+**3. Low post-2022 commit frequency is a major confound.**  
+Several developers (Dan Abramov, Ryan Dahl) shifted to lower personal commit frequency after 2022 — possibly because more code goes through AI tools and is committed by others, or because team workflows changed. This makes their post-LLM estimates unreliable.
 
-180 commits, all from 2018–2020. antirez stepped back from Redis in 2020 and has not been active in our tracked repos since. No post-LLM data available.
-
----
-
-## What the Results Tell Us
-
-### 1. The tool's sensitivity is low for commit diffs
-
-All scores fall in the 3–12/100 range. The `copilot_score()` metric was calibrated on complete code files. Commit diffs are partial views — a developer adding one LLM-assisted function to a hand-written file will produce a blended signal that's hard to distinguish from normal variation.
-
-### 2. Only Rich Harris shows a clear signal
-
-A +4.9 pt drift is modest but consistent across 14 quarters and both repos (Svelte + SvelteKit). It is the only developer where baseline and post-LLM distributions are clearly separated.
-
-### 3. Null results are informative
-
-The flat results for Evan You (+0.1), Ryan Dahl (+0.5), and Dan Abramov (−1.1) do not mean these developers don't use AI tools. They mean our metric, applied to commit diffs from these specific repos, does not detect a signal. High-volume repos with many contributors (vue/core, react) may dilute individual author signals.
-
-### 4. The TypeScript hypothesis is not supported
-
-We hypothesized that TypeScript developers (Rich Harris, Evan You, Ryan Dahl) would show the strongest drift due to Copilot's strong TypeScript support. Only Rich Harris shows drift. This suggests language alone is not a reliable predictor.
+**4. The metric has limited sensitivity on commit diffs.**  
+All scores fall in 3–12/100. The `copilot_score()` function is calibrated on complete code files; commit diffs are partial views. A developer adding one AI-assisted function to a 200-line PR will have that signal diluted. Individual signals (docstrings, comments) may be more sensitive than the composite — see `docs/img/signals.png`.
 
 ---
 
-## Limitations
+## Known Limitations
 
-- **Commit diff vs. full file**: our metric is calibrated on complete files and loses sensitivity when applied to diffs.
-- **Author filter**: GitHub's `?author=login` filter matches on the committer's GitHub account. Merge-heavy workflows (React, CPython) may attribute commits differently.
-- **Sample size**: 60 commits/year is sufficient for quarterly aggregation but some quarters have n < 5, producing high-variance estimates.
-- **No ground truth**: we have no verified dataset of "developer X used AI for commit Y." The +4.9 drift for Rich Harris is real but its cause is unconfirmed.
-- **Single metric**: `copilot_score()` is one composite score. Disaggregating individual signals (docstrings, comments, identifier length separately) may reveal patterns the composite obscures.
+| Limitation | Impact |
+|-----------|--------|
+| Author filter via GitHub login | Misses commits with unlinked email (DHH, TJ) |
+| 60 commits/year cap | Sparse devs get good coverage; active devs get sampled |
+| Diff-level metric | Lower sensitivity than full-file analysis |
+| No ground truth | Cannot confirm AI usage, only measure style signals |
+| Single composite score | May average out real per-signal movement |
 
 Full methodology: [METHODOLOGY.md](METHODOLOGY.md)  
 Raw profiles: [`reports/real/`](reports/real/)  
-Data collection script: [`run_analysis.py`](run_analysis.py)
+Collection script: [`run_analysis.py`](run_analysis.py)  
+Figure script: [`generate_figures.py`](generate_figures.py)

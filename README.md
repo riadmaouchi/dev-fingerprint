@@ -18,7 +18,7 @@ Can you see when a famous open-source developer started using AI tools — just 
 
 This project applies style fingerprinting to the commit history of 9 famous GitHub developers. We track **6 measurable style signals** across 2,608 real commits (2018–2024) and compare them against LLM release milestones.
 
-**The data is real and auditable.** All profiles are in [`reports/real/`](reports/real/). Reproduce with `python run_analysis.py`.
+**The data is real and auditable.** 2,923 commits, 9 developers, 2018–2025. All profiles in [`reports/real/`](reports/real/). Reproduce with `python run_analysis.py`.
 
 ---
 
@@ -44,17 +44,17 @@ We ask: **did they change after Copilot and ChatGPT?**
 
 | Developer | Commits | Baseline | Post-LLM | Drift |
 |-----------|---------|----------|----------|-------|
-| Rich Harris | 420 | 5.7 | 10.6 | **+4.9** |
-| Ryan Dahl | 292 | 6.5 | 7.0 | +0.5 |
-| Evan You | 420 | 4.3 | 4.2 | −0.1 |
-| Dan Abramov | 282 | 6.1 | 5.0 | −1.1 |
-| Sindre Sorhus | 319 | 3.7 | 1.3 | −2.4 |
-| Guido van Rossum | 173 | 7.8 | 5.1 | −2.6 |
-| DHH | 102 | 7.3 | 5.1 | −2.2 |
-| Linus Torvalds | 420 | 11.5 | 10.7 | −0.7 |
-| antirez | 180 | 6.1 | — | inactive post-2021 |
+| Rich Harris | 480 | 5.7 | 12.5 | **+6.8** |
+| antirez | 240 | 6.1 | 14.0 | +7.9 ⚠ confounded |
+| Ryan Dahl | 300 | 6.5 | 7.4 | +0.8 |
+| Evan You | 421 | 4.3 | 4.0 | −0.3 |
+| Dan Abramov | 285 | 6.1 | 5.2 | −0.8 |
+| Sindre Sorhus | 379 | 3.7 | 1.6 | −2.1 |
+| DHH | 163 | 7.3 | 4.6 | −2.7 |
+| Guido van Rossum | 175 | 7.8 | 4.0 | −3.8 |
+| Linus Torvalds | 480 | 11.5 | 10.5 | −1.0 |
 
-**Key findings:** Most developers show no detectable drift. Rich Harris is the only developer with a clear positive shift (+4.9 pts, gradual, consistent across svelte and SvelteKit). Torvalds is a clean negative control (−0.7). The dramatic drifts (+20 to +28 pts) sometimes attributed to these developers in blog posts are not what we observe.
+**Key findings:** Most developers show no detectable drift. Rich Harris is the only developer with a clear, well-supported positive shift (+6.8, gradual across 4 post-LLM years, consistent across svelte and SvelteKit). Torvalds is a clean negative control (−1.0). The dramatic drifts (+20 to +28 pts) sometimes attributed to these developers in blog posts are not what we observe in real commit data.
 
 > Full analysis: [FINDINGS.md](FINDINGS.md)
 

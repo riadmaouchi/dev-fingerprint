@@ -14,7 +14,7 @@ developers:
     primary_language: ruby
     repos:
       - rails/rails
-      - basecamp/hotwire-rails
+      - basecamp/kamal
     notes: >
       Créateur de Ruby on Rails. Très opinionated, a publiquement critiqué
       l'adoption aveugle des LLM en développement. Bonne baseline "anti-LLM".
@@ -92,10 +92,10 @@ developers:
 
   - github_login: tj
     display_name: "TJ Holowaychuk"
-    primary_language: go
+    primary_language: javascript
     repos:
       - tj/commander.js
-      - tj/apex
+      - tj/git-extras
     notes: >
       Créateur d'Express, Koa, Co. A quitté JS pour Go de manière radicale.
       Moins actif depuis 2019. Bon exemple de style pré-LLM bien établi.
