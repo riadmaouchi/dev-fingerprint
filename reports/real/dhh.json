@@ -1,0 +1,132 @@
+{
+  "github_login": "dhh",
+  "display_name": "David Heinemeier Hansson (DHH)",
+  "primary_language": "unknown",
+  "analyzed_repos": [
+    "rails/rails",
+    "basecamp/hotwire-rails"
+  ],
+  "first_commit_date": "2021-10-09T15:03:05Z",
+  "last_commit_date": "2024-10-25T18:06:45Z",
+  "total_commits_analyzed": 102,
+  "score_timeline": [
+    {
+      "author": "dhh",
+      "period_start": "2021-10-01T00:00:00Z",
+      "period_end": "2021-12-31T00:00:00Z",
+      "comment_score": 0.015,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.1385,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 0.7,
+      "n_commits": 15
+    },
+    {
+      "author": "dhh",
+      "period_start": "2022-01-01T00:00:00Z",
+      "period_end": "2022-03-31T00:00:00Z",
+      "comment_score": 0.302,
+      "docstring_score": 0.005,
+      "verbosity_score": 0.34395,
+      "error_handling_score": 0.025666666666666667,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 13.9,
+      "n_commits": 5
+    },
+    {
+      "author": "dhh",
+      "period_start": "2022-10-01T00:00:00Z",
+      "period_end": "2022-12-31T00:00:00Z",
+      "comment_score": 0.066,
+      "docstring_score": 0.125,
+      "verbosity_score": 0.186,
+      "error_handling_score": 0.037866666666666667,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 8.0,
+      "n_commits": 8
+    },
+    {
+      "author": "dhh",
+      "period_start": "2023-01-01T00:00:00Z",
+      "period_end": "2023-03-31T00:00:00Z",
+      "comment_score": 0.115,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.2701,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 5.3,
+      "n_commits": 7
+    },
+    {
+      "author": "dhh",
+      "period_start": "2023-04-01T00:00:00Z",
+      "period_end": "2023-06-30T00:00:00Z",
+      "comment_score": 0.25,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.12310000000000001,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 7.5,
+      "n_commits": 2
+    },
+    {
+      "author": "dhh",
+      "period_start": "2023-07-01T00:00:00Z",
+      "period_end": "2023-09-30T00:00:00Z",
+      "comment_score": 0.0,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.0,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 0.0,
+      "n_commits": 1
+    },
+    {
+      "author": "dhh",
+      "period_start": "2023-10-01T00:00:00Z",
+      "period_end": "2023-12-31T00:00:00Z",
+      "comment_score": 0.117,
+      "docstring_score": 0.036,
+      "verbosity_score": 0.30565000000000003,
+      "error_handling_score": 0.046266666666666664,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 11.2,
+      "n_commits": 4
+    },
+    {
+      "author": "dhh",
+      "period_start": "2024-07-01T00:00:00Z",
+      "period_end": "2024-09-30T00:00:00Z",
+      "comment_score": 0.013,
+      "docstring_score": 0.023,
+      "verbosity_score": 0.10195000000000001,
+      "error_handling_score": 0.0024,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 1.9,
+      "n_commits": 53
+    },
+    {
+      "author": "dhh",
+      "period_start": "2024-10-01T00:00:00Z",
+      "period_end": "2024-12-31T00:00:00Z",
+      "comment_score": 0.0,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.0756,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 1.5,
+      "n_commits": 7
+    }
+  ],
+  "change_points": []
+}

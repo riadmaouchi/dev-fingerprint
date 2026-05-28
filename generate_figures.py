@@ -1,31 +1,29 @@
-"""Regenerate all static figures for docs/img/.
+"""Regenerate all static figures for docs/img/ from real collected profiles.
 
-Run:
+Run AFTER python run_analysis.py has completed:
     python generate_figures.py
 
-Outputs:
-    docs/img/timeline.png
-    docs/img/drift_comparison.png
-    docs/img/radar.png
+Reads:  reports/real/*.json   (computed by run_analysis.py from GitHub API data)
+Writes: docs/img/timeline.png
+        docs/img/drift_comparison.png
+        docs/img/radar.png
 
-All figures use synthetic data calibrated against the findings in FINDINGS.md.
-No GitHub token or internet access required.
+Each figure embeds a "Data collected YYYY-MM-DD" annotation for auditability.
 """
 
 from __future__ import annotations
 
-import os
+import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import matplotlib.patheffects as pe
 import numpy as np
-from matplotlib.patches import FancyArrowPatch
 
-# ── Design system ────────────────────────────────────────────────────────────
+# ── Design system ─────────────────────────────────────────────────────────────
 
 THEME = {
     "bg":           "#0D1117",
@@ -42,29 +40,69 @@ THEME = {
     "annot_size":   8,
 }
 
+# GitHub-dark palette — one colour per developer
 PALETTE = {
-    "torvalds":   "#8B949E",   # muted — organic control
-    "antirez":    "#8B949E",
-    "dhh":        "#8B949E",
-    "tj":         "#8B949E",
-    "gaearon":    "#E3B341",   # amber — moderate drift
-    "gvanrossum": "#E3B341",
-    "Rich-Harris": "#FF7B72",  # red-orange — high drift
-    "yyx990803":  "#D2A8FF",   # purple — high drift
-    "Ryan-Dahl":  "#58A6FF",   # blue — high drift
-    "sindresorhus": "#3FB950", # green — high drift
+    "torvalds":     "#8B949E",   # muted grey — organic control
+    "dhh":          "#8B949E",
+    "antirez":      "#8B949E",
+    "tj":           "#8B949E",
+    "gaearon":      "#E3B341",   # amber — moderate drift
+    "gvanrossum":   "#E3B341",
+    "Rich-Harris":  "#FF7B72",   # red-orange — high drift
+    "yyx990803":    "#D2A8FF",   # purple
+    "ry":           "#58A6FF",   # blue
+    "sindresorhus": "#3FB950",   # green
 }
 
-# Milestone dates as decimal years for easy positioning
 MILESTONES = {
-    "Copilot\nPreview":  2021.49,   # 2021-06-29
-    "Copilot GA":        2022.47,   # 2022-06-21
-    "ChatGPT":           2022.91,   # 2022-11-30
-    "GPT-4":             2023.20,   # 2023-03-14
-    "Copilot\nChat GA":  2023.96,   # 2023-12-19
+    "Copilot\nPreview": 2021.49,
+    "Copilot GA":       2022.47,
+    "ChatGPT":          2022.91,
+    "GPT-4":            2023.20,
 }
 
 RESULTS_DIR = Path("docs/img")
+PROFILES_DIR = Path("reports/real")
+
+# ── Data loading ──────────────────────────────────────────────────────────────
+
+def _decimal_quarter(period_start: str) -> float:
+    """Convert '2022-07-01T00:00:00Z' → 2022.5"""
+    dt = datetime.fromisoformat(period_start.replace("Z", "+00:00"))
+    return dt.year + (dt.month - 1) / 12.0
+
+
+def load_profiles() -> dict[str, dict]:
+    """Load all real JSON profiles. Returns {login: profile_dict}."""
+    profiles = {}
+    for f in sorted(PROFILES_DIR.glob("*.json")):
+        if f.stem == "summary":
+            continue
+        d = json.loads(f.read_text())
+        if d.get("score_timeline"):
+            profiles[d["github_login"]] = d
+    return profiles
+
+
+def _drift(profile: dict) -> tuple[float | None, float | None, float | None]:
+    qs = profile.get("score_timeline", [])
+    pre  = [q["llm_score"] for q in qs if q["period_start"] < "2022-06-01"]
+    post = [q["llm_score"] for q in qs if q["period_start"] >= "2022-06-01"]
+    if not pre or not post:
+        return None, None, None
+    b = sum(pre) / len(pre)
+    p = sum(post) / len(post)
+    return round(b, 1), round(p, 1), round(p - b, 1)
+
+
+def _collection_date(profiles: dict[str, dict]) -> str:
+    """Infer the collection date from the latest last_commit_date across profiles."""
+    dates = [
+        p.get("last_commit_date", "")
+        for p in profiles.values()
+        if p.get("last_commit_date")
+    ]
+    return max(dates)[:10] if dates else datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -89,6 +127,15 @@ def _ax_style(ax: plt.Axes, title: str = "", xlabel: str = "", ylabel: str = "")
     ax.set_axisbelow(True)
 
 
+def _watermark(ax: plt.Axes, collection_date: str, n_commits: int) -> None:
+    ax.text(
+        0.99, 0.01,
+        f"Real GitHub data  ·  collected {collection_date}  ·  {n_commits:,} commits",
+        transform=ax.transAxes, ha="right", va="bottom",
+        color=THEME["text_muted"], fontsize=7, alpha=0.7,
+    )
+
+
 def _save(fig: plt.Figure, name: str) -> None:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     path = RESULTS_DIR / name
@@ -99,116 +146,21 @@ def _save(fig: plt.Figure, name: str) -> None:
     print(f"  ✓ {path}  ({kb} KB)")
 
 
-def _decimal_year_ticks(ax: plt.Axes, start: int = 2019, end: int = 2025) -> None:
-    years = list(range(start, end + 1))
-    ax.set_xticks(years)
-    ax.set_xticklabels([str(y) for y in years])
-
-
-# ── Synthetic data ────────────────────────────────────────────────────────────
-
-def _make_quarterly(
-    start: float,      # decimal year of first quarter
-    end: float,        # decimal year of last quarter
-    base: float,       # baseline score
-    jump_at: float | None = None,   # decimal year of change point
-    jump_delta: float = 0.0,        # score increase at change point
-    noise: float = 1.5,
-    rng: np.random.Generator | None = None,
-) -> tuple[list[float], list[float]]:
-    """Return (xs, ys) quarterly time series as decimal years."""
-    if rng is None:
-        rng = np.random.default_rng(42)
-    xs: list[float] = []
-    ys: list[float] = []
-    q = start
-    while q <= end + 0.01:
-        xs.append(round(q, 3))
-        score = base
-        if jump_at is not None and q >= jump_at:
-            frac = min((q - jump_at) / 0.5, 1.0)
-            score = base + jump_delta * frac
-        score += rng.normal(0, noise)
-        ys.append(float(np.clip(score, 0, 100)))
-        q = round(q + 0.25, 3)
-    return xs, ys
-
-
-def synthetic_timeline_data() -> dict[str, tuple[list[float], list[float]]]:
-    rng = np.random.default_rng(7)
-    return {
-        # organic control — stays flat
-        "Linus Torvalds": _make_quarterly(2019.0, 2024.75, base=8.5, noise=0.6, rng=rng),
-        # moderate drift — jump Q4 2022 (ChatGPT)
-        "Dan Abramov": _make_quarterly(
-            2019.0, 2024.75, base=28.6, jump_at=2022.75, jump_delta=19.0, noise=1.8, rng=rng),
-        # high drift — sharp jump Q1 2023 (GPT-4)
-        "Evan You": _make_quarterly(
-            2019.0, 2024.75, base=29.4, jump_at=2023.0, jump_delta=30.0, noise=2.2, rng=rng),
-    }
-
-
-def synthetic_drift_data() -> list[dict]:
-    return [
-        {"name": "Linus Torvalds",    "lang": "C",          "baseline": 8.2,  "post": 9.1,  "cp": None},
-        {"name": "antirez",           "lang": "C",          "baseline": 11.4, "post": 12.8, "cp": None},
-        {"name": "DHH",               "lang": "Ruby",        "baseline": 24.3, "post": 26.1, "cp": None},
-        {"name": "TJ Holowaychuk",    "lang": "JS",          "baseline": 19.3, "post": 21.1, "cp": None},
-        {"name": "Guido van Rossum",  "lang": "Python",      "baseline": 22.1, "post": 38.4, "cp": "Q2 2023"},
-        {"name": "Dan Abramov",       "lang": "TypeScript",  "baseline": 28.6, "post": 47.3, "cp": "Q4 2022"},
-        {"name": "Rich Harris",       "lang": "TypeScript",  "baseline": 31.2, "post": 52.8, "cp": "Q3 2022"},
-        {"name": "Ryan Dahl",         "lang": "TypeScript",  "baseline": 27.8, "post": 55.2, "cp": "Q3 2022"},
-        {"name": "Sindre Sorhus",     "lang": "JS/TS",       "baseline": 35.7, "post": 61.4, "cp": "Q4 2022"},
-        {"name": "Evan You",          "lang": "TypeScript",  "baseline": 29.4, "post": 58.1, "cp": "Q1 2023"},
-    ]
-
-
-def synthetic_signal_data() -> dict[str, dict[str, float]]:
-    """Per-signal normalized scores (0–1) for organic vs high-drift devs.
-
-    Values derived from the reported raw metrics in FINDINGS.md and METHODOLOGY.md.
-    comment_density: /20, docstring_coverage: raw, verbosity: /20, error_handling: /15
-    """
-    return {
-        # "organic" baseline — average of Torvalds, antirez, DHH
-        "Organic\nbaseline": {
-            "Comments": 0.08, "Docstrings": 0.15, "Verbosity": 0.37,
-            "Error hdlg": 0.20, "Conv. commit": 0.05,
-        },
-        "Dan\nAbramov": {
-            "Comments": 0.22, "Docstrings": 0.52, "Verbosity": 0.54,
-            "Error hdlg": 0.38, "Conv. commit": 0.34,
-        },
-        "Rich\nHarris": {
-            "Comments": 0.26, "Docstrings": 0.67, "Verbosity": 0.49,
-            "Error hdlg": 0.51, "Conv. commit": 0.55,
-        },
-        "Evan You": {
-            "Comments": 0.30, "Docstrings": 0.82, "Verbosity": 0.56,
-            "Error hdlg": 0.42, "Conv. commit": 0.78,
-        },
-        "Ryan Dahl": {
-            "Comments": 0.28, "Docstrings": 0.72, "Verbosity": 0.58,
-            "Error hdlg": 0.44, "Conv. commit": 0.89,
-        },
-    }
-
-
 # ── Figure 1 — LLM Score Timeline ─────────────────────────────────────────────
 
-def fig_timeline() -> None:
-    """Timeline of LLM score for 3 developer archetypes with milestone bands."""
-    data = synthetic_timeline_data()
+def fig_timeline(profiles: dict[str, dict], collection_date: str) -> None:
+    """Timeline: one line per developer, milestone verticals, threshold bands."""
 
-    colors = {
-        "Linus Torvalds": PALETTE["torvalds"],
-        "Dan Abramov":    PALETTE["gaearon"],
-        "Evan You":       PALETTE["yyx990803"],
+    # Pick developers with at least 8 quarters spanning both eras
+    eligible = {
+        login: p for login, p in profiles.items()
+        if len([q for q in p["score_timeline"] if q["period_start"] < "2022-06-01"]) >= 2
+        and len([q for q in p["score_timeline"] if q["period_start"] >= "2022-06-01"]) >= 2
     }
-    change_points = {
-        "Dan Abramov": 2022.75,
-        "Evan You":    2023.0,
-    }
+
+    if not eligible:
+        print("  [SKIP] timeline — not enough profiles with pre+post data yet")
+        return
 
     fig, ax = plt.subplots(figsize=(11, 5.5))
     fig.patch.set_facecolor(THEME["bg"])
@@ -219,191 +171,226 @@ def fig_timeline() -> None:
     ax.axhspan(70, 100, alpha=0.06, color="#FF7B72", zorder=0)
 
     # Milestone verticals
-    m_labels = list(MILESTONES.keys())
-    m_xs = list(MILESTONES.values())
-    for x, label in zip(m_xs, m_labels):
-        ax.axvline(x, color=THEME["spine"], lw=0.8, ls="--", zorder=1)
-        ax.text(x + 0.02, 96, label, color=THEME["text_muted"], fontsize=7,
-                va="top", ha="left", rotation=0, linespacing=1.3)
+    for x, label in MILESTONES.items():
+        ax.axvline(label, color=THEME["spine"], lw=0.8, ls="--", zorder=1)
+        ax.text(label + 0.02, 96, x, color=THEME["text_muted"], fontsize=7,
+                va="top", ha="left", linespacing=1.3)
 
-    # Developer lines
-    for name, (xs, ys) in data.items():
-        color = colors[name]
-        ax.plot(xs, ys, color=color, lw=2.2, zorder=3, solid_capstyle="round")
-        ax.fill_between(xs, ys, alpha=0.10, color=color, zorder=2)
+    total_commits = 0
+    for login, p in sorted(eligible.items()):
+        qs = sorted(p["score_timeline"], key=lambda q: q["period_start"])
+        xs = [_decimal_quarter(q["period_start"]) for q in qs]
+        ys = [q["llm_score"] for q in qs]
+        color = PALETTE.get(login, "#8B949E")
+        name = p["display_name"].split(" (")[0].split(" — ")[0][:20]
 
-        # Change-point arrow
-        if name in change_points:
-            cp_x = change_points[name]
-            # Find y at cp
-            cp_idx = min(range(len(xs)), key=lambda i: abs(xs[i] - cp_x))
-            cp_y = ys[cp_idx]
-            ax.annotate(
-                "▼", xy=(cp_x, cp_y + 2), color=color,
-                fontsize=11, ha="center", va="bottom", zorder=4,
-            )
-
-        # Inline end label
+        # Smooth only if enough points
+        ax.plot(xs, ys, color=color, lw=2.0, zorder=3, solid_capstyle="round",
+                marker="o", markersize=3, markerfacecolor=color)
+        ax.fill_between(xs, ys, alpha=0.08, color=color, zorder=2)
         ax.text(xs[-1] + 0.08, ys[-1], name, color=color,
-                fontsize=9, va="center", fontweight="bold")
+                fontsize=8.5, va="center", fontweight="bold")
+        total_commits += p.get("total_commits_analyzed", 0)
 
-    # Zone labels (right margin)
-    ax.text(2024.92, 55, "Ambiguous", color="#E3B341", fontsize=7.5,
-            va="center", ha="right", alpha=0.8)
-    ax.text(2024.92, 85, "LLM-influenced", color="#FF7B72", fontsize=7.5,
-            va="center", ha="right", alpha=0.8)
-    ax.text(2024.92, 20, "Organic", color="#3FB950", fontsize=7.5,
-            va="center", ha="right", alpha=0.8)
+    # Change-point markers
+    for login, p in eligible.items():
+        color = PALETTE.get(login, "#8B949E")
+        for cp in p.get("change_points", []):
+            cp_x = _decimal_quarter(cp["date"] + "T00:00:00Z")
+            ax.axvline(cp_x, color=color, lw=0.6, ls=":", alpha=0.5, zorder=1)
+            ax.annotate("▼", xy=(cp_x, 98), color=color,
+                        fontsize=9, ha="center", va="top", zorder=4)
 
-    ax.set_xlim(2018.9, 2025.6)
+    # Zone labels
+    ax.text(2018.1, 55, "Ambiguous", color="#E3B341", fontsize=7.5, va="center", alpha=0.8)
+    ax.text(2018.1, 85, "LLM-influenced", color="#FF7B72", fontsize=7.5, va="center", alpha=0.8)
+    ax.text(2018.1, 20, "Organic", color="#3FB950", fontsize=7.5, va="center", alpha=0.8)
+
+    ax.set_xlim(2017.8, max(
+        max(_decimal_quarter(q["period_start"]) for p in eligible.values() for q in p["score_timeline"]),
+        2025.0,
+    ) + 0.8)
     ax.set_ylim(0, 100)
-    _decimal_year_ticks(ax, 2019, 2024)
+    years = list(range(2018, 2026))
+    ax.set_xticks(years)
+    ax.set_xticklabels([str(y) for y in years])
 
     ax.set_title(
-        "LLM Influence Score timeline — 3 developer archetypes\n"
-        "▼ = detected style change point  ·  dashed lines = LLM release milestones",
+        "LLM Influence Score timeline — real GitHub commit data\n"
+        "▼ = detected style change point  ·  dashed = LLM milestones",
         color=THEME["text_primary"], fontsize=THEME["title_size"],
         pad=10, fontweight="semibold",
     )
-
+    _watermark(ax, collection_date, total_commits)
     _save(fig, "timeline.png")
 
 
-# ── Figure 2 — Drift Comparison (horizontal diverging bars) ──────────────────
+# ── Figure 2 — Drift Comparison ───────────────────────────────────────────────
 
-def fig_drift_comparison() -> None:
-    """Horizontal bar chart: baseline vs post-LLM LLM score per developer."""
-    data = sorted(synthetic_drift_data(), key=lambda d: d["post"] - d["baseline"])
+def fig_drift_comparison(profiles: dict[str, dict], collection_date: str) -> None:
+    """Horizontal bar: baseline vs post-LLM, sorted by drift."""
 
-    names    = [d["name"]     for d in data]
-    baseline = [d["baseline"] for d in data]
-    post     = [d["post"]     for d in data]
-    cps      = [d["cp"]       for d in data]
-    drifts   = [p - b for p, b in zip(post, baseline)]
+    rows = []
+    for login, p in profiles.items():
+        b, post, d = _drift(p)
+        if b is None:
+            continue
+        rows.append({
+            "login": login,
+            "name": p["display_name"].split(" (")[0][:24],
+            "baseline": b,
+            "post": post,
+            "drift": d,
+            "cp": p.get("change_points", []),
+            "commits": p.get("total_commits_analyzed", 0),
+        })
 
-    # Color by drift magnitude
-    bar_colors = []
-    for drift in drifts:
-        if drift < 5:
-            bar_colors.append(PALETTE["torvalds"])
-        elif drift < 20:
-            bar_colors.append(PALETTE["gaearon"])
-        else:
-            bar_colors.append(PALETTE["Ryan-Dahl"])
+    if not rows:
+        print("  [SKIP] drift_comparison — no profiles with pre+post data")
+        return
 
-    fig, ax = plt.subplots(figsize=(10, 5.8))
+    rows.sort(key=lambda r: r["drift"])
+
+    names    = [r["name"]     for r in rows]
+    baseline = [r["baseline"] for r in rows]
+    post     = [r["post"]     for r in rows]
+    drifts   = [r["drift"]    for r in rows]
+
+    bar_colors = [
+        PALETTE.get(r["login"], "#8B949E")
+        for r in rows
+    ]
+
+    fig, ax = plt.subplots(figsize=(10, max(4, len(rows) * 0.6)))
     fig.patch.set_facecolor(THEME["bg"])
     _ax_style(ax, xlabel="LLM Influence Score (0–100)")
 
     y = np.arange(len(names))
-    bar_h = 0.42
+    bar_h = 0.38
 
-    # Baseline bars (thin, muted)
-    ax.barh(y + bar_h / 2, baseline, height=bar_h * 0.7,
+    ax.barh(y + bar_h / 2, baseline, height=bar_h * 0.6,
             color=THEME["grid"], zorder=3, label="Pre-LLM baseline")
-
-    # Post bars (full color)
     ax.barh(y - bar_h / 2, post, height=bar_h,
             color=bar_colors, zorder=3, label="Post-LLM era")
 
-    # Drift annotation
-    for i, (drift, cp, p) in enumerate(zip(drifts, cps, post)):
-        if drift >= 5:
-            ax.text(p + 0.8, i - bar_h / 2,
-                    f"+{drift:.1f}" + (f"  [{cp}]" if cp else ""),
-                    color=bar_colors[i], fontsize=8, va="center", fontweight="bold")
-        else:
-            ax.text(p + 0.8, i - bar_h / 2,
-                    f"+{drift:.1f}  organic",
-                    color=THEME["text_muted"], fontsize=8, va="center")
+    for i, (r, p_val) in enumerate(zip(rows, post)):
+        sign = "+" if r["drift"] >= 0 else ""
+        cp_str = ""
+        if r["cp"]:
+            cp_str = f"  [{r['cp'][0]['date'][:7]}]"
+        ax.text(p_val + 0.6, i - bar_h / 2,
+                f"{sign}{r['drift']:.1f}{cp_str}",
+                color=bar_colors[i], fontsize=8, va="center",
+                fontweight="bold" if abs(r["drift"]) >= 5 else "normal")
 
-    # Threshold lines
     ax.axvline(40, color="#E3B341", lw=0.8, ls="--", alpha=0.6, zorder=2)
     ax.axvline(70, color="#FF7B72", lw=0.8, ls="--", alpha=0.6, zorder=2)
-    ax.text(40.5, len(names) - 0.2, "40", color="#E3B341", fontsize=7.5)
-    ax.text(70.5, len(names) - 0.2, "70", color="#FF7B72", fontsize=7.5)
+    ax.text(40.5, len(names) - 0.3, "40", color="#E3B341", fontsize=7.5)
+    ax.text(70.5, len(names) - 0.3, "70", color="#FF7B72", fontsize=7.5)
 
     ax.set_yticks(y)
     ax.set_yticklabels(names, fontsize=9, color=THEME["text_primary"])
-    ax.set_xlim(0, 85)
+    ax.set_xlim(0, max(max(post) + 15, 85))
 
-    # Legend
     legend_elements = [
-        mpatches.Patch(color=THEME["grid"],          label="Pre-LLM baseline"),
-        mpatches.Patch(color=PALETTE["torvalds"],    label="Organic (drift < 5 pts)"),
-        mpatches.Patch(color=PALETTE["gaearon"],     label="Possible drift (5–20 pts)"),
-        mpatches.Patch(color=PALETTE["Ryan-Dahl"],   label="High drift (> 20 pts)"),
+        mpatches.Patch(color=THEME["grid"],        label="Pre-LLM baseline (pre Jun 2022)"),
+        mpatches.Patch(color="#FF7B72",             label="Post-LLM era score"),
     ]
     ax.legend(handles=legend_elements, loc="lower right",
               facecolor=THEME["surface"], edgecolor=THEME["spine"],
               labelcolor=THEME["text_muted"], fontsize=8)
 
+    total = sum(r["commits"] for r in rows)
     ax.set_title(
-        "Style drift — baseline vs post-LLM era (Copilot GA, Jun 2022)\n"
-        "Annotation shows detected change-point quarter where applicable",
+        "Style drift — pre vs post Copilot GA (Jun 2022)\n"
+        "Annotation: detected change-point quarter",
         color=THEME["text_primary"], fontsize=THEME["title_size"],
         pad=10, fontweight="semibold",
     )
-
+    _watermark(ax, collection_date, total)
     _save(fig, "drift_comparison.png")
 
 
-# ── Figure 3 — Signal heatmap (replaces radar) ───────────────────────────────
+# ── Figure 3 — Per-signal heatmap ────────────────────────────────────────────
 
-def fig_radar() -> None:
-    """Diverging heatmap: per-signal deviation from organic baseline.
+def fig_radar(profiles: dict[str, dict], collection_date: str) -> None:
+    """Diverging heatmap: per-signal % deviation from organic baseline.
 
-    Rows = developers (organic baseline + 4 LLM-influenced devs).
-    Columns = 5 style signals.
-    Cell value = deviation from organic baseline in percentage points.
+    Organic baseline = mean of developers with |drift| < 5 pts.
     """
-    raw = synthetic_signal_data()
-    devs = list(raw.keys())
-    signals = ["Comments", "Docstrings", "Verbosity", "Error hdlg", "Conv. commit"]
+    signals = ["comment_score", "docstring_score", "verbosity_score",
+               "error_handling_score", "commit_style_score"]
+    labels  = ["Comments", "Docstrings", "Verbosity", "Error hdlg", "Conv. commit"]
 
-    organic = raw["Organic\nbaseline"]
-    matrix = np.zeros((len(devs), len(signals)))
-    for i, dev in enumerate(devs):
-        for j, sig in enumerate(signals):
-            matrix[i, j] = (raw[dev][sig] - organic[sig]) * 100.0
+    # Compute latest-quarter signal averages per developer
+    dev_signals: dict[str, dict[str, float]] = {}
+    for login, p in profiles.items():
+        post_qs = [q for q in p["score_timeline"] if q["period_start"] >= "2022-06-01"]
+        if not post_qs:
+            continue
+        avgs = {sig: sum(q[sig] for q in post_qs) / len(post_qs) for sig in signals}
+        dev_signals[login] = avgs
 
-    fig, ax = plt.subplots(figsize=(9, 4.5))
+    if len(dev_signals) < 2:
+        print("  [SKIP] radar — not enough post-LLM data")
+        return
+
+    # Organic baseline = mean of low-drift devs
+    low_drift = [
+        login for login in dev_signals
+        if profiles[login].get("change_points") == []
+        or (_drift(profiles[login])[2] or 99) < 5
+    ]
+    if not low_drift:
+        low_drift = list(dev_signals.keys())[:2]
+
+    organic: dict[str, float] = {
+        sig: sum(dev_signals[l][sig] for l in low_drift) / len(low_drift)
+        for sig in signals
+    }
+
+    # Build matrix (all devs including organic baseline row)
+    devs_ordered = sorted(dev_signals.keys(),
+                          key=lambda l: _drift(profiles[l])[2] or 0)
+    rows_data = []
+    row_labels = []
+    for login in devs_ordered:
+        row = [(dev_signals[login][sig] - organic[sig]) * 100 for sig in signals]
+        rows_data.append(row)
+        name = profiles[login]["display_name"].split(" (")[0][:18]
+        row_labels.append(name)
+
+    matrix = np.array(rows_data)
+
+    fig, ax = plt.subplots(figsize=(9, max(3, len(devs_ordered) * 0.55 + 1.2)))
     fig.patch.set_facecolor(THEME["bg"])
     ax.set_facecolor(THEME["surface"])
 
-    vmax = 70
-    # Manual RdBu_r colormap rendering on dark background
-    cmap = plt.cm.RdBu_r  # type: ignore[attr-defined]
+    vmax = max(60, float(np.abs(matrix).max()) * 0.9)
+    im = ax.imshow(matrix, cmap=plt.cm.RdBu_r, vmin=-vmax, vmax=vmax, aspect="auto")
 
-    im = ax.imshow(matrix, cmap=cmap, vmin=-vmax, vmax=vmax, aspect="auto")
-
-    # Cell annotations
-    for i in range(len(devs)):
+    for i in range(len(devs_ordered)):
         for j in range(len(signals)):
             val = matrix[i, j]
-            text_color = "white" if abs(val) > 30 else THEME["text_primary"]
+            text_color = "white" if abs(val) > vmax * 0.5 else THEME["text_primary"]
             sign = "+" if val >= 0 else ""
             ax.text(j, i, f"{sign}{val:.0f}%",
                     ha="center", va="center", fontsize=9,
                     color=text_color, fontweight="bold")
 
     ax.set_xticks(range(len(signals)))
-    ax.set_xticklabels(signals, fontsize=THEME["label_size"],
-                       color=THEME["text_primary"])
-    ax.set_yticks(range(len(devs)))
-    ax.set_yticklabels(devs, fontsize=9, color=THEME["text_primary"])
+    ax.set_xticklabels(labels, fontsize=THEME["label_size"], color=THEME["text_primary"])
+    ax.set_yticks(range(len(devs_ordered)))
+    ax.set_yticklabels(row_labels, fontsize=9, color=THEME["text_primary"])
 
     for spine in ax.spines.values():
         spine.set_edgecolor(THEME["spine"])
     ax.tick_params(colors=THEME["tick"])
-
-    # Grid lines between cells
     for x in np.arange(-0.5, len(signals), 1):
         ax.axvline(x, color=THEME["grid"], lw=0.6)
-    for y in np.arange(-0.5, len(devs), 1):
+    for y in np.arange(-0.5, len(devs_ordered), 1):
         ax.axhline(y, color=THEME["grid"], lw=0.6)
 
-    # Colorbar
     cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
     cbar.set_label("Deviation from organic baseline (%pts)",
                    color=THEME["text_muted"], fontsize=8)
@@ -411,12 +398,13 @@ def fig_radar() -> None:
     cbar.outline.set_edgecolor(THEME["spine"])
 
     ax.set_title(
-        "Style signal fingerprint — deviation from organic baseline\n"
-        "Red = more LLM-like than organic  ·  Blue = less",
+        "Style signal fingerprint — deviation from organic baseline (post-LLM era)\n"
+        "Red = more LLM-like  ·  Blue = less",
         color=THEME["text_primary"], fontsize=THEME["title_size"],
         pad=10, fontweight="semibold",
     )
-
+    total = sum(p.get("total_commits_analyzed", 0) for p in profiles.values())
+    _watermark(ax, collection_date, total)
     _save(fig, "radar.png")
 
 
@@ -424,17 +412,29 @@ def fig_radar() -> None:
 
 def main() -> None:
     plt.rcParams.update({
-        "font.family":    "sans-serif",
-        "font.size":      THEME["tick_size"],
-        "axes.titlesize": THEME["title_size"],
-        "axes.labelsize": THEME["label_size"],
+        "font.family":      "sans-serif",
+        "font.size":        THEME["tick_size"],
+        "axes.titlesize":   THEME["title_size"],
+        "axes.labelsize":   THEME["label_size"],
         "figure.facecolor": THEME["bg"],
     })
 
+    profiles = load_profiles()
+    if not profiles:
+        print(f"No profiles found in {PROFILES_DIR}/")
+        print("Run: python run_analysis.py")
+        return
+
+    total_commits = sum(p.get("total_commits_analyzed", 0) for p in profiles.values())
+    collection_date = _collection_date(profiles)
+    print(f"Loaded {len(profiles)} profiles  ({total_commits:,} total commits)")
+    print(f"Collection date: {collection_date}")
     print("Generating figures …")
-    fig_timeline()
-    fig_drift_comparison()
-    fig_radar()
+
+    fig_timeline(profiles, collection_date)
+    fig_drift_comparison(profiles, collection_date)
+    fig_radar(profiles, collection_date)
+
     print("Done.")
 
 

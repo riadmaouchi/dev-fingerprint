@@ -1,0 +1,19 @@
+[
+  {
+    "login": "ry",
+    "display_name": "Ryan Dahl",
+    "status": "ok",
+    "commits": 292,
+    "quarters": 19,
+    "baseline": 6.5,
+    "post_llm": 7.0,
+    "drift": 0.5,
+    "change_points": []
+  },
+  {
+    "login": "tj",
+    "status": "skipped",
+    "reason": "too_few_commits",
+    "commits": 0
+  }
+]

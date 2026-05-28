@@ -39,7 +39,9 @@ cache/
 
 # Generated reports (HTML) — sample PNGs are committed intentionally
 reports/**/*.html
+# Exclude generated JSON reports but keep real collected profiles
 reports/**/*.json
+!reports/real/*.json
 !reports/sample/
 
 # IDE

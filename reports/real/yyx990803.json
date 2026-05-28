@@ -1,0 +1,119 @@
+{
+  "github_login": "yyx990803",
+  "display_name": "Evan You",
+  "primary_language": "unknown",
+  "analyzed_repos": [
+    "vuejs/core",
+    "vitejs/vite"
+  ],
+  "first_commit_date": "2018-10-26T16:11:52Z",
+  "last_commit_date": "2024-11-15T14:45:28Z",
+  "total_commits_analyzed": 420,
+  "score_timeline": [
+    {
+      "author": "yyx990803",
+      "period_start": "2018-10-01T00:00:00Z",
+      "period_end": "2018-12-31T00:00:00Z",
+      "comment_score": 0.066,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.3089,
+      "error_handling_score": 0.017133333333333334,
+      "commit_style_score": 0.8,
+      "function_style_score": 0.0,
+      "llm_score": 4.3,
+      "n_commits": 60
+    },
+    {
+      "author": "yyx990803",
+      "period_start": "2019-10-01T00:00:00Z",
+      "period_end": "2019-12-31T00:00:00Z",
+      "comment_score": 0.063,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.27759999999999996,
+      "error_handling_score": 0.0037333333333333333,
+      "commit_style_score": 0.95,
+      "function_style_score": 0.0,
+      "llm_score": 4.7,
+      "n_commits": 60
+    },
+    {
+      "author": "yyx990803",
+      "period_start": "2020-10-01T00:00:00Z",
+      "period_end": "2020-12-31T00:00:00Z",
+      "comment_score": 0.05,
+      "docstring_score": 0.038,
+      "verbosity_score": 0.24345,
+      "error_handling_score": 0.007933333333333332,
+      "commit_style_score": 0.8,
+      "function_style_score": 0.0,
+      "llm_score": 3.8,
+      "n_commits": 60
+    },
+    {
+      "author": "yyx990803",
+      "period_start": "2021-10-01T00:00:00Z",
+      "period_end": "2021-12-31T00:00:00Z",
+      "comment_score": 0.077,
+      "docstring_score": 0.054,
+      "verbosity_score": 0.1647,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.7833333333333333,
+      "function_style_score": 0.0,
+      "llm_score": 4.3,
+      "n_commits": 60
+    },
+    {
+      "author": "yyx990803",
+      "period_start": "2022-10-01T00:00:00Z",
+      "period_end": "2022-12-31T00:00:00Z",
+      "comment_score": 0.051,
+      "docstring_score": 0.067,
+      "verbosity_score": 0.16605,
+      "error_handling_score": 0.023,
+      "commit_style_score": 0.8833333333333333,
+      "function_style_score": 0.0,
+      "llm_score": 3.9,
+      "n_commits": 60
+    },
+    {
+      "author": "yyx990803",
+      "period_start": "2023-10-01T00:00:00Z",
+      "period_end": "2023-12-31T00:00:00Z",
+      "comment_score": 0.023,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.13274999999999998,
+      "error_handling_score": 0.005933333333333333,
+      "commit_style_score": 0.7833333333333333,
+      "function_style_score": 0.0,
+      "llm_score": 1.7,
+      "n_commits": 60
+    },
+    {
+      "author": "yyx990803",
+      "period_start": "2024-07-01T00:00:00Z",
+      "period_end": "2024-09-30T00:00:00Z",
+      "comment_score": 0.107,
+      "docstring_score": 0.076,
+      "verbosity_score": 0.21949999999999997,
+      "error_handling_score": 0.0038,
+      "commit_style_score": 0.7391304347826086,
+      "function_style_score": 0.0,
+      "llm_score": 8.9,
+      "n_commits": 46
+    },
+    {
+      "author": "yyx990803",
+      "period_start": "2024-10-01T00:00:00Z",
+      "period_end": "2024-12-31T00:00:00Z",
+      "comment_score": 0.048,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.1255,
+      "error_handling_score": 0.0,
+      "commit_style_score": 0.6428571428571429,
+      "function_style_score": 0.0,
+      "llm_score": 2.4,
+      "n_commits": 14
+    }
+  ],
+  "change_points": []
+}

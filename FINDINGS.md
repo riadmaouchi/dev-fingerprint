@@ -1,188 +1,127 @@
 # Findings
 
-> Results from analyzing 10 famous OSS developers, ~4,800 commits total,
-> spanning 2018–2024. Full methodology in [METHODOLOGY.md](METHODOLOGY.md).
+> Real measurements from 2,608 commits across 9 developers (2018–2024).  
+> Data collected via GitHub API, cached locally, profiles auditable in `reports/real/`.  
+> Methodology: `run_analysis.py` — year-windowed sampling (60 commits/year × 2018–2024).
 
 ---
 
 ## TL;DR
 
-Three distinct clusters emerge:
+Using our 6-signal LLM Influence Score on real commit history, **most developers show no detectable style drift** correlated with LLM adoption. The one clear exception is Rich Harris.
 
-**Stable / Organic** — Torvalds, antirez, DHH, TJ Holowaychuk
-- LLM Score delta < 5 points over the entire period
-- No detected change points correlated with LLM releases
-- Consistent with their public statements (Torvalds: "I don't use AI tools", DHH: vocal AI skeptic)
+| Developer | Commits | Baseline | Post-LLM | Drift | Result |
+|-----------|---------|----------|----------|-------|--------|
+| Rich Harris | 420 | 5.7 | 10.6 | **+4.9** | Detectable drift |
+| Ryan Dahl | 292 | 6.5 | 7.0 | +0.5 | Flat |
+| Evan You | 420 | 4.3 | 4.2 | −0.1 | Flat |
+| Dan Abramov | 282 | 6.1 | 5.0 | −1.1 | Flat |
+| DHH | 102 | 7.3 | 5.1 | −2.2 | Flat |
+| Sindre Sorhus | 319 | 3.7 | 1.3 | −2.4 | Flat |
+| Guido van Rossum | 173 | 7.8 | 5.1 | −2.6 | Flat |
+| Linus Torvalds | 420 | 11.5 | 10.7 | −0.7 | Flat (control) |
+| antirez | 180 | 6.1 | — | — | Inactive post-2021 |
 
-**Moderate Drift** — Dan Abramov, Guido van Rossum
-- LLM Score delta 15–20 points
-- At least one change point in 2022–2023
-- Likely: selective use for boilerplate / commit messages / docs
-
-**High Drift** — Evan You, Rich Harris, Ryan Dahl, Sindre Sorhus
-- LLM Score delta > 20 points
-- Change point tightly correlated with Copilot GA or ChatGPT
-- Consistent with their public ecosystem (JS/TS tooling, highly iterative)
+**Baseline** = mean LLM Score pre–Jun 2022.  
+**Post-LLM** = mean LLM Score post–Jun 2022 (Copilot GA).
 
 ---
 
 ## Developer Profiles
 
 ### Linus Torvalds — torvalds/linux
+**Drift: −0.7 · Negative control**
 
-**Baseline LLM Score:** 8.2  
-**Post-LLM Score:** 9.1  
-**Drift:** +0.9  
-**Verdict:** Organic — ideal control
-
-The data is unambiguous: zero style change. Linus writes the same way he wrote in 2018. Comment density stays at ~4%, docstrings are non-existent (it's C), identifier verbosity is low. If anything, his commit messages got *shorter* post-2022.
-
-> "I'm not using any AI tools. My development process is deeply personal." — Torvalds, 2023
-
-Serves as our **negative control**: if our tool detected a drift here, it would indicate a false positive.
+Flat trajectory across the full period. Scores hover around 10–12/100 — entirely consistent with low-comment, low-docstring C kernel code. No change points detected. Confirms the tool is not picking up spurious drift.
 
 ---
 
-### Salvatore Sanfilippo (antirez) — antirez/redis
+### Rich Harris — sveltejs/svelte, sveltejs/kit
+**Drift: +4.9 · Detectable drift**
 
-**Baseline LLM Score:** 11.4  
-**Post-LLM Score:** 12.8  
-**Drift:** +1.4  
-**Verdict:** Organic
+The only developer in our dataset showing a consistent positive shift. Baseline (pre-Copilot) average: 5.7. Post-LLM average: 10.6. The signal is driven mainly by comment density and docstring scores, which gradually increase from 2022 onwards. No single sharp change point was detected by PELT — the shift appears gradual rather than abrupt.
 
-antirez stepped back from Redis in 2020, then returned with occasional contributions. His C style remains strikingly consistent — minimal comments, short identifiers (`robj *o`), no defensive error handling patterns. No change points detected.
+This is consistent with incremental adoption of AI tooling rather than a single moment of change.
 
 ---
 
-### David Heinemeier Hansson (DHH) — rails/rails
+### Ryan Dahl — denoland/deno, denoland/deno_std
+**Drift: +0.5 · Flat**
 
-**Baseline LLM Score:** 24.3  
-**Post-LLM Score:** 26.1  
-**Drift:** +1.8  
-**Verdict:** Organic
-
-DHH's score is slightly higher than Torvalds/antirez — Ruby's conventions (RDoc, `# frozen_string_literal`) inflate comment density. But the trajectory is flat. His commit messages remained casual and direct ("Fix #XXXXX", "Oops").
-
----
-
-### Dan Abramov — gaearon/react, gaearon/redux
-
-**Baseline LLM Score:** 28.6  
-**Post-LLM Score:** 47.3  
-**Drift:** +18.7  
-**Verdict:** Possible LLM influence
-
-**Change point detected:** Q4 2022 (Δ19.1 pts) — 5 weeks after ChatGPT launch.
-
-Key changes:
-- Docstring coverage jumped from 18% → 52%
-- Commit messages grew from avg 38 chars → 71 chars, with 34% conventional format (was <5%)
-- Identifier length: 8.2 → 10.8
-
-Dan was publicly reflective about AI tools in 2023 and acknowledged using them for "specific tasks." This is consistent with selective, thoughtful adoption.
-
----
-
-### Rich Harris — sveltejs/svelte
-
-**Baseline LLM Score:** 31.2  
-**Post-LLM Score:** 52.8  
-**Drift:** +21.6  
-**Verdict:** Possible LLM influence
-
-**Change point detected:** Q3 2022 (Δ22.4 pts) — 2 weeks after GitHub Copilot GA.
-
-The SvelteKit codebase shows strong signal. TypeScript docstrings went from rare to near-ubiquitous. Error handling density doubled. Yet the *architecture* and macro design patterns remain distinctly Rich-Harris: elegant, minimal, non-verbose.
-
-This is a strong pattern for AI-assisted code: the **micro-style** (docs, error handling) drifts LLM-ward while the **macro-style** (API design, architecture) stays human.
+292 commits across 2018–2024. Scores are stable in the 5–8 range throughout. The post-LLM period shows marginally higher averages (+0.5), but well within noise. The Deno codebase switching from JavaScript to TypeScript/Rust is a significant confound — language conventions differ enough that commit-level signals are unreliable for cross-language comparison.
 
 ---
 
 ### Evan You — vuejs/core, vitejs/vite
+**Drift: −0.1 · Flat**
 
-**Baseline LLM Score:** 29.4  
-**Post-LLM Score:** 58.1  
-**Drift:** +28.7  
-**Verdict:** High LLM influence
-
-**Change point detected:** Q1 2023 (Δ29.3 pts) — 3 weeks after GPT-4 launch.
-
-The strongest absolute drift in our dataset. Vite's codebase post-2023 shows comment density above 30% (was ~12%), full JSDoc coverage on exported APIs, conventional commits with descriptive bodies.
-
-Evan publicly mentioned using AI tools for "repetitive parts of the codebase" in a 2023 interview.
+420 commits, 8 quarters. Essentially zero drift. Both baseline and post-LLM periods score around 4/100. Note: vuejs/core and vitejs/vite are very high-volume repos — our 60-commit/year sample may not capture the specific commits where AI assistance is most visible.
 
 ---
 
-### Sindre Sorhus — sindresorhus/*
+### Dan Abramov — facebook/react, reduxjs/redux, pmndrs/valtio
+**Drift: −1.1 · Flat**
 
-**Baseline LLM Score:** 35.7  
-**Post-LLM Score:** 61.4  
-**Drift:** +25.7  
-**Verdict:** High LLM influence
+Strong temporal coverage (18 quarters), but a critical observation: post-2022, Dan's commit frequency dropped sharply (32 commits in 2022, 3 in 2023, 11 in 2024). The post-LLM signal is statistically weak due to low sample size per quarter. No conclusion can be drawn about LLM influence from these repos.
 
-**Change point detected:** Q4 2022 (Δ26.1 pts).
+---
 
-Sindre was already a high-scorer pre-LLM (he writes meticulous, well-documented code as a baseline). The jump is therefore especially notable. Two signals drove most of the increase: conventional commits (near 100% post-Q4 2022) and error handling density (tripled).
+### Sindre Sorhus — sindresorhus/execa, got, p-queue
+**Drift: −2.4 · Flat**
 
-With 1,000+ maintained packages, AI assistance for boilerplate is a logical hypothesis.
+Sindre's scores are unusually low (baseline 3.7, post-LLM 1.3). This reflects his extremely terse, well-factored JavaScript style — minimal comments, short functions, no defensive error handling. The negative drift may reflect package maturity: smaller, more stable packages need less ongoing documentation churn. No LLM influence detected.
 
 ---
 
 ### Guido van Rossum — python/cpython
+**Drift: −2.6 · Flat**
 
-**Baseline LLM Score:** 22.1  
-**Post-LLM Score:** 38.4  
-**Drift:** +16.3  
-**Verdict:** Possible LLM influence
-
-**Change point detected:** Q2 2023 (Δ15.8 pts).
-
-Guido's Python contributions are mostly Python Enhancement Proposals and core interpreter work. The drift is moderate and concentrated in docstring verbosity (Python's PEP 257 compliance). It's worth noting that Microsoft's VSCode team, where Guido works, deployed Copilot widely in 2022.
+173 commits across 2018–2024. Good temporal coverage (20 quarters). Scores are consistently low (5–10/100). The small negative drift post-2022 may reflect Guido's shift toward more focused, narrowly-scoped cpython contributions rather than any style change.
 
 ---
 
-### Ryan Dahl — denoland/deno
+### DHH — rails/rails
+**Drift: −2.2 · Flat (sparse data 2018–2020)**
 
-**Baseline LLM Score:** 27.8  
-**Post-LLM Score:** 55.2  
-**Drift:** +27.4  
-**Verdict:** High LLM influence
-
-**Change point detected:** Q3 2022 (Δ27.9 pts) — 5 days after Copilot GA.
-
-The sharpest temporally-correlated change point in the dataset. Deno's TypeScript codebase shifted dramatically: JSDoc coverage went from <10% to >70% in a single quarter. Ryan's commit messages transformed from terse (`"fix crash"`) to structured (`"fix(fetch): handle AbortSignal in streaming responses"`).
+Only 102 commits, with near-zero activity in our repos for 2018–2020. Rails is a large multi-contributor repo where DHH's individual commits are less frequent. The data is insufficient for strong conclusions. Scores in the 5–8 range throughout.
 
 ---
 
-### TJ Holowaychuk — tj/*
+### Salvatore Sanfilippo (antirez) — antirez/redis, kilo
+**Not measurable — inactive post-2021**
 
-**Baseline LLM Score:** 19.3  
-**Post-LLM Score:** 21.1  
-**Drift:** +1.8  
-**Verdict:** Organic (insufficient data post-2022)
-
-TJ has been less active since 2019. We have only 23 commits post-2022, insufficient for a reliable change-point analysis. Scoring him organic is the conservative default.
+180 commits, all from 2018–2020. antirez stepped back from Redis in 2020 and has not been active in our tracked repos since. No post-LLM data available.
 
 ---
 
-## Cross-Developer Patterns
+## What the Results Tell Us
 
-### The Micro/Macro Dissociation
-High-drift developers show a consistent pattern: **LLM-like micro-patterns but human macro-patterns.** Their APIs, architecture, and conceptual decisions remain distinctive. What changes is the *surface texture* of the code — comments, error handling, variable names.
+### 1. The tool's sensitivity is low for commit diffs
 
-This is consistent with using AI tools for "filling in" rather than "designing."
+All scores fall in the 3–12/100 range. The `copilot_score()` metric was calibrated on complete code files. Commit diffs are partial views — a developer adding one LLM-assisted function to a hand-written file will produce a blended signal that's hard to distinguish from normal variation.
 
-### The TypeScript Effect
-4 of the 5 highest-drift developers work primarily in TypeScript (Rich Harris, Evan You, Sindre Sorhus, Ryan Dahl). TypeScript's ecosystem (Copilot, VSCode-first tooling, strong AI autocompletion support) may inflate the effect.
+### 2. Only Rich Harris shows a clear signal
 
-### No Early Adopters Before Copilot Preview
-No developer shows a change point before June 2021 (Copilot Technical Preview). The earliest change point in the dataset is Q3 2022. This is reassuring — it suggests our detector is not picking up random style drift.
+A +4.9 pt drift is modest but consistent across 14 quarters and both repos (Svelte + SvelteKit). It is the only developer where baseline and post-LLM distributions are clearly separated.
+
+### 3. Null results are informative
+
+The flat results for Evan You (+0.1), Ryan Dahl (+0.5), and Dan Abramov (−1.1) do not mean these developers don't use AI tools. They mean our metric, applied to commit diffs from these specific repos, does not detect a signal. High-volume repos with many contributors (vue/core, react) may dilute individual author signals.
+
+### 4. The TypeScript hypothesis is not supported
+
+We hypothesized that TypeScript developers (Rich Harris, Evan You, Ryan Dahl) would show the strongest drift due to Copilot's strong TypeScript support. Only Rich Harris shows drift. This suggests language alone is not a reliable predictor.
 
 ---
 
-## Questions for Future Work
+## Limitations
 
-1. Can we detect *which* AI tool? (Copilot vs ChatGPT vs Claude have different style biases)
-2. Does the drift correlate with productivity metrics? (commits/week, PR merge rate)
-3. How do junior contributors compare? (we focused on famous devs for ground truth)
-4. Can we build a real-time "LLM Confidence" badge for GitHub repos?
+- **Commit diff vs. full file**: our metric is calibrated on complete files and loses sensitivity when applied to diffs.
+- **Author filter**: GitHub's `?author=login` filter matches on the committer's GitHub account. Merge-heavy workflows (React, CPython) may attribute commits differently.
+- **Sample size**: 60 commits/year is sufficient for quarterly aggregation but some quarters have n < 5, producing high-variance estimates.
+- **No ground truth**: we have no verified dataset of "developer X used AI for commit Y." The +4.9 drift for Rich Harris is real but its cause is unconfirmed.
+- **Single metric**: `copilot_score()` is one composite score. Disaggregating individual signals (docstrings, comments, identifier length separately) may reveal patterns the composite obscures.
+
+Full methodology: [METHODOLOGY.md](METHODOLOGY.md)  
+Raw profiles: [`reports/real/`](reports/real/)  
+Data collection script: [`run_analysis.py`](run_analysis.py)

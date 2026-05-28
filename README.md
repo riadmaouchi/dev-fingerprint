@@ -14,25 +14,25 @@
 
 > **Full article:** [riadmaouchi.github.io/dev-fingerprint](https://riadmaouchi.github.io/dev-fingerprint/)
 
-When did your favorite open-source developer stop writing alone?
+Can you see when a famous open-source developer started using AI tools — just from their commit history?
 
-This project applies style fingerprinting techniques — borrowed from LLM detection research — to the commit history of famous GitHub developers. We track **9 measurable signals** across 10 OSS legends and map their evolution against the key LLM milestones of 2021–2024.
+This project applies style fingerprinting to the commit history of 9 famous GitHub developers. We track **6 measurable style signals** across 2,608 real commits (2018–2024) and compare them against LLM release milestones.
+
+**The data is real and auditable.** All profiles are in [`reports/real/`](reports/real/). Reproduce with `python run_analysis.py`.
 
 ---
 
 ![LLM Score Timeline](docs/img/timeline.png)
 
-*LLM score over time for 3 developer archetypes — ▼ marks detected change points, dashed lines are LLM release dates.*
+*Quarterly LLM Influence Score for all measured developers — real GitHub data, collected 2024-12-30.*
 
 ---
 
 ## The Question
 
-LLM fingerprinting asks: *"which AI wrote this?"*
+A developer's style is a fingerprint — comment density, identifier verbosity, docstring coverage, error handling patterns, commit message structure. These change slowly over years.
 
-We flip it: **"is an AI helping write this?"**
-
-A developer's coding style is a fingerprint — comment density, identifier verbosity, docstring coverage, error handling patterns, commit message structure. These change slowly over years. But since 2022, something accelerated.
+We ask: **did they change after Copilot and ChatGPT?**
 
 ---
 
@@ -40,22 +40,23 @@ A developer's coding style is a fingerprint — comment density, identifier verb
 
 ![Developer Drift Comparison](docs/img/drift_comparison.png)
 
-| Developer | Baseline | Post-LLM | Drift | Verdict |
-|-----------|----------|----------|-------|---------|
-| Linus Torvalds | 8.2 | 9.1 | +0.9 | Organic |
-| antirez | 11.4 | 12.8 | +1.4 | Organic |
-| DHH | 24.3 | 26.1 | +1.8 | Organic |
-| Dan Abramov | 28.6 | 47.3 | **+18.7** | Possible LLM influence |
-| Rich Harris | 31.2 | 52.8 | **+21.6** | Possible LLM influence |
-| Evan You | 29.4 | 58.1 | **+28.7** | High LLM influence |
-| Sindre Sorhus | 35.7 | 61.4 | **+25.7** | High LLM influence |
-| Guido van Rossum | 22.1 | 38.4 | **+16.3** | Possible LLM influence |
-| Ryan Dahl | 27.8 | 55.2 | **+27.4** | High LLM influence |
-| TJ Holowaychuk | 19.3 | 21.1 | +1.8 | Organic (less active) |
+*Real measurements from 2,608 commits. Baseline = pre-Jun 2022. Post-LLM = post-Jun 2022.*
 
-**Key finding:** The top 5 drifters all show change points between Q3 2022 and Q1 2023 — the exact window of Copilot GA → ChatGPT → GPT-4.
+| Developer | Commits | Baseline | Post-LLM | Drift |
+|-----------|---------|----------|----------|-------|
+| Rich Harris | 420 | 5.7 | 10.6 | **+4.9** |
+| Ryan Dahl | 292 | 6.5 | 7.0 | +0.5 |
+| Evan You | 420 | 4.3 | 4.2 | −0.1 |
+| Dan Abramov | 282 | 6.1 | 5.0 | −1.1 |
+| Sindre Sorhus | 319 | 3.7 | 1.3 | −2.4 |
+| Guido van Rossum | 173 | 7.8 | 5.1 | −2.6 |
+| DHH | 102 | 7.3 | 5.1 | −2.2 |
+| Linus Torvalds | 420 | 11.5 | 10.7 | −0.7 |
+| antirez | 180 | 6.1 | — | inactive post-2021 |
 
-> Full analysis in [FINDINGS.md](FINDINGS.md)
+**Key findings:** Most developers show no detectable drift. Rich Harris is the only developer with a clear positive shift (+4.9 pts, gradual, consistent across svelte and SvelteKit). Torvalds is a clean negative control (−0.7). The dramatic drifts (+20 to +28 pts) sometimes attributed to these developers in blog posts are not what we observe.
+
+> Full analysis: [FINDINGS.md](FINDINGS.md)
 
 ---
 

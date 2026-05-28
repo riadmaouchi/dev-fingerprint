@@ -1,0 +1,54 @@
+{
+  "github_login": "antirez",
+  "display_name": "Salvatore Sanfilippo (antirez)",
+  "primary_language": "unknown",
+  "analyzed_repos": [
+    "antirez/redis",
+    "antirez/kilo"
+  ],
+  "first_commit_date": "2018-11-06T11:05:24Z",
+  "last_commit_date": "2020-06-25T10:58:21Z",
+  "total_commits_analyzed": 180,
+  "score_timeline": [
+    {
+      "author": "antirez",
+      "period_start": "2018-10-01T00:00:00Z",
+      "period_end": "2018-12-31T00:00:00Z",
+      "comment_score": 0.115,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.19444999999999998,
+      "error_handling_score": 0.022600000000000002,
+      "commit_style_score": 0.03333333333333333,
+      "function_style_score": 0.0,
+      "llm_score": 5.0,
+      "n_commits": 60
+    },
+    {
+      "author": "antirez",
+      "period_start": "2019-10-01T00:00:00Z",
+      "period_end": "2019-12-31T00:00:00Z",
+      "comment_score": 0.17,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.2433,
+      "error_handling_score": 0.004,
+      "commit_style_score": 0.0,
+      "function_style_score": 0.0,
+      "llm_score": 6.5,
+      "n_commits": 60
+    },
+    {
+      "author": "antirez",
+      "period_start": "2020-04-01T00:00:00Z",
+      "period_end": "2020-06-30T00:00:00Z",
+      "comment_score": 0.189,
+      "docstring_score": 0.0,
+      "verbosity_score": 0.18095,
+      "error_handling_score": 0.03779999999999999,
+      "commit_style_score": 0.05,
+      "function_style_score": 0.0,
+      "llm_score": 6.7,
+      "n_commits": 60
+    }
+  ],
+  "change_points": []
+}
