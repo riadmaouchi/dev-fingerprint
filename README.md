@@ -77,6 +77,12 @@ The data detects real behavioral change. The cause isn't written in the commits.
 
 ---
 
+![Drift vs. LLM Timeline](docs/img/drift_vs_llm_timeline.png)
+
+*Swimlane view: each needle = one Level-A change point, colored by signal type. ↑ signal increased, ↓ decreased. Height ∝ log(magnitude). Shaded bands = LLM release eras (for temporal reference only — correlation is not causation; each change point has a documented non-AI explanation in [FINDINGS.md](FINDINGS.md)). Bottom panel: quarterly count of Level-A change points across all developers.*
+
+---
+
 ![Process Scatter](docs/img/process_scatter.png)
 
 *Baseline vs. recent commits/week. Everything below the diagonal declined. Rich Harris sits on the diagonal. Source: [`reports/real/summary.json`](reports/real/summary.json).*

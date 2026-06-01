@@ -612,6 +612,230 @@ def fig_process_scatter(profiles: list[dict]) -> None:
     _save(fig, "process_scatter.png")
 
 
+# ── Figure 5 — Drift Emergence vs. LLM Timeline ───────────────────────────────
+
+def fig_drift_vs_llm_timeline(profiles: list[dict]) -> None:
+    """Swimlane + histogram: when did each developer's Level-A signals change,
+    relative to LLM milestones?
+
+    Top panel: 9 developer swimlanes. Each needle = one Level-A change point.
+      Color = signal type. Height ∝ log(magnitude). Up = signal increased. Down = decreased.
+      LLM era background tints + milestone dashed lines overlaid.
+
+    Bottom panel: quarterly histogram of total Level-A change points across all developers.
+    """
+    SIGNAL_COLORS_LOCAL = {
+        "commits_per_week":          "#e74c3c",
+        "median_inter_commit_hours": "#e67e22",
+        "cross_module_ratio":        "#58a6ff",
+        "refactor_ratio":            "#bc8cff",
+        "median_files_per_commit":   "#3fb950",
+        "large_commit_ratio":        "#f1c40f",
+    }
+
+    # LLM eras as tinted background bands
+    LLM_ERA_BANDS = [
+        (2021.41, 2022.47, "#1f6feb", "Copilot Preview"),
+        (2022.47, 2022.91, "#388bfd", "Copilot GA"),
+        (2022.91, 2023.20, "#3fb950", "ChatGPT"),
+        (2023.20, 2023.97, "#d29922", "GPT-4"),
+        (2023.97, 2024.17, "#bc8cff", "Copilot Chat GA"),
+        (2024.17, 2026.4,  "#f0883e", "Claude 3+"),
+    ]
+
+    n_dev = len(profiles)
+    LANE_H = 1.0
+
+    fig = plt.figure(figsize=(15, n_dev * LANE_H + 3.8), facecolor=BG)
+    gs = fig.add_gridspec(
+        2, 1,
+        height_ratios=[n_dev * LANE_H, 2.4],
+        hspace=0.0,
+        left=0.19, right=0.97,
+        top=0.88, bottom=0.13,
+    )
+    ax_swim = fig.add_subplot(gs[0])
+    ax_hist = fig.add_subplot(gs[1], sharex=ax_swim)
+
+    for ax in (ax_swim, ax_hist):
+        ax.set_facecolor(BG)
+        for sp in ax.spines.values():
+            sp.set_edgecolor(BORDER)
+        ax.tick_params(colors=TEXT_LO, labelsize=9)
+
+    ax_swim.set_xlim(2017.7, 2026.3)
+    ax_swim.set_ylim(n_dev - 0.55, -0.55)   # inverted: 0 at top
+    ax_swim.set_yticks([])
+    ax_swim.xaxis.set_visible(False)
+    ax_swim.grid(axis="x", color=GRID, lw=0.4, alpha=0.5, zorder=1)
+
+    ax_hist.set_facecolor(SURFACE)
+    ax_hist.grid(axis="y", color=GRID, lw=0.4, alpha=0.6)
+    ax_hist.set_axisbelow(True)
+
+    # ── LLM era background bands ────────────────────────────────────────────────
+    x_total = 2026.3 - 2017.7
+    for x0, x1, color, label in LLM_ERA_BANDS:
+        for ax in (ax_swim, ax_hist):
+            ax.axvspan(x0, x1, color=color, alpha=0.07, zorder=0)
+        # Label placed just above the swimlane panel using axes-fraction coords
+        mid = (x0 + min(x1, 2026.0)) / 2
+        x_frac = (mid - 2017.7) / x_total
+        ax_swim.text(x_frac, 1.012, label,
+                     transform=ax_swim.transAxes,
+                     color=color, fontsize=6.8, ha="center", va="bottom",
+                     alpha=0.9, fontweight="bold",
+                     bbox=dict(boxstyle="round,pad=0.25", facecolor=BG,
+                               edgecolor=color, alpha=0.65, linewidth=0.7))
+
+    # LLM milestone dashed lines
+    for x, _ in LLM_MILESTONES:
+        ax_swim.axvline(x, color=BORDER, lw=0.8, ls="--", alpha=0.45, zorder=2)
+        ax_hist.axvline(x, color=BORDER, lw=0.8, ls="--", alpha=0.45, zorder=2)
+
+    # ── Developer swimlanes ─────────────────────────────────────────────────────
+    total_commits = 0
+    quarter_cp: dict[float, dict[str, int]] = {}
+
+    for i, prof in enumerate(profiles):
+        y_ctr = i
+        login = prof.get("github_login", "")
+        name  = _short_name(prof)
+        dr    = prof.get("drift_result")
+        fp    = dr["combined_p_value"] if dr else None
+        total_commits += prof.get("total_commits_analyzed", 0)
+
+        sig_color = _sig_color(fp)
+
+        # Lane background (alternating)
+        ax_swim.axhspan(y_ctr - 0.47, y_ctr + 0.47,
+                        color=SURFACE if i % 2 == 0 else BG,
+                        alpha=1.0, zorder=0)
+
+        # Significance accent stripe on far left (inside plot area)
+        ax_swim.axhspan(y_ctr - 0.47, y_ctr + 0.47,
+                        xmin=0.0, xmax=0.004,
+                        color=sig_color, alpha=0.9, zorder=3,
+                        transform=ax_swim.get_yaxis_transform())
+
+        # Center baseline (thin)
+        ax_swim.axhline(y_ctr, color=BORDER, lw=0.5, alpha=0.5,
+                        xmin=0.004, zorder=2)
+
+        # Developer name (left of plot)
+        ax_swim.text(-0.013, y_ctr - 0.12, name,
+                     transform=ax_swim.get_yaxis_transform(),
+                     color=TEXT_HI, fontsize=9, fontweight="bold",
+                     ha="right", va="center", zorder=6)
+        p_str = f"p = {fp:.4f}" if fp else "n/a"
+        ax_swim.text(-0.013, y_ctr + 0.22, p_str,
+                     transform=ax_swim.get_yaxis_transform(),
+                     color=sig_color, fontsize=7.2,
+                     ha="right", va="center", zorder=6)
+
+        # ── Change-point needles ──────────────────────────────────────────────
+        cps_a = [cp for cp in prof.get("change_points", [])
+                 if cp.get("signal_level") == "A"]
+
+        for cp in cps_a:
+            x   = _dq(cp["date"])
+            sig = cp.get("signal", "")
+            mag = float(cp.get("magnitude", 0.0))
+            v_after  = float(cp.get("value_after",  0.0))
+            v_before = float(cp.get("value_before", 0.0))
+            color = SIGNAL_COLORS_LOCAL.get(sig, "#8b949e")
+
+            # Log-scale magnitude → needle height (max ±0.42 of half-lane)
+            log_mag = np.log1p(min(mag, 200))
+            log_cap = np.log1p(200)
+            needle_h = (log_mag / log_cap) * 0.42
+
+            # Up = signal increased, Down = decreased
+            direction = -1 if v_after > v_before else +1  # inverted y-axis
+            y_tip = y_ctr + direction * needle_h
+
+            ax_swim.plot([x, x], [y_ctr, y_tip],
+                         color=color, lw=1.5, alpha=0.88,
+                         solid_capstyle="round", zorder=4)
+            ax_swim.scatter([x], [y_tip], s=18, color=color,
+                            alpha=0.95, zorder=5, linewidths=0)
+
+            # Accumulate for histogram (snap to quarter)
+            q = round(x * 4) / 4
+            quarter_cp.setdefault(q, {})
+            quarter_cp[q][sig] = quarter_cp[q].get(sig, 0) + 1
+
+    # ── Histogram ───────────────────────────────────────────────────────────────
+    if quarter_cp:
+        sig_order = list(SIGNAL_COLORS_LOCAL.keys())
+        quarters  = sorted(quarter_cp.keys())
+        bottoms   = np.zeros(len(quarters))
+
+        for sig in sig_order:
+            counts = np.array([quarter_cp.get(q, {}).get(sig, 0) for q in quarters],
+                               dtype=float)
+            if counts.sum() == 0:
+                continue
+            ax_hist.bar(quarters, counts, bottom=bottoms, width=0.19,
+                        color=SIGNAL_COLORS_LOCAL[sig], alpha=0.85,
+                        label=sig.replace("_", " "), zorder=3)
+            bottoms += counts
+
+        ax_hist.set_ylabel("# change\npoints / quarter", color=TEXT_LO, fontsize=8.5,
+                            linespacing=1.3)
+        ax_hist.set_xlabel("Year", color=TEXT_LO, fontsize=9)
+        ax_hist.set_xticks(range(2018, 2026))
+        ax_hist.set_xticklabels([str(y) for y in range(2018, 2026)], color=TEXT_LO)
+
+        legend_handles = [
+            plt.Line2D([0], [0], marker="s", color="none",
+                       markerfacecolor=SIGNAL_COLORS_LOCAL[s], markersize=8,
+                       label=s.replace("_", " "))
+            for s in sig_order
+            if any(quarter_cp.get(q, {}).get(s, 0) > 0 for q in quarters)
+        ]
+        ax_hist.legend(handles=legend_handles, ncol=3, loc="upper left",
+                       facecolor=SURFACE, edgecolor=BORDER,
+                       labelcolor=TEXT_LO, fontsize=7.5,
+                       title="Level-A signal", title_fontsize=7.5)
+
+    # ── Legend for needles ──────────────────────────────────────────────────────
+    needle_legend = [
+        plt.Line2D([0], [0], color=c, lw=2, marker="o", markersize=5,
+                   label=s.replace("_", " "))
+        for s, c in SIGNAL_COLORS_LOCAL.items()
+    ]
+    needle_legend += [
+        plt.Line2D([0], [0], color=TEXT_LO, lw=0, marker=r"$\uparrow$",
+                   markersize=9, label="signal increased"),
+        plt.Line2D([0], [0], color=TEXT_LO, lw=0, marker=r"$\downarrow$",
+                   markersize=9, label="signal decreased"),
+    ]
+    # Place legend below the histogram, inside figure bottom margin
+    fig.legend(handles=needle_legend, ncol=4,
+               loc="lower center", bbox_to_anchor=(0.58, 0.01),
+               facecolor=SURFACE, edgecolor=BORDER,
+               labelcolor=TEXT_LO, fontsize=8,
+               title="Level-A signal  ·  needle height ∝ log(magnitude)",
+               title_fontsize=7.5)
+
+    # Honesty note — explicit about correlation vs causation
+    fig.text(0.19, 0.01,
+             "⚠  Temporal proximity ≠ causation. Each change point has a documented non-AI "
+             "explanation (see FINDINGS.md). LLM bands mark release windows for context only.",
+             color=TEXT_LO, fontsize=7.2, ha="left", va="bottom", alpha=0.80,
+             style="italic")
+
+    fig.suptitle(
+        "When did process signals shift? — 9 developers, 5,426 commits, 2018–2025\n"
+        "Each needle = one Level-A change point   ↑ signal increased  ↓ decreased   "
+        "Shaded bands = LLM release eras  [temporal correlation only — not causal]",
+        color=TEXT_HI, fontsize=11, fontweight="bold", y=0.99,
+    )
+    _watermark(fig, total_commits)
+    _save(fig, "drift_vs_llm_timeline.png")
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -638,6 +862,7 @@ def main() -> None:
     fig_activity_timeline(profiles)
     fig_changepoint_calendar(profiles)
     fig_process_scatter(profiles)
+    fig_drift_vs_llm_timeline(profiles)
 
     print("Done.")
 
