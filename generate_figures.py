@@ -1,15 +1,15 @@
-"""Regenerate all static figures for docs/img/ from real collected profiles.
+"""Generate all static figures for docs/img/ from real collected profiles.
 
 Run AFTER python run_analysis.py has completed:
     python generate_figures.py
 
-Reads:  reports/real/*.json   (computed by run_analysis.py from GitHub API data)
-Writes: docs/img/timeline.png
-        docs/img/drift_comparison.png
-        docs/img/radar.png
-        docs/img/signals.png      ← per-signal trends (new)
+Reads:  reports/real/*.json
+Writes: docs/img/level_a_heatmap.png       ← Level-A signal Δ% heatmap
+        docs/img/activity_timeline.png      ← commits/week trajectories (2018-2025)
+        docs/img/changepoint_calendar.png   ← when did change points occur
+        docs/img/process_scatter.png        ← baseline vs recent activity scatter
 
-Each figure embeds a "Data collected YYYY-MM-DD" annotation for auditability.
+Each figure embeds an auditability watermark.
 """
 
 from __future__ import annotations
@@ -22,502 +22,622 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.ticker as mticker
 import numpy as np
+from matplotlib.colors import Normalize
+from matplotlib.cm import ScalarMappable
 
-# ── Design system ─────────────────────────────────────────────────────────────
+# ── Design system ──────────────────────────────────────────────────────────────
 
-THEME = {
-    "bg":           "#0D1117",
-    "surface":      "#161B22",
-    "grid":         "#21262D",
-    "text_primary": "#E6EDF3",
-    "text_muted":   "#8B949E",
-    "spine":        "#30363D",
-    "tick":         "#484F58",
-    "dpi":          150,
-    "title_size":   13,
-    "label_size":   10,
-    "tick_size":    9,
-    "annot_size":   8,
+BG        = "#0D1117"
+SURFACE   = "#161B22"
+GRID      = "#21262D"
+BORDER    = "#30363D"
+TEXT_HI   = "#E6EDF3"
+TEXT_LO   = "#8B949E"
+DPI       = 160
+
+# Significance palette
+SIG_COLORS = {
+    "p001": "#e74c3c",   # p < 0.01  — strong
+    "p005": "#e67e22",   # p < 0.05  — moderate
+    "p010": "#f1c40f",   # p < 0.10  — trend
+    "ns":   "#27ae60",   # not significant
+    "na":   "#484F58",   # not testable
 }
 
-# GitHub-dark palette — one colour per developer
-PALETTE = {
-    "torvalds":     "#8B949E",   # muted grey — organic control
-    "dhh":          "#8B949E",
-    "antirez":      "#8B949E",
-    "tj":           "#8B949E",
-    "gaearon":      "#E3B341",   # amber — moderate drift
-    "gvanrossum":   "#E3B341",
-    "Rich-Harris":  "#FF7B72",   # red-orange — high drift
-    "yyx990803":    "#D2A8FF",   # purple
-    "ry":           "#58A6FF",   # blue
-    "sindresorhus": "#3FB950",   # green
+# Per-developer accent colour
+DEV_COLORS = {
+    "gaearon":      "#e74c3c",
+    "gvanrossum":   "#e67e22",
+    "sindresorhus": "#f1c40f",
+    "dhh":          "#d2a8ff",
+    "yyx990803":    "#58a6ff",
+    "ry":           "#79c0ff",
+    "Rich-Harris":  "#3fb950",
+    "torvalds":     "#8b949e",
+    "antirez":      "#6e7681",
 }
 
-MILESTONES = {
-    "Copilot\nPreview": 2021.49,
-    "Copilot GA":       2022.47,
-    "ChatGPT":          2022.91,
-    "GPT-4":            2023.20,
-}
+LLM_MILESTONES = [
+    (2021.49, "Copilot\nPreview"),
+    (2022.47, "Copilot GA"),
+    (2022.91, "ChatGPT"),
+    (2023.20, "GPT-4"),
+    (2023.97, "Copilot\nChat GA"),
+    (2024.17, "Claude 3"),
+]
 
-RESULTS_DIR = Path("docs/img")
+LEVEL_A_SIGNALS = [
+    ("median_files_per_commit",   "Files /\ncommit"),
+    ("large_commit_ratio",        "Large\ncommit"),
+    ("cross_module_ratio",        "Cross-\nmodule"),
+    ("refactor_ratio",            "Refactor\nratio"),
+    ("median_inter_commit_hours", "Inter-commit\nhours"),
+    ("commits_per_week",          "Commits\n/ week"),
+]
+
 PROFILES_DIR = Path("reports/real")
+IMG_DIR      = Path("docs/img")
 
-# ── Data loading ──────────────────────────────────────────────────────────────
+# ── Data loading ───────────────────────────────────────────────────────────────
 
-def _decimal_quarter(period_start: str) -> float:
-    """Convert '2022-07-01T00:00:00Z' → 2022.5"""
-    dt = datetime.fromisoformat(period_start.replace("Z", "+00:00"))
+def _dq(iso: str) -> float:
+    """ISO timestamp → decimal year (e.g. '2022-07-01T…' → 2022.5)."""
+    dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
     return dt.year + (dt.month - 1) / 12.0
 
 
-def load_profiles() -> dict[str, dict]:
-    """Load all real JSON profiles. Returns {login: profile_dict}."""
-    profiles = {}
+def load() -> list[dict]:
+    """Load all profiles, newest-schema only, sorted by Fisher p."""
+    profiles = []
     for f in sorted(PROFILES_DIR.glob("*.json")):
         if f.stem == "summary":
             continue
         d = json.loads(f.read_text())
-        if d.get("score_timeline"):
-            profiles[d["github_login"]] = d
+        if "behavior_timeline" in d:
+            profiles.append(d)
+    profiles.sort(key=lambda p: (
+        p.get("drift_result", {}) is None or p["drift_result"] is None,
+        p.get("drift_result", {}).get("combined_p_value", 1.0)
+        if p.get("drift_result") else 1.0,
+    ))
     return profiles
 
 
-def _drift(profile: dict) -> tuple[float | None, float | None, float | None]:
-    qs = profile.get("score_timeline", [])
-    pre  = [q["llm_score"] for q in qs if q["period_start"] < "2022-06-01"]
-    post = [q["llm_score"] for q in qs if q["period_start"] >= "2022-06-01"]
-    if not pre or not post:
-        return None, None, None
-    b = sum(pre) / len(pre)
-    p = sum(post) / len(post)
-    return round(b, 1), round(p, 1), round(p - b, 1)
+def _sig_color(p: float | None) -> str:
+    if p is None:    return SIG_COLORS["na"]
+    if p < 0.01:     return SIG_COLORS["p001"]
+    if p < 0.05:     return SIG_COLORS["p005"]
+    if p < 0.10:     return SIG_COLORS["p010"]
+    return SIG_COLORS["ns"]
 
 
-def _collection_date(profiles: dict[str, dict]) -> str:
-    """Infer the collection date from the latest last_commit_date across profiles."""
-    dates = [
-        p.get("last_commit_date", "")
-        for p in profiles.values()
-        if p.get("last_commit_date")
-    ]
-    return max(dates)[:10] if dates else datetime.now(timezone.utc).strftime("%Y-%m-%d")
+def _short_name(profile: dict) -> str:
+    name = profile.get("display_name", profile.get("github_login", "?"))
+    # Strip parenthetical suffixes like "(DHH)" or "(antirez)"
+    name = name.split(" (")[0]
+    # Abbreviate long names that exceed display budget
+    ABBREVS = {
+        "David Heinemeier Hansson": "DHH (D. Heinemeier Hansson)",
+        "Salvatore Sanfilippo": "Salvatore Sanfilippo",
+    }
+    return ABBREVS.get(name, name[:26])
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# ── Shared helpers ─────────────────────────────────────────────────────────────
 
-def _ax_style(ax: plt.Axes, title: str = "", xlabel: str = "", ylabel: str = "") -> None:
-    ax.set_facecolor(THEME["surface"])
-    for spine in ax.spines.values():
-        spine.set_edgecolor(THEME["spine"])
-    ax.tick_params(colors=THEME["tick"], labelsize=THEME["tick_size"])
-    ax.xaxis.label.set_color(THEME["text_muted"])
-    ax.yaxis.label.set_color(THEME["text_muted"])
-    ax.xaxis.label.set_size(THEME["label_size"])
-    ax.yaxis.label.set_size(THEME["label_size"])
-    if title:
-        ax.set_title(title, color=THEME["text_primary"], fontsize=THEME["title_size"],
-                     pad=10, fontweight="semibold")
-    if xlabel:
-        ax.set_xlabel(xlabel)
-    if ylabel:
-        ax.set_ylabel(ylabel)
-    ax.grid(color=THEME["grid"], linewidth=0.5, alpha=0.8)
+def _setup_ax(ax: plt.Axes) -> None:
+    ax.set_facecolor(SURFACE)
+    for sp in ax.spines.values():
+        sp.set_edgecolor(BORDER)
+    ax.tick_params(colors=TEXT_LO, labelsize=9)
+    ax.xaxis.label.set_color(TEXT_LO)
+    ax.yaxis.label.set_color(TEXT_LO)
+    ax.grid(color=GRID, lw=0.5, alpha=0.9, zorder=0)
     ax.set_axisbelow(True)
 
 
-def _watermark(ax: plt.Axes, collection_date: str, n_commits: int) -> None:
-    ax.text(
-        0.99, 0.01,
-        f"Real GitHub data  ·  collected {collection_date}  ·  {n_commits:,} commits",
-        transform=ax.transAxes, ha="right", va="bottom",
-        color=THEME["text_muted"], fontsize=7, alpha=0.7,
-    )
+def _milestone_lines(ax: plt.Axes, y_annot: float | None = None,
+                     alpha_vline: float = 0.35) -> None:
+    for x, lbl in LLM_MILESTONES:
+        ax.axvline(x, color=BORDER, lw=0.8, ls="--", alpha=alpha_vline, zorder=1)
+        if y_annot is not None:
+            ax.text(x + 0.03, y_annot, lbl, color=TEXT_LO,
+                    fontsize=7, va="top", ha="left", linespacing=1.3, alpha=0.7)
+
+
+def _watermark(fig: plt.Figure, n_commits: int) -> None:
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    fig.text(0.99, 0.005,
+             f"Real GitHub data · {n_commits:,} commits · generated {today}",
+             ha="right", va="bottom", color=TEXT_LO, fontsize=7, alpha=0.6)
 
 
 def _save(fig: plt.Figure, name: str) -> None:
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    path = RESULTS_DIR / name
-    fig.savefig(path, dpi=THEME["dpi"], bbox_inches="tight",
-                facecolor=THEME["bg"], edgecolor="none")
+    IMG_DIR.mkdir(parents=True, exist_ok=True)
+    path = IMG_DIR / name
+    fig.savefig(path, dpi=DPI, bbox_inches="tight",
+                facecolor=BG, edgecolor="none")
     plt.close(fig)
-    kb = path.stat().st_size // 1024
-    print(f"  ✓ {path}  ({kb} KB)")
+    print(f"  ✓ {path}  ({path.stat().st_size // 1024} KB)")
 
 
-# ── Figure 1 — LLM Score Timeline ─────────────────────────────────────────────
+# ── Figure 1 — Level-A Signal Heatmap ─────────────────────────────────────────
 
-def fig_timeline(profiles: dict[str, dict], collection_date: str) -> None:
-    """Timeline: one line per developer, milestone verticals, threshold bands."""
+def fig_level_a_heatmap(profiles: list[dict]) -> None:
+    """Heatmap: 9 developers × 6 Level-A signals — Δ% baseline→recent.
 
-    # Pick developers with at least 8 quarters spanning both eras
-    eligible = {
-        login: p for login, p in profiles.items()
-        if len([q for q in p["score_timeline"] if q["period_start"] < "2022-06-01"]) >= 2
-        and len([q for q in p["score_timeline"] if q["period_start"] >= "2022-06-01"]) >= 2
-    }
-
-    if not eligible:
-        print("  [SKIP] timeline — not enough profiles with pre+post data yet")
-        return
-
-    fig, ax = plt.subplots(figsize=(11, 5.5))
-    fig.patch.set_facecolor(THEME["bg"])
-    _ax_style(ax, xlabel="Year", ylabel="LLM Influence Score (0–100)")
-
-    # Threshold bands
-    ax.axhspan(40, 70,  alpha=0.06, color="#E3B341", zorder=0)
-    ax.axhspan(70, 100, alpha=0.06, color="#FF7B72", zorder=0)
-
-    # Milestone verticals
-    for x, label in MILESTONES.items():
-        ax.axvline(label, color=THEME["spine"], lw=0.8, ls="--", zorder=1)
-        ax.text(label + 0.02, 96, x, color=THEME["text_muted"], fontsize=7,
-                va="top", ha="left", linespacing=1.3)
-
-    total_commits = 0
-    for login, p in sorted(eligible.items()):
-        qs = sorted(p["score_timeline"], key=lambda q: q["period_start"])
-        xs = [_decimal_quarter(q["period_start"]) for q in qs]
-        ys = [q["llm_score"] for q in qs]
-        color = PALETTE.get(login, "#8B949E")
-        name = p["display_name"].split(" (")[0].split(" — ")[0][:20]
-
-        # Smooth only if enough points
-        ax.plot(xs, ys, color=color, lw=2.0, zorder=3, solid_capstyle="round",
-                marker="o", markersize=3, markerfacecolor=color)
-        ax.fill_between(xs, ys, alpha=0.08, color=color, zorder=2)
-        ax.text(xs[-1] + 0.08, ys[-1], name, color=color,
-                fontsize=8.5, va="center", fontweight="bold")
-        total_commits += p.get("total_commits_analyzed", 0)
-
-    # Change-point markers
-    for login, p in eligible.items():
-        color = PALETTE.get(login, "#8B949E")
-        for cp in p.get("change_points", []):
-            cp_date = cp["date"] if "T" in cp["date"] else cp["date"] + "T00:00:00Z"
-            cp_x = _decimal_quarter(cp_date)
-            ax.axvline(cp_x, color=color, lw=0.6, ls=":", alpha=0.5, zorder=1)
-            ax.annotate("▼", xy=(cp_x, 98), color=color,
-                        fontsize=9, ha="center", va="top", zorder=4)
-
-    # Zone labels
-    ax.text(2018.1, 55, "Ambiguous", color="#E3B341", fontsize=7.5, va="center", alpha=0.8)
-    ax.text(2018.1, 85, "LLM-influenced", color="#FF7B72", fontsize=7.5, va="center", alpha=0.8)
-    ax.text(2018.1, 20, "Organic", color="#3FB950", fontsize=7.5, va="center", alpha=0.8)
-
-    ax.set_xlim(2017.8, max(
-        max(_decimal_quarter(q["period_start"]) for p in eligible.values() for q in p["score_timeline"]),
-        2025.0,
-    ) + 0.8)
-    ax.set_ylim(0, 100)
-    years = list(range(2018, 2026))
-    ax.set_xticks(years)
-    ax.set_xticklabels([str(y) for y in years])
-
-    ax.set_title(
-        "LLM Influence Score timeline — real GitHub commit data\n"
-        "▼ = detected style change point  ·  dashed = LLM milestones",
-        color=THEME["text_primary"], fontsize=THEME["title_size"],
-        pad=10, fontweight="semibold",
-    )
-    _watermark(ax, collection_date, total_commits)
-    _save(fig, "timeline.png")
-
-
-# ── Figure 2 — Drift Comparison ───────────────────────────────────────────────
-
-def fig_drift_comparison(profiles: dict[str, dict], collection_date: str) -> None:
-    """Horizontal bar: baseline vs post-LLM, sorted by drift."""
-
-    rows = []
-    for login, p in profiles.items():
-        b, post, d = _drift(p)
-        if b is None:
-            continue
-        rows.append({
-            "login": login,
-            "name": p["display_name"].split(" (")[0][:24],
-            "baseline": b,
-            "post": post,
-            "drift": d,
-            "cp": p.get("change_points", []),
-            "commits": p.get("total_commits_analyzed", 0),
-        })
-
-    if not rows:
-        print("  [SKIP] drift_comparison — no profiles with pre+post data")
-        return
-
-    rows.sort(key=lambda r: r["drift"])
-
-    names    = [r["name"]     for r in rows]
-    baseline = [r["baseline"] for r in rows]
-    post     = [r["post"]     for r in rows]
-    drifts   = [r["drift"]    for r in rows]
-
-    bar_colors = [
-        PALETTE.get(r["login"], "#8B949E")
-        for r in rows
-    ]
-
-    fig, ax = plt.subplots(figsize=(10, max(4, len(rows) * 0.6)))
-    fig.patch.set_facecolor(THEME["bg"])
-    _ax_style(ax, xlabel="LLM Influence Score (0–100)")
-
-    y = np.arange(len(names))
-    bar_h = 0.38
-
-    ax.barh(y + bar_h / 2, baseline, height=bar_h * 0.6,
-            color=THEME["grid"], zorder=3, label="Pre-LLM baseline")
-    ax.barh(y - bar_h / 2, post, height=bar_h,
-            color=bar_colors, zorder=3, label="Post-LLM era")
-
-    for i, (r, p_val) in enumerate(zip(rows, post)):
-        sign = "+" if r["drift"] >= 0 else ""
-        cp_str = ""
-        if r["cp"]:
-            cp_str = f"  [{r['cp'][0]['date'][:7]}]"
-        ax.text(p_val + 0.6, i - bar_h / 2,
-                f"{sign}{r['drift']:.1f}{cp_str}",
-                color=bar_colors[i], fontsize=8, va="center",
-                fontweight="bold" if abs(r["drift"]) >= 5 else "normal")
-
-    ax.axvline(40, color="#E3B341", lw=0.8, ls="--", alpha=0.6, zorder=2)
-    ax.axvline(70, color="#FF7B72", lw=0.8, ls="--", alpha=0.6, zorder=2)
-    ax.text(40.5, len(names) - 0.3, "40", color="#E3B341", fontsize=7.5)
-    ax.text(70.5, len(names) - 0.3, "70", color="#FF7B72", fontsize=7.5)
-
-    ax.set_yticks(y)
-    ax.set_yticklabels(names, fontsize=9, color=THEME["text_primary"])
-    ax.set_xlim(0, max(max(post) + 15, 85))
-
-    legend_elements = [
-        mpatches.Patch(color=THEME["grid"],        label="Pre-LLM baseline (pre Jun 2022)"),
-        mpatches.Patch(color="#FF7B72",             label="Post-LLM era score"),
-    ]
-    ax.legend(handles=legend_elements, loc="lower right",
-              facecolor=THEME["surface"], edgecolor=THEME["spine"],
-              labelcolor=THEME["text_muted"], fontsize=8)
-
-    total = sum(r["commits"] for r in rows)
-    ax.set_title(
-        "Style drift — pre vs post Copilot GA (Jun 2022)\n"
-        "Annotation: detected change-point quarter",
-        color=THEME["text_primary"], fontsize=THEME["title_size"],
-        pad=10, fontweight="semibold",
-    )
-    _watermark(ax, collection_date, total)
-    _save(fig, "drift_comparison.png")
-
-
-# ── Figure 3 — Per-signal heatmap ────────────────────────────────────────────
-
-def fig_radar(profiles: dict[str, dict], collection_date: str) -> None:
-    """Diverging heatmap: per-signal % deviation from organic baseline.
-
-    Organic baseline = mean of developers with |drift| < 5 pts.
+    Diverging colormap: red = increase, blue = decrease.
+    Significance stars overlaid on each cell.
+    Right axis: Fisher p-value bar.
     """
-    signals = ["comment_score", "docstring_score", "verbosity_score",
-               "error_handling_score", "commit_style_score"]
-    labels  = ["Comments", "Docstrings", "Verbosity", "Error hdlg", "Conv. commit"]
+    n_dev = len(profiles)
+    n_sig = len(LEVEL_A_SIGNALS)
 
-    # Compute latest-quarter signal averages per developer
-    dev_signals: dict[str, dict[str, float]] = {}
-    for login, p in profiles.items():
-        post_qs = [q for q in p["score_timeline"] if q["period_start"] >= "2022-06-01"]
-        if not post_qs:
+    matrix     = np.full((n_dev, n_sig), np.nan)
+    sig_matrix = np.zeros((n_dev, n_sig), dtype=bool)
+
+    dev_names  = []
+    fisher_ps  = []
+
+    for i, prof in enumerate(profiles):
+        dev_names.append(_short_name(prof))
+        dr = prof.get("drift_result")
+        fisher_ps.append(dr["combined_p_value"] if dr else None)
+
+        if not dr:
             continue
-        avgs = {sig: sum(q[sig] for q in post_qs) / len(post_qs) for sig in signals}
-        dev_signals[login] = avgs
+        sigs = {s["signal"]: s for s in dr.get("signals", [])}
+        for j, (sig_key, _) in enumerate(LEVEL_A_SIGNALS):
+            s = sigs.get(sig_key)
+            if s is None:
+                continue
+            raw_pct = s["delta_pct"]
+            # Cap display range at ±200% (Sindre's large_commit_ratio: +4.5e9%)
+            matrix[i, j] = float(np.clip(raw_pct, -200, 200))
+            sig_matrix[i, j] = s.get("significant_at_05", False)
 
-    if len(dev_signals) < 2:
-        print("  [SKIP] radar — not enough post-LLM data")
-        return
+    # ── Layout ────────────────────────────────────────────────────────────────
+    fig = plt.figure(figsize=(12, 6.5), facecolor=BG)
+    # Main heatmap + colorbar + p-value bar
+    gs = fig.add_gridspec(1, 3, width_ratios=[10, 0.4, 1.2],
+                          left=0.18, right=0.94, wspace=0.06)
+    ax_heat = fig.add_subplot(gs[0, 0])
+    ax_cbar = fig.add_subplot(gs[0, 1])
+    ax_p    = fig.add_subplot(gs[0, 2])
 
-    # Organic baseline = mean of low-drift devs
-    low_drift = [
-        login for login in dev_signals
-        if profiles[login].get("change_points") == []
-        or (_drift(profiles[login])[2] or 99) < 5
-    ]
-    if not low_drift:
-        low_drift = list(dev_signals.keys())[:2]
+    # ── Heatmap ───────────────────────────────────────────────────────────────
+    ax_heat.set_facecolor(SURFACE)
 
-    organic: dict[str, float] = {
-        sig: sum(dev_signals[l][sig] for l in low_drift) / len(low_drift)
-        for sig in signals
-    }
+    cmap = plt.cm.RdBu_r
+    norm = Normalize(vmin=-200, vmax=200)
 
-    # Build matrix (all devs including organic baseline row)
-    devs_ordered = sorted(dev_signals.keys(),
-                          key=lambda l: _drift(profiles[l])[2] or 0)
-    rows_data = []
-    row_labels = []
-    for login in devs_ordered:
-        row = [(dev_signals[login][sig] - organic[sig]) * 100 for sig in signals]
-        rows_data.append(row)
-        name = profiles[login]["display_name"].split(" (")[0][:18]
-        row_labels.append(name)
+    img = ax_heat.imshow(matrix, cmap=cmap, norm=norm, aspect="auto",
+                         interpolation="nearest")
 
-    matrix = np.array(rows_data)
-
-    fig, ax = plt.subplots(figsize=(9, max(3, len(devs_ordered) * 0.55 + 1.2)))
-    fig.patch.set_facecolor(THEME["bg"])
-    ax.set_facecolor(THEME["surface"])
-
-    vmax = max(60, float(np.abs(matrix).max()) * 0.9)
-    im = ax.imshow(matrix, cmap=plt.cm.RdBu_r, vmin=-vmax, vmax=vmax, aspect="auto")
-
-    for i in range(len(devs_ordered)):
-        for j in range(len(signals)):
+    # Cell annotations
+    for i in range(n_dev):
+        for j in range(n_sig):
             val = matrix[i, j]
-            text_color = "white" if abs(val) > vmax * 0.5 else THEME["text_primary"]
-            sign = "+" if val >= 0 else ""
-            ax.text(j, i, f"{sign}{val:.0f}%",
-                    ha="center", va="center", fontsize=9,
-                    color=text_color, fontweight="bold")
+            if np.isnan(val):
+                ax_heat.text(j, i, "n/a", ha="center", va="center",
+                             fontsize=8, color=TEXT_LO)
+                continue
+            intensity = abs(val) / 200
+            text_color = "white" if intensity > 0.5 else TEXT_HI
+            sign = "+" if val > 0 else ""
+            star = "★" if sig_matrix[i, j] else ""
+            ax_heat.text(j, i, f"{sign}{val:.0f}%{star}",
+                         ha="center", va="center",
+                         fontsize=8.5, fontweight="bold" if sig_matrix[i, j] else "normal",
+                         color=text_color)
 
-    ax.set_xticks(range(len(signals)))
-    ax.set_xticklabels(labels, fontsize=THEME["label_size"], color=THEME["text_primary"])
-    ax.set_yticks(range(len(devs_ordered)))
-    ax.set_yticklabels(row_labels, fontsize=9, color=THEME["text_primary"])
+    # Grid lines
+    for x in np.arange(-0.5, n_sig, 1):
+        ax_heat.axvline(x, color=BG, lw=1.5)
+    for y in np.arange(-0.5, n_dev, 1):
+        ax_heat.axhline(y, color=BG, lw=1.5)
 
-    for spine in ax.spines.values():
-        spine.set_edgecolor(THEME["spine"])
-    ax.tick_params(colors=THEME["tick"])
-    for x in np.arange(-0.5, len(signals), 1):
-        ax.axvline(x, color=THEME["grid"], lw=0.6)
-    for y in np.arange(-0.5, len(devs_ordered), 1):
-        ax.axhline(y, color=THEME["grid"], lw=0.6)
+    ax_heat.set_xticks(range(n_sig))
+    ax_heat.set_xticklabels([lbl for _, lbl in LEVEL_A_SIGNALS],
+                             fontsize=9, color=TEXT_HI)
+    ax_heat.set_yticks(range(n_dev))
+    ax_heat.set_yticklabels(dev_names, fontsize=9.5, color=TEXT_HI)
+    for sp in ax_heat.spines.values():
+        sp.set_edgecolor(BORDER)
+    ax_heat.tick_params(colors=TEXT_LO, length=0)
+    ax_heat.xaxis.tick_top()
+    ax_heat.xaxis.set_label_position("top")
 
-    cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
-    cbar.set_label("Deviation from organic baseline (%pts)",
-                   color=THEME["text_muted"], fontsize=8)
-    cbar.ax.tick_params(colors=THEME["tick"], labelsize=8)
-    cbar.outline.set_edgecolor(THEME["spine"])
+    # ── Colorbar ──────────────────────────────────────────────────────────────
+    cb = fig.colorbar(ScalarMappable(norm=norm, cmap=cmap), cax=ax_cbar)
+    cb.set_label("Δ% (baseline → recent)", color=TEXT_LO, fontsize=8)
+    cb.ax.tick_params(colors=TEXT_LO, labelsize=8)
+    cb.outline.set_edgecolor(BORDER)
+    cb.ax.yaxis.label.set_color(TEXT_LO)
 
-    ax.set_title(
-        "Style signal fingerprint — deviation from organic baseline (post-LLM era)\n"
-        "Red = more LLM-like  ·  Blue = less",
-        color=THEME["text_primary"], fontsize=THEME["title_size"],
-        pad=10, fontweight="semibold",
-    )
-    total = sum(p.get("total_commits_analyzed", 0) for p in profiles.values())
-    _watermark(ax, collection_date, total)
-    _save(fig, "radar.png")
+    # ── Fisher p-value bar ────────────────────────────────────────────────────
+    ax_p.set_facecolor(BG)
+    for sp in ax_p.spines.values():
+        sp.set_visible(False)
 
+    y_pos = np.arange(n_dev)
+    for i, (name, fp) in enumerate(zip(dev_names, fisher_ps)):
+        color = _sig_color(fp)
+        bar_val = -np.log10(fp) if fp and fp > 0 else 0
+        bar_val = min(bar_val, 5)  # cap at 5 = p=1e-5
+        ax_p.barh(i, bar_val, height=0.6, color=color, alpha=0.9)
+        label = f"p={fp:.4f}" if fp else "n/a"
+        ax_p.text(bar_val + 0.08, i, label, color=color,
+                  fontsize=8, va="center", fontweight="bold")
 
-# ── Figure 4 — Per-signal trends ─────────────────────────────────────────────
+    ax_p.set_xlim(0, 5.8)
+    ax_p.set_ylim(-0.5, n_dev - 0.5)
+    ax_p.set_yticks([])
+    ax_p.set_xticks([0, 1.3, 2, 3])
+    ax_p.set_xticklabels(["1", "0.05", "0.01", "0.001"], fontsize=7.5, color=TEXT_LO)
+    ax_p.set_xlabel("Fisher p", fontsize=8, color=TEXT_LO)
+    ax_p.tick_params(colors=TEXT_LO, length=3)
+    ax_p.axvline(1.3, color=TEXT_LO, lw=0.8, ls="--", alpha=0.5)
+    ax_p.set_title("Fisher\np-value", color=TEXT_HI, fontsize=8, pad=6)
+    ax_p.invert_yaxis()
+    ax_p.set_facecolor(SURFACE)
 
-def fig_signals(profiles: dict[str, dict], collection_date: str) -> None:
-    """Small multiples: one panel per signal, all developers overlaid.
-
-    Reveals which specific signals drive drift (or not) without the composite
-    score masking individual movement.
-    """
-    signals = [
-        ("comment_score",       "Comment density"),
-        ("docstring_score",     "Docstring coverage"),
-        ("commit_style_score",  "Conventional commits"),
-        ("verbosity_score",     "Identifier verbosity"),
-        ("error_handling_score","Error handling"),
+    # Legend for stars
+    legend_elements = [
+        mpatches.Patch(color=_sig_color(0.001), label="p < 0.01  ★"),
+        mpatches.Patch(color=_sig_color(0.03),  label="p < 0.05  ★"),
+        mpatches.Patch(color=_sig_color(0.08),  label="p < 0.10"),
+        mpatches.Patch(color=_sig_color(0.5),   label="not significant"),
+        mpatches.Patch(color=_sig_color(None),  label="insufficient data"),
     ]
-
-    # Only developers with >= 6 quarters total
-    eligible = {
-        login: p for login, p in profiles.items()
-        if len(p["score_timeline"]) >= 6
-    }
-    if not eligible:
-        print("  [SKIP] signals — not enough profiles")
-        return
-
-    fig, axes = plt.subplots(1, len(signals), figsize=(14, 4.2), sharey=False)
-    fig.patch.set_facecolor(THEME["bg"])
-
-    copilot_ga = 2022.47
-
-    for ax, (sig_key, sig_label) in zip(axes, signals):
-        _ax_style(ax, title=sig_label)
-        ax.axvline(copilot_ga, color=THEME["spine"], lw=0.8, ls="--", zorder=1)
-        ax.axhline(0, color=THEME["spine"], lw=0.4, zorder=1)
-
-        for login, p in eligible.items():
-            qs = sorted(p["score_timeline"], key=lambda q: q["period_start"])
-            xs = [_decimal_quarter(q["period_start"]) for q in qs]
-            ys = [q[sig_key] * 100 for q in qs]   # → percentage
-            color = PALETTE.get(login, "#8B949E")
-            lw = 2.2 if login == "Rich-Harris" else 1.2
-            alpha = 0.95 if login == "Rich-Harris" else 0.55
-            ax.plot(xs, ys, color=color, lw=lw, alpha=alpha,
-                    solid_capstyle="round", zorder=3)
-
-        ax.set_ylabel("% of commits", fontsize=8)
-        ax.yaxis.label.set_color(THEME["text_muted"])
-        years = list(range(2018, 2026))
-        ax.set_xticks([y for y in years if y % 2 == 0])
-        ax.set_xticklabels([str(y) for y in years if y % 2 == 0], fontsize=8)
-        ax.tick_params(labelsize=8)
-
-    # Shared legend
-    handles = [
-        plt.Line2D([0], [0], color=PALETTE.get(login, "#8B949E"),
-                   lw=2 if login == "Rich-Harris" else 1.2,
-                   label=p["display_name"].split(" (")[0][:20])
-        for login, p in sorted(eligible.items())
-    ]
-    fig.legend(handles=handles, loc="lower center", ncol=min(len(eligible), 5),
-               facecolor=THEME["surface"], edgecolor=THEME["spine"],
-               labelcolor=THEME["text_muted"], fontsize=8,
-               bbox_to_anchor=(0.5, -0.08))
+    ax_heat.legend(handles=legend_elements, loc="lower left",
+                   bbox_to_anchor=(0, -0.22), ncol=5,
+                   facecolor=SURFACE, edgecolor=BORDER,
+                   labelcolor=TEXT_LO, fontsize=8)
 
     fig.suptitle(
-        "Per-signal trends over time — dashed line = Copilot GA (Jun 2022)",
-        color=THEME["text_primary"], fontsize=THEME["title_size"],
-        fontweight="semibold", y=1.02,
+        "Level-A Process Signal Δ% — baseline vs. recent (4 most recent quarters)\n"
+        "★ = significant at α=0.05 (Mann-Whitney U) · Δ% capped at ±200% for display",
+        color=TEXT_HI, fontsize=11, fontweight="bold", y=1.02,
     )
+    _watermark(fig, sum(p.get("total_commits_analyzed", 0) for p in profiles))
+    _save(fig, "level_a_heatmap.png")
 
-    total = sum(p.get("total_commits_analyzed", 0) for p in eligible.values())
-    axes[-1].text(
-        1.0, -0.18,
-        f"Real GitHub data  ·  collected {collection_date}  ·  {total:,} commits",
-        transform=axes[-1].transAxes, ha="right", va="bottom",
-        color=THEME["text_muted"], fontsize=7, alpha=0.7,
+
+# ── Figure 2 — Commit Activity Timeline ───────────────────────────────────────
+
+def fig_activity_timeline(profiles: list[dict]) -> None:
+    """commits/week trajectory for all developers, 2018–2025.
+
+    Each line coloured by Fisher p significance.
+    Change points marked with ▼.
+    LLM milestones as vertical reference lines.
+    """
+    fig, ax = plt.subplots(figsize=(13, 6), facecolor=BG)
+    _setup_ax(ax)
+
+    max_y = 0.0
+    total_commits = 0
+
+    for prof in profiles:
+        login = prof.get("github_login", "")
+        name  = _short_name(prof)
+        tl    = prof.get("behavior_timeline", [])
+        dr    = prof.get("drift_result")
+        fp    = dr["combined_p_value"] if dr else None
+        color = DEV_COLORS.get(login, "#8b949e")
+
+        if not tl:
+            continue
+
+        xs = [_dq(w["period_start"]) for w in tl]
+        ys = [w.get("commits_per_week", 0) for w in tl]
+        max_y = max(max_y, max(ys))
+        total_commits += prof.get("total_commits_analyzed", 0)
+
+        # Line width / alpha driven by significance
+        lw    = 2.5 if fp and fp < 0.01 else (2.0 if fp and fp < 0.05 else 1.5)
+        alpha = 1.0 if fp and fp < 0.05 else 0.65
+
+        ax.plot(xs, ys, color=color, lw=lw, alpha=alpha,
+                solid_capstyle="round", zorder=3)
+        ax.fill_between(xs, ys, alpha=0.07, color=color, zorder=2)
+
+        # Developer label at last non-zero point
+        last_nonzero = [(x, y) for x, y in zip(xs, ys) if y > 0.05]
+        if last_nonzero:
+            lx, ly = last_nonzero[-1]
+            ax.text(lx + 0.07, ly, name, color=color, fontsize=8.5,
+                    va="center", fontweight="bold", zorder=5)
+
+        # Level-A change points for commits_per_week
+        cps = [cp for cp in prof.get("change_points", [])
+               if cp.get("signal_level") == "A"
+               and cp.get("signal") == "commits_per_week"]
+        for cp in cps:
+            cp_x = _dq(cp["date"])
+            cp_y = cp.get("value_after", 0)
+            ax.annotate("▼", xy=(cp_x, cp_y + max_y * 0.04),
+                        color=color, fontsize=10, ha="center",
+                        va="bottom", zorder=6, alpha=0.9)
+
+    # LLM milestones
+    for x, lbl in LLM_MILESTONES:
+        ax.axvline(x, color=BORDER, lw=0.9, ls="--", alpha=0.55, zorder=1)
+        ax.text(x + 0.04, max_y * 0.97, lbl, color=TEXT_LO,
+                fontsize=7.5, va="top", ha="left", linespacing=1.3, alpha=0.85)
+
+    ax.set_xlim(2018.0, 2026.2)
+    ax.set_ylim(0, max_y * 1.15)
+    ax.set_xticks(range(2018, 2026))
+    ax.set_xticklabels([str(y) for y in range(2018, 2026)], color=TEXT_LO)
+    ax.set_xlabel("Year", color=TEXT_LO)
+    ax.set_ylabel("commits / week  (quarterly median)", color=TEXT_LO)
+
+    # Significance legend
+    legend_elements = [
+        plt.Line2D([0], [0], color=SIG_COLORS["p001"], lw=2.5, label="p < 0.01 ★★★"),
+        plt.Line2D([0], [0], color=SIG_COLORS["p005"], lw=2.0, label="p < 0.05 ★"),
+        plt.Line2D([0], [0], color=SIG_COLORS["ns"],   lw=1.5, label="no significant drift", alpha=0.7),
+        plt.Line2D([0], [0], color=SIG_COLORS["na"],   lw=1.5, label="insufficient windows", alpha=0.5),
+        plt.Line2D([0], [0], color=TEXT_LO, marker="v", lw=0, markersize=9,
+                   label="▼ change point (commits/week)"),
+    ]
+    ax.legend(handles=legend_elements, loc="upper right",
+              facecolor=SURFACE, edgecolor=BORDER,
+              labelcolor=TEXT_LO, fontsize=8.5)
+
+    ax.set_title(
+        "Commit activity trajectory — commits / week (quarterly windows, 2018–2025)\n"
+        "Line weight ∝ statistical significance · ▼ = Level-A change point"
+        " · Torvalds flat line = 120-commit/year cap artifact (merge-window clustering)",
+        color=TEXT_HI, fontsize=10, fontweight="bold", pad=10,
     )
+    _watermark(fig, total_commits)
+    _save(fig, "activity_timeline.png")
 
-    _save(fig, "signals.png")
+
+# ── Figure 3 — Change-Point Calendar ──────────────────────────────────────────
+
+def fig_changepoint_calendar(profiles: list[dict]) -> None:
+    """Dot calendar: when did Level-A change points occur, for each developer.
+
+    X = time, Y = developer, dot = change point.
+    Size ∝ magnitude. Color = signal type. LLM milestones overlaid.
+    """
+    # Signal-to-colour mapping
+    SIGNAL_COLORS = {
+        "commits_per_week":          "#e74c3c",
+        "median_inter_commit_hours": "#e67e22",
+        "cross_module_ratio":        "#3498db",
+        "refactor_ratio":            "#9b59b6",
+        "median_files_per_commit":   "#1abc9c",
+        "large_commit_ratio":        "#f1c40f",
+    }
+
+    fig, ax = plt.subplots(figsize=(13, 5.5), facecolor=BG)
+    _setup_ax(ax)
+    ax.grid(axis="x", color=GRID, lw=0.5, alpha=0.7)
+    ax.grid(axis="y", visible=False)
+
+    dev_names = [_short_name(p) for p in profiles]
+    n_dev = len(dev_names)
+
+    # Background bands for each developer row
+    for i in range(n_dev):
+        ax.axhspan(i - 0.45, i + 0.45, color=SURFACE if i % 2 == 0 else BG,
+                   alpha=1.0, zorder=0)
+
+    # LLM milestone bands (faint)
+    for x, lbl in LLM_MILESTONES:
+        ax.axvline(x, color="#58a6ff", lw=0.8, ls="--", alpha=0.35, zorder=1)
+        ax.text(x, n_dev - 0.05, lbl, color="#58a6ff",
+                fontsize=7, va="top", ha="center", linespacing=1.3, alpha=0.65)
+
+    total_commits = 0
+    plotted_signals: set[str] = set()
+
+    for i, prof in enumerate(profiles):
+        total_commits += prof.get("total_commits_analyzed", 0)
+        cps_a = [cp for cp in prof.get("change_points", [])
+                 if cp.get("signal_level") == "A"]
+
+        for cp in cps_a:
+            x = _dq(cp["date"])
+            sig = cp.get("signal", "")
+            mag = min(float(cp.get("magnitude", 0.1)), 10.0)
+            color = SIGNAL_COLORS.get(sig, "#8b949e")
+
+            # Size: log-scaled magnitude
+            size = 30 + 120 * min(mag / 5.0, 1.0)
+
+            ax.scatter(x, i, s=size, color=color, alpha=0.85,
+                       zorder=3, edgecolors="white", linewidths=0.4)
+            plotted_signals.add(sig)
+
+        # Fisher p annotation at right
+        dr = prof.get("drift_result")
+        fp = dr["combined_p_value"] if dr else None
+        p_txt = f"p={fp:.4f}" if fp else "n/a"
+        p_color = _sig_color(fp)
+        ax.text(2026.0, i, p_txt, color=p_color, fontsize=8.5,
+                va="center", ha="left", fontweight="bold")
+
+    ax.set_xlim(2017.9, 2026.5)
+    ax.set_ylim(-0.7, n_dev - 0.3)
+    ax.set_yticks(range(n_dev))
+    ax.set_yticklabels(dev_names, fontsize=10, color=TEXT_HI)
+    ax.set_xticks(range(2018, 2026))
+    ax.set_xticklabels([str(y) for y in range(2018, 2026)], color=TEXT_LO)
+    ax.set_xlabel("Year", color=TEXT_LO)
+    ax.invert_yaxis()
+
+    # Signal legend
+    legend_elements = [
+        plt.Line2D([0], [0], marker="o", color="none",
+                   markerfacecolor=SIGNAL_COLORS[sig_key],
+                   markeredgecolor="white", markeredgewidth=0.4,
+                   markersize=9, label=sig_key.replace("_", " "))
+        for sig_key, _ in reversed(LEVEL_A_SIGNALS)
+        if sig_key in plotted_signals and sig_key in SIGNAL_COLORS
+    ]
+    legend_elements += [
+        plt.Line2D([0], [0], marker="o", color="none",
+                   markerfacecolor="white", markersize=6,
+                   label="size ∝ magnitude"),
+    ]
+    ax.legend(handles=legend_elements, title="Level-A signal",
+              title_fontsize=8,
+              loc="lower left", bbox_to_anchor=(0, -0.28), ncol=4,
+              facecolor=SURFACE, edgecolor=BORDER,
+              labelcolor=TEXT_LO, fontsize=8)
+
+    ax.set_title(
+        "Level-A change-point calendar — when did each developer's process shift?\n"
+        "Each dot = one Level-A change point · Size ∝ magnitude · Color = signal",
+        color=TEXT_HI, fontsize=11, fontweight="bold", pad=10,
+    )
+    _watermark(fig, total_commits)
+    _save(fig, "changepoint_calendar.png")
+
+
+# ── Figure 4 — Before vs After Scatter ────────────────────────────────────────
+
+def fig_process_scatter(profiles: list[dict]) -> None:
+    """Scatter: baseline commits/week vs recent commits/week.
+
+    Diagonal = no change. Below diagonal = activity declined.
+    Point size ∝ total commits. Color = Fisher p significance.
+    """
+    fig, ax = plt.subplots(figsize=(8, 7), facecolor=BG)
+    _setup_ax(ax)
+
+    xs, ys, sizes, colors, labels, fps = [], [], [], [], [], []
+    total_commits = 0
+
+    for prof in profiles:
+        dr = prof.get("drift_result")
+        if not dr:
+            continue
+
+        sigs = {s["signal"]: s for s in dr.get("signals", [])}
+        cpw  = sigs.get("commits_per_week")
+        if not cpw:
+            continue
+
+        baseline = cpw["baseline_mean"]
+        recent   = cpw["recent_mean"]
+        fp       = dr.get("combined_p_value")
+        commits  = prof.get("total_commits_analyzed", 100)
+        total_commits += commits
+
+        xs.append(baseline)
+        ys.append(recent)
+        sizes.append(40 + commits / 8)
+        colors.append(_sig_color(fp))
+        labels.append(_short_name(prof))
+        fps.append(fp)
+
+    if not xs:
+        print("  [SKIP] process_scatter — no drift results")
+        return
+
+    # Diagonal reference (no change)
+    all_vals = xs + ys
+    lim_max = max(all_vals) * 1.15
+    lim_max = max(lim_max, 8)
+    diag = np.linspace(0, lim_max, 100)
+    ax.plot(diag, diag, color=BORDER, lw=1.2, ls="--",
+            alpha=0.7, zorder=1, label="no change")
+    ax.fill_between(diag, 0, diag, alpha=0.04, color="#3fb950", zorder=0)
+    ax.fill_between(diag, diag, lim_max, alpha=0.04, color="#e74c3c", zorder=0)
+
+    # Zone labels
+    ax.text(lim_max * 0.72, lim_max * 0.10,
+            "Activity declined\n(recent < baseline)",
+            color="#e74c3c", fontsize=8.5, alpha=0.7, ha="center")
+    ax.text(lim_max * 0.18, lim_max * 0.82,
+            "Activity increased\n(recent > baseline)",
+            color="#3fb950", fontsize=8.5, alpha=0.7, ha="center")
+
+    # Scatter
+    ax.scatter(xs, ys, s=sizes, c=colors, alpha=0.90,
+               zorder=4, edgecolors="white", linewidths=0.6)
+
+    # Labels — stagger vertically when points cluster near y≈0
+    # Sort by x to apply deterministic offsets
+    label_data = sorted(zip(xs, ys, labels, fps), key=lambda t: t[0])
+    prev_y_text = -999.0
+    for x, y, name, fp in label_data:
+        offset_x = lim_max * 0.025
+        offset_y = lim_max * 0.03
+        y_text = y + offset_y
+        # Push label up if it would overlap with previous
+        if y_text - prev_y_text < lim_max * 0.07:
+            y_text = prev_y_text + lim_max * 0.07
+        prev_y_text = y_text
+        ax.annotate(
+            name,
+            xy=(x, y), xytext=(x + offset_x, y_text),
+            arrowprops=dict(arrowstyle="-", color=_sig_color(fp), lw=0.6, alpha=0.5)
+            if abs(y_text - y) > lim_max * 0.05 else None,
+            color=_sig_color(fp), fontsize=8.5, fontweight="bold",
+            zorder=5,
+        )
+
+    ax.set_xlim(-0.1, lim_max)
+    ax.set_ylim(-0.1, lim_max)
+    ax.set_xlabel("Baseline commits / week  (historical windows)", color=TEXT_LO, fontsize=10)
+    ax.set_ylabel("Recent commits / week  (last 4 quarters)", color=TEXT_LO, fontsize=10)
+
+    legend_elements = [
+        mpatches.Patch(color=SIG_COLORS["p001"], label="Fisher p < 0.01  ★★★"),
+        mpatches.Patch(color=SIG_COLORS["p005"], label="Fisher p < 0.05  ★"),
+        mpatches.Patch(color=SIG_COLORS["p010"], label="Fisher p < 0.10  ~"),
+        mpatches.Patch(color=SIG_COLORS["ns"],   label="not significant"),
+        plt.Line2D([0], [0], color=BORDER, ls="--", lw=1.2, label="no change (y = x)"),
+    ]
+    ax.legend(handles=legend_elements, loc="upper left",
+              facecolor=SURFACE, edgecolor=BORDER,
+              labelcolor=TEXT_LO, fontsize=8.5)
+
+    ax.set_title(
+        "Process change: baseline activity vs. recent activity\n"
+        "Point size ∝ total commits analyzed · Color = Fisher p significance",
+        color=TEXT_HI, fontsize=11, fontweight="bold", pad=10,
+    )
+    _watermark(fig, total_commits)
+    _save(fig, "process_scatter.png")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
     plt.rcParams.update({
-        "font.family":      "sans-serif",
-        "font.size":        THEME["tick_size"],
-        "axes.titlesize":   THEME["title_size"],
-        "axes.labelsize":   THEME["label_size"],
-        "figure.facecolor": THEME["bg"],
+        "font.family":      "DejaVu Sans",
+        "font.size":        9,
+        "axes.titlesize":   11,
+        "axes.labelsize":   10,
+        "figure.facecolor": BG,
+        "savefig.facecolor": BG,
     })
 
-    profiles = load_profiles()
+    profiles = load()
     if not profiles:
-        print(f"No profiles found in {PROFILES_DIR}/")
+        print(f"No profiles with behavior_timeline in {PROFILES_DIR}/")
         print("Run: python run_analysis.py")
         return
 
-    total_commits = sum(p.get("total_commits_analyzed", 0) for p in profiles.values())
-    collection_date = _collection_date(profiles)
-    print(f"Loaded {len(profiles)} profiles  ({total_commits:,} total commits)")
-    print(f"Collection date: {collection_date}")
+    total = sum(p.get("total_commits_analyzed", 0) for p in profiles)
+    print(f"Loaded {len(profiles)} profiles ({total:,} commits)")
     print("Generating figures …")
 
-    fig_timeline(profiles, collection_date)
-    fig_drift_comparison(profiles, collection_date)
-    fig_radar(profiles, collection_date)
-    fig_signals(profiles, collection_date)
+    fig_level_a_heatmap(profiles)
+    fig_activity_timeline(profiles)
+    fig_changepoint_calendar(profiles)
+    fig_process_scatter(profiles)
 
     print("Done.")
 

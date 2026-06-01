@@ -1,4 +1,4 @@
-"""Build developer style fingerprints from metrics + scores."""
+"""Build developer behavioral fingerprints from commits."""
 
 from __future__ import annotations
 
@@ -6,20 +6,39 @@ from pathlib import Path
 from typing import Optional
 import json
 
-from devfp.analyzer.llm_signals import aggregate_quarterly
+from devfp.analyzer.llm_signals import aggregate_windows
 from devfp.analyzer.style import batch_extract
-from devfp.analyzer.temporal import detect_change_points, compute_drift
-from devfp.models import Commit, DeveloperConfig, DevProfile, Language, LLM_MILESTONES
+from devfp.analyzer.temporal import (
+    compare_recent_vs_historical,
+    compute_drift,
+    detect_change_points,
+)
+from devfp.models import Commit, DeveloperConfig, DevProfile, Language
 
 
 def build_profile(
     config: DeveloperConfig,
     commits: list[Commit],
+    recent_n: int = 4,
+    min_historical: int = 6,
 ) -> DevProfile:
-    """Full pipeline: commits → metrics → scores → change points → profile."""
+    """
+    Full pipeline: commits → per-commit metrics → behavioral windows →
+                   change points → drift result → profile.
+
+    recent_n / min_historical control the self-comparison window.
+    The drift_result is None when there is insufficient history.
+    """
     metrics = batch_extract(commits)
-    scores = aggregate_quarterly(config.github_login, metrics)
-    change_points = detect_change_points(config.github_login, scores)
+    windows = aggregate_windows(config.github_login, metrics)
+    change_points = detect_change_points(config.github_login, windows)
+    drift_result = compare_recent_vs_historical(
+        author=config.github_login,
+        windows=windows,
+        recent_n=recent_n,
+        min_historical=min_historical,
+        change_points=change_points,
+    )
 
     profile = DevProfile(
         github_login=config.github_login,
@@ -27,8 +46,9 @@ def build_profile(
         primary_language=config.primary_language,
         analyzed_repos=config.repos,
         total_commits_analyzed=len(commits),
-        score_timeline=scores,
+        behavior_timeline=windows,
         change_points=change_points,
+        drift_result=drift_result,
     )
 
     if commits:
@@ -41,26 +61,34 @@ def build_profile(
 
 def profile_summary(profile: DevProfile) -> dict[str, object]:
     """Return a concise dict summary for terminal display."""
-    drift_stats = compute_drift(profile.score_timeline)
-    latest = profile.latest_score
+    drift = compute_drift(profile.behavior_timeline)
+    latest = profile.latest_window
+    dr = profile.drift_result
 
     return {
         "login": profile.github_login,
         "display_name": profile.display_name,
         "commits_analyzed": profile.total_commits_analyzed,
-        "quarters_analyzed": len(profile.score_timeline),
-        "latest_llm_score": latest.llm_score if latest else None,
-        "latest_verdict": latest.verdict if latest else "N/A",
-        "baseline_score": drift_stats.get("baseline_mean"),
-        "post_llm_score": drift_stats.get("post_llm_mean"),
-        "drift": drift_stats.get("drift"),
-        "change_points": [
+        "windows_analyzed": len(profile.behavior_timeline),
+        # Level C legacy score
+        "latest_style_score": latest.style_score if latest else None,
+        "style_drift_pre_post": drift.get("drift"),
+        # Level A process signals (recent window)
+        "latest_median_files": latest.median_files_per_commit if latest else None,
+        "latest_large_commit_ratio": latest.large_commit_ratio if latest else None,
+        "latest_refactor_ratio": latest.refactor_ratio if latest else None,
+        # Statistical result
+        "drift_combined_p": dr.combined_p_value if dr else None,
+        "interpretation": dr.interpretation if dr else "Insufficient data.",
+        "level_a_change_points": [
             {
                 "date": cp.date.strftime("%Y-%m"),
+                "signal": cp.signal,
                 "magnitude": cp.magnitude,
-                "nearest_event": cp.nearest_llm_event,
+                "method": cp.detection_method,
+                "nearest_event": cp.nearest_known_event,
             }
-            for cp in profile.change_points
+            for cp in profile.level_a_change_points
         ],
     }
 

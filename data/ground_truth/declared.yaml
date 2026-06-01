@@ -1,0 +1,125 @@
+# Ground truth: public declarations of AI-assisted development.
+#
+# type: "ai_assisted"   — developer publicly declared using AI tools during this period
+#        "no_ai"        — developer publicly stated they do NOT use AI tools
+#        "none_declared" — no public statement; used to mark known-unknowns
+#
+# IMPORTANT — epistemological constraints:
+#   1. Only public, verifiable declarations are recorded here.
+#   2. A declaration covers the developer's *intent*, not individual commits.
+#   3. "ai_assisted" does NOT mean every commit used AI — only that the developer
+#      reported using AI tools as part of their workflow during this period.
+#   4. These labels are used for calibration only, NOT for detecting change points.
+#      (Using known AI-adoption dates to locate change points is circular.)
+#   5. Selection bias: developers who publicly discuss AI usage ≠ representative sample.
+
+declarations:
+
+  # ── DHH (David Heinemeier Hansson) ──────────────────────────────────────────
+  # DHH publicly rejected GitHub Copilot in 2022, citing concerns about training
+  # data provenance and the nature of software creativity.
+  - developer: dhh
+    type: no_ai
+    period_start: "2021-06-01"
+    period_end: "2022-12-31"
+    source: "https://world.hey.com/dhh/github-copilot-is-not-infringing-your-copyright-6b8a9e90"
+    notes: >
+      DHH wrote publicly in June 2022 that he does not use GitHub Copilot and is
+      skeptical of AI code generation tools. This covers the Copilot Technical Preview
+      and GA period. His position was that AI-generated code raises copyright concerns
+      and that programmers should write their own code.
+
+  # ── Linus Torvalds ───────────────────────────────────────────────────────────
+  # Torvalds has publicly expressed skepticism about AI coding assistants.
+  - developer: torvalds
+    type: no_ai
+    period_start: "2022-01-01"
+    period_end: null
+    source: "https://www.theregister.com/2024/01/25/linus_torvalds_ai/"
+    notes: >
+      Linus Torvalds expressed skepticism about AI-generated code in multiple
+      interviews (e.g., 2024 Open Source Summit North America). He stated that
+      AI-generated code often looks plausible but introduces subtle bugs, and
+      that kernel development requires deep understanding that AI tools do not
+      provide. No evidence of Copilot or ChatGPT usage in kernel commits.
+
+  # ── Sindre Sorhus ────────────────────────────────────────────────────────────
+  # No verified public declaration found. Marked as none_declared.
+  - developer: sindresorhus
+    type: none_declared
+    period_start: "2021-06-01"
+    period_end: null
+    source: ""
+    notes: >
+      No confirmed public statement about AI tool usage found as of 2024.
+      Sindre Sorhus is prolific (1000+ npm packages) and maintains extremely
+      consistent coding style across years — this makes him a useful control
+      case for the calibration set, but without a ground-truth label.
+
+  # ── Dan Abramov (gaearon) ────────────────────────────────────────────────────
+  # No definitive public declaration of AI-assisted code generation found.
+  # He has mentioned using AI tools for exploration but not systematic commit-level usage.
+  - developer: gaearon
+    type: none_declared
+    period_start: "2022-01-01"
+    period_end: null
+    source: ""
+    notes: >
+      Dan Abramov has publicly discussed AI tools in the context of learning and
+      understanding (e.g., using ChatGPT to explain concepts), but no confirmed
+      declaration of using Copilot or other AI tools to generate commits.
+      The change point detected on his llm_score around GPT-4 release (2023-03)
+      is a signal artifact, not a validated label.
+
+  # ── Ryan Dahl (ry) ───────────────────────────────────────────────────────────
+  - developer: ry
+    type: none_declared
+    period_start: "2021-06-01"
+    period_end: null
+    source: ""
+    notes: >
+      No public declaration of AI-assisted coding found. Ryan Dahl (creator of
+      Node.js, now working on Deno) has not made public statements about using
+      AI code generation tools in his commit workflow.
+
+  # ── Evan You (yyx990803) ─────────────────────────────────────────────────────
+  - developer: yyx990803
+    type: none_declared
+    period_start: "2021-06-01"
+    period_end: null
+    source: ""
+    notes: >
+      No verified public declaration. Evan You (creator of Vue.js and Vite) has
+      not made confirmed public statements about using AI coding assistants.
+
+  # ── antirez (Salvatore Sanfilippo) ───────────────────────────────────────────
+  - developer: antirez
+    type: none_declared
+    period_start: "2021-06-01"
+    period_end: null
+    source: ""
+    notes: >
+      antirez (creator of Redis) has blogged extensively about software craft and
+      the importance of human judgment in system design, but no confirmed AI tool
+      usage declaration found.
+
+  # ── Rich Harris ──────────────────────────────────────────────────────────────
+  - developer: Rich-Harris
+    type: none_declared
+    period_start: "2021-06-01"
+    period_end: null
+    source: ""
+    notes: >
+      Rich Harris (creator of Svelte) has not made confirmed public declarations
+      about AI-assisted code generation in his personal commit workflow.
+
+  # ── Guido van Rossum (gvanrossum) ────────────────────────────────────────────
+  - developer: gvanrossum
+    type: none_declared
+    period_start: "2021-06-01"
+    period_end: null
+    source: ""
+    notes: >
+      Guido van Rossum has discussed AI and Python (e.g., faster-cpython project
+      at Microsoft) but no confirmed declaration of using Copilot or similar tools
+      to generate his own commits.

@@ -1,4 +1,9 @@
-"""Aggregate per-commit LLM scores into quarterly LLMScore windows."""
+"""
+Aggregate per-commit StyleMetrics into quarterly BehaviorWindow objects.
+
+Process signals (Level A/B) are the primary output.
+Style signals (Level C) are computed alongside for baseline comparison.
+"""
 
 from __future__ import annotations
 
@@ -7,7 +12,7 @@ from itertools import groupby
 
 import numpy as np
 
-from devfp.models import LLMScore, StyleMetrics
+from devfp.models import BehaviorWindow, StyleMetrics
 
 
 def _quarter(dt: datetime) -> tuple[int, int]:
@@ -15,32 +20,35 @@ def _quarter(dt: datetime) -> tuple[int, int]:
 
 
 def _function_style_score(items: list[StyleMetrics]) -> float:
-    """Signal 6: inverse of average function length, normalized to [0, 1].
+    """
+    Level C: inverse of average function length, normalized [0, 1].
 
-    LLMs tend to emit short, single-purpose functions (mean ~8–15 lines).
-    Long organic functions (20–60 lines) are less common in LLM output.
-    Score = 1.0 when avg_function_length ≤ 8 lines, 0.0 when ≥ 40 lines.
-    Commits with no function data (avg_function_length == 0) are excluded.
+    Historically calibrated: ≤8 lines → 1.0, ≥40 lines → 0.0.
+    This is fragile — developer style dominates over AI influence.
     """
     lengths = [m.avg_function_length for m in items if m.avg_function_length > 0]
     if not lengths:
         return 0.0
     mean_len = float(np.mean(lengths))
-    # Linear interpolation: 8 → 1.0, 40 → 0.0; clamped
     score = 1.0 - (mean_len - 8.0) / (40.0 - 8.0)
     return float(np.clip(score, 0.0, 1.0))
 
 
-def aggregate_quarterly(
+def aggregate_windows(
     author: str,
     metrics_list: list[StyleMetrics],
-) -> list[LLMScore]:
-    """Average the per-commit copilot scores into quarterly LLMScore objects."""
+) -> list[BehaviorWindow]:
+    """
+    Fold per-commit StyleMetrics into quarterly BehaviorWindow objects.
+
+    Process signals are aggregated using median/ratio statistics (robust to outliers).
+    Style signals are averaged for display purposes only.
+    """
     if not metrics_list:
         return []
 
     sorted_metrics = sorted(metrics_list, key=lambda m: m.date)
-    quarters: list[LLMScore] = []
+    windows: list[BehaviorWindow] = []
 
     for (year, q), group in groupby(sorted_metrics, key=lambda m: _quarter(m.date)):
         items = list(group)
@@ -49,19 +57,65 @@ def aggregate_quarterly(
         end_day = 30 if end_month in {4, 6, 9, 11} else 31
         period_end = datetime(year, end_month, end_day, tzinfo=timezone.utc)
 
-        # Primary score: average of CodeAnalyzer.copilot_score() per commit
-        llm_score = float(np.mean([m.llm_score for m in items])) * 100
+        # ── Level A: Process signals ─────────────────────────────────────────
 
-        # Per-signal averages (for display / radar chart)
+        files_per_commit = [m.files_changed for m in items]
+        median_files = float(np.median(files_per_commit)) if files_per_commit else 0.0
+
+        net_lines_per = [m.net_lines for m in items]
+        median_net = float(np.median(net_lines_per)) if net_lines_per else 0.0
+
+        large_commit_ratio = sum(
+            1 for m in items if abs(m.net_lines) > 200
+        ) / max(len(items), 1)
+
+        cross_mod_vals = [m.cross_module_ratio for m in items]
+        avg_cross_module = float(np.mean(cross_mod_vals)) if cross_mod_vals else 0.0
+
+        refactor_ratio = sum(1 for m in items if m.is_refactor) / max(len(items), 1)
+
+        # Velocity: inter-commit delay (hours between consecutive commits)
+        inter_hours = [m.inter_commit_hours for m in items if m.inter_commit_hours is not None]
+        median_inter = float(np.median(inter_hours)) if inter_hours else 0.0
+
+        # Commit frequency: commits per calendar week over the window
+        duration_days = max((period_end - period_start).days, 1)
+        commits_per_week = len(items) / (duration_days / 7.0)
+
+        # ── Level B: Process signals ─────────────────────────────────────────
+
+        test_touch_ratio = sum(
+            1 for m in items if m.touches_tests
+        ) / max(len(items), 1)
+
+        merge_ratio = sum(1 for m in items if m.is_merge) / max(len(items), 1)
+
+        # ── Level C: Style signals ────────────────────────────────────────────
+
         def avg(attr: str) -> float:
             vals = [getattr(m, attr) for m in items]
             return round(float(np.mean(vals)), 3)
 
-        quarters.append(
-            LLMScore(
+        style_score = float(np.mean([m.style_score for m in items])) * 100
+
+        windows.append(
+            BehaviorWindow(
                 author=author,
                 period_start=period_start,
                 period_end=period_end,
+                n_commits=len(items),
+                # Level A
+                median_files_per_commit=round(median_files, 2),
+                median_net_lines=round(median_net, 1),
+                large_commit_ratio=round(large_commit_ratio, 3),
+                cross_module_ratio=round(avg_cross_module, 3),
+                refactor_ratio=round(refactor_ratio, 3),
+                median_inter_commit_hours=round(median_inter, 1),
+                commits_per_week=round(commits_per_week, 2),
+                # Level B
+                test_touch_ratio=round(test_touch_ratio, 3),
+                merge_ratio=round(merge_ratio, 3),
+                # Level C
                 comment_score=avg("comment_density"),
                 docstring_score=avg("docstring_coverage"),
                 verbosity_score=min(avg("avg_identifier_length") / 20.0, 1.0),
@@ -70,9 +124,12 @@ def aggregate_quarterly(
                     1.0 if m.has_conventional_commit else 0.0 for m in items
                 ])),
                 function_style_score=_function_style_score(items),
-                llm_score=round(llm_score, 1),
-                n_commits=len(items),
+                style_score=round(style_score, 1),
             )
         )
 
-    return quarters
+    return windows
+
+
+# Backward-compatibility alias
+aggregate_quarterly = aggregate_windows

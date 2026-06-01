@@ -15,7 +15,10 @@ from devfp.models import DeveloperConfig, Language
 
 app = typer.Typer(
     name="devfp",
-    help="[bold cyan]dev-fingerprint[/bold cyan] — Detecting the AI Drift in Famous OSS Contributors",
+    help=(
+        "[bold cyan]dev-fingerprint[/bold cyan] — "
+        "P(behavioral drift | Git history) estimation for OSS contributors"
+    ),
     rich_markup_mode="rich",
     no_args_is_help=True,
 )
@@ -47,14 +50,20 @@ def _load_configs(configs_dir: Path = _CONFIGS_DIR) -> dict[str, DeveloperConfig
 
 @app.command()
 def analyze(
-    login: Annotated[str, typer.Argument(help="GitHub login to analyze (e.g. gaearon)")],
+    login: Annotated[str, typer.Argument(help="GitHub login to analyze (e.g. torvalds)")],
     commits: Annotated[int, typer.Option("--commits", "-n", help="Max commits to fetch")] = 300,
     since: Annotated[Optional[str], typer.Option(help="Start date (YYYY-MM-DD)")] = None,
     output: Annotated[Path, typer.Option(help="Output dir for JSON profile")] = _REPORTS_DIR,
     token: Annotated[Optional[str], typer.Option(envvar="GITHUB_TOKEN", help="GitHub token")] = None,
     html: Annotated[bool, typer.Option("--html/--no-html", help="Also generate HTML report")] = True,
+    recent_n: Annotated[int, typer.Option(help="Recent windows for self-comparison test")] = 4,
+    min_historical: Annotated[int, typer.Option(help="Minimum historical windows required")] = 6,
 ) -> None:
-    """Fetch commits and build a style fingerprint for a GitHub developer."""
+    """
+    Fetch commits and estimate behavioral drift for a GitHub developer.
+
+    Output: P(behavioral drift | Git history) — NOT P(AI-generated code).
+    """
     from datetime import datetime
 
     from devfp.analyzer.fingerprint import build_profile, save_profile
@@ -88,7 +97,7 @@ def analyze(
     )
     console.print(f"  Fetched [bold]{len(commits_list)}[/bold] commits")
 
-    profile = build_profile(cfg, commits_list)
+    profile = build_profile(cfg, commits_list, recent_n=recent_n, min_historical=min_historical)
     json_path = save_profile(profile, output)
     console.print(f"  Profile saved → [dim]{json_path}[/dim]")
 
@@ -106,7 +115,7 @@ def compare(
     html: Annotated[bool, typer.Option("--html/--no-html")] = True,
     output: Annotated[Path, typer.Option()] = _REPORTS_DIR,
 ) -> None:
-    """Compare style fingerprints of multiple developers side by side."""
+    """Compare behavioral fingerprints of multiple developers side by side."""
     from devfp.analyzer.fingerprint import load_profile
     from devfp.reporter.terminal import print_comparison
     from devfp.reporter.html import build_comparison_chart
@@ -115,7 +124,10 @@ def compare(
     for login in logins:
         path = profiles_dir / f"{login}.json"
         if not path.exists():
-            err_console.print(f"[yellow]No profile for '{login}' in {profiles_dir}. Run 'devfp analyze {login}' first.[/yellow]")
+            err_console.print(
+                f"[yellow]No profile for '{login}' in {profiles_dir}. "
+                f"Run 'devfp analyze {login}' first.[/yellow]"
+            )
             continue
         profiles.append(load_profile(path))
 
@@ -136,10 +148,9 @@ def compare(
 @app.command()
 def score(
     login: Annotated[str, typer.Argument(help="GitHub login")],
-    window: Annotated[Optional[str], typer.Option(help="Date window YYYY-MM-DD:YYYY-MM-DD")] = None,
     profiles_dir: Annotated[Path, typer.Option()] = _REPORTS_DIR,
 ) -> None:
-    """Show the LLM score timeline for a developer."""
+    """Show the behavioral drift timeline for a developer."""
     from devfp.analyzer.fingerprint import load_profile
     from devfp.reporter.terminal import print_profile
 
@@ -148,8 +159,7 @@ def score(
         err_console.print(f"[red]Profile not found. Run: devfp analyze {login}[/red]")
         raise typer.Exit(1)
 
-    profile = load_profile(path)
-    print_profile(profile)
+    print_profile(load_profile(path))
 
 
 @app.command()
@@ -167,32 +177,35 @@ def demo() -> None:
     profiles = [load_profile(p) for p in sorted(sample_profiles)]
     console.rule("[bold cyan]dev-fingerprint DEMO[/bold cyan]")
     console.print(f"[dim]Loaded {len(profiles)} sample profiles from reports/sample/[/dim]\n")
-
     print_comparison(profiles)
-
-    console.print("\n[dim]Run 'devfp analyze <login>' with a GITHUB_TOKEN to analyze any developer.[/dim]")
-    console.print("[dim]See README.md for the full findings and methodology.[/dim]")
+    console.print(
+        "\n[dim]Run 'devfp analyze <login>' with a GITHUB_TOKEN to analyze any developer.[/dim]"
+    )
 
 
 @app.command(name="list")
 def list_devs() -> None:
     """List all configured developers."""
     configs = _load_configs()
-    table_data = [
-        (cfg.github_login, cfg.display_name, cfg.primary_language.value, len(cfg.repos))
-        for cfg in configs.values()
-    ]
 
     from rich.table import Table
     from rich import box
+
     table = Table(box=box.SIMPLE, border_style="bright_black")
     table.add_column("Login", style="cyan")
     table.add_column("Display name")
     table.add_column("Language", style="dim")
     table.add_column("Repos", justify="right", style="dim")
+    table.add_column("Notes", style="dim")
 
-    for row in table_data:
-        table.add_row(*[str(v) for v in row])
+    for cfg in configs.values():
+        table.add_row(
+            cfg.github_login,
+            cfg.display_name,
+            cfg.primary_language.value,
+            str(len(cfg.repos)),
+            cfg.notes[:60] if cfg.notes else "",
+        )
 
     console.print(table)
 
