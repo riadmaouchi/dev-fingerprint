@@ -9,20 +9,23 @@
 
 ## Summary Table
 
-| Developer | Commits | Windows | Fisher p | Sig. | CPs-A | Process verdict |
-|-----------|--------:|--------:|---------:|:----:|------:|-----------------|
-| Dan Abramov | 465 | 22 | **0.0002** | ★★★ | 17 | Strong drift |
-| Guido van Rossum | 230 | 24 | **0.0022** | ★★★ | 4 | Strong drift |
-| Sindre Sorhus | 521 | 32 | **0.0022** | ★★★ | 13 | Strong drift |
-| DHH | 429 | 23 | **0.0301** | ★ | 1 | Moderate drift |
-| Evan You | 841 | 12 | **0.0457** | ★ | 3 | Moderate drift |
-| Ryan Dahl | 540 | 24 | 0.0775 | ~ | 17 | Trend (non-sig.) |
-| Rich Harris | 960 | 20 | 0.2483 | — | 3 | No significant drift |
-| Linus Torvalds | 960 | 8 | n/a | — | 1 | Insufficient windows |
-| Salvatore Sanfilippo | 480 | 6 | n/a | — | 11 | Insufficient windows |
-| TJ Holowaychuk | — | — | — | — | — | No attributable commits |
+| Developer | Commits | Windows | Fisher p | Sig. | CPs-A | AI declared | LLM instr files | Process verdict |
+|-----------|--------:|--------:|---------:|:----:|------:|:-----------:|:---------------:|-----------------|
+| Dan Abramov | 465 | 22 | **0.0002** | ★★★ | 17 | — | none | Strong drift (role exit) |
+| Guido van Rossum | 230 | 24 | **0.0022** | ★★★ | 4 | — | none | Strong drift (BDFL exit) |
+| Sindre Sorhus | 521 | 32 | **0.0022** | ★★★ | 13 | — | none | Strong drift (portfolio shift) |
+| DHH | 429 | 23 | **0.0301** | ★ | 1 | ❌ no AI | AGENTS.md (6.8 KB) | Moderate drift (role evolution) |
+| Evan You | 841 | 12 | **0.0457** | ★ | 3 | — | copilot-instr (1.6 KB) | Moderate drift (fragile baseline) |
+| Andrej Karpathy | 284 | 10 | **0.0495** | ★ | 5 | ✅ "vibe coding" | none | Marginal (thin baseline) |
+| Ryan Dahl | 540 | 24 | 0.0775 | ~ | 17 | — | copilot-instr (12 KB) + CLAUDE.md (11.9 KB) | Trend (non-sig.) |
+| Rich Harris | 960 | 20 | 0.2483 | — | 3 | — | CLAUDE.md + AGENTS.md + copilot-instr (4.3 KB each) | No significant drift |
+| **Simon Willison** | **960** | **19** | **0.7473** | **—** | **1** | **✅ heavy user** | none (llm: 425B setup only) | **Null — strongest negative control** |
+| Linus Torvalds | 960 | 8 | n/a | — | 1 | ❌ skeptic | none | Insufficient windows |
+| Salvatore Sanfilippo | 480 | 6 | n/a | — | 11 | — | none | Insufficient windows (4-yr gap) |
+| TJ Holowaychuk | — | — | — | — | — | — | — | No attributable commits |
 
-`★★★ p < 0.01   ★ p < 0.05   ~ p < 0.10   — not significant / insufficient data`
+`★★★ p < 0.01   ★ p < 0.05   ~ p < 0.10   — not significant / insufficient data`  
+`✅ publicly declared AI usage  ❌ publicly declared non-usage  — no declaration found`
 
 **Level-A signals** (6 total): `median_files_per_commit`, `large_commit_ratio`, `cross_module_ratio`,  
 `refactor_ratio`, `median_inter_commit_hours`, `commits_per_week`.
@@ -241,6 +244,62 @@ The reduction in files/commit and large-commit ratio over 7 years is consistent 
 
 ---
 
+### Simon Willison (`simonw`) — Null result, p = 0.7473 — primary negative control
+
+**960 commits · 19 quarterly windows · 2018-04 → 2025-10**  
+*Publicly declared heavy Claude Code user since 2023. Built the `llm` CLI. Documented at simonwillison.net/tags/claude-code/.*
+
+No Level-A signal shows statistically significant change:
+
+| Signal | Baseline | Recent | Δ% | p-value |
+|--------|----------:|-------:|---:|--------:|
+| `median_inter_commit_hours` | 1,014 h | 3,750 h | +270% | 0.0836 |
+| `commits_per_week` | 1.010 | 0.577 | −42.9% | 0.1053 |
+| `median_files_per_commit` | 2.250 | 1.625 | −27.8% | 0.1613 |
+| `large_commit_ratio` | 0.000 | 0.021 | +∞ | 0.2697 |
+| `cross_module_ratio` | 0.064 | 0.079 | +22.8% | 0.6561 |
+| `refactor_ratio` | 0.014 | 0.021 | +47.3% | 0.8175 |
+
+**Combined Fisher p = 0.7473.** The most statistically stable developer in the corpus, despite being the most documented AI adopter.
+
+**Level B patch signal:**  
+`patch_comment_density`: baseline 0.0169 → recent 0.0390, **p = 0.0485** (Mann-Whitney U, increase).  
+`patch_blank_line_ratio`: baseline 0.0284 → recent 0.0253, p = 0.664 (stable).
+
+**The only signal to reach significance for simonw is at Level B** — the density of comment lines within the code he actually adds to commits increased significantly in recent quarters. This is directionally consistent with AI assistance (AI tools tend to add inline comments). However, this signal alone cannot distinguish AI adoption from a conscious style change, and it did not survive Fisher combination with the flat Level-A signals.
+
+**Interpretation:** Simon Willison is the central negative result of this study. 960 commits, 19 windows, documented heavy AI use — zero detectable Level-A drift. The Level B patch signal provides a whisper of signal (comment density, p = 0.048) but the overall behavioral fingerprint is unchanged. Two explanations are consistent with this: (1) AI adapts to his established coding style and produces output indistinguishable from his manual commits; (2) his primary development workflow changed in ways that aren't captured by commit-level process signals. His analyzed repos (datasette, llm, sqlite-utils) have no LLM style-instruction files of substance, ruling out instruction-driven style normalization as the explanation here.
+
+---
+
+### Andrej Karpathy (`karpathy`) — Marginal result, p = 0.0495 ★ (interpret with caution)
+
+**284 commits · 10 quarterly windows · 2022-04 → 2025-10**  
+*Coined "vibe coding" (X, February 2025). Minimal public GitHub activity before 2022 — most prior work in private repos at OpenAI and Tesla.*
+
+1 of 6 Level-A signals shows statistically significant change:
+
+| Signal | Baseline | Recent | Δ% | p-value |
+|--------|----------:|-------:|---:|--------:|
+| `refactor_ratio` | 0.270 | 0.041 | −84.8% | **0.0003** ★ |
+| `median_inter_commit_hours` | 52 h | 1,714 h | +3,197% | 0.1042 |
+| `median_files_per_commit` | 2.875 | 1.625 | −43.5% | 0.1085 |
+| `large_commit_ratio` | 0.059 | 0.025 | −57.9% | 0.6083 |
+| `cross_module_ratio` | 0.077 | 0.054 | −30.0% | 0.4701 |
+| `commits_per_week` | 0.520 | 0.577 | +11.1% | 0.8461 |
+
+**Combined Fisher p = 0.0495.** Driven by a single strongly significant predictor (`refactor_ratio`); Fisher amplification inflates the combined p past the threshold.
+
+**Level B patch signals:**  
+`patch_comment_density`: baseline 0.0758 → recent 0.0109, **p = 0.023** (decrease).  
+`patch_blank_line_ratio`: baseline 0.0482 → recent 0.0103, **p = 0.023** (decrease).
+
+The patch signals for karpathy move in the *opposite* direction from what AI assistance would predict — comment density and blank-line ratio are **lower** in his recent commits. This is consistent with a shift from research code (nanoGPT, micrograd — heavily commented for pedagogical clarity) to production/systems code (llm.c — C code, terse by convention). **The direction of drift contradicts the AI-assistance hypothesis.**
+
+**Interpretation:** Karpathy's result is technically significant but methodologically fragile. Only 10 windows (the bare minimum), a sparse baseline (most pre-2022 work in private repos), and a single driving signal (refactor ratio). His repos have no LLM instruction files. The patch signals decrease rather than increase — the opposite of what AI adoption would predict. The most likely explanation is a genre shift: from high-commentary ML education repos to lower-commentary C/systems work. **Treat as marginal; the evidence does not clearly point to AI adoption as the cause.**
+
+---
+
 ### Salvatore Sanfilippo / antirez (`antirez`) — Insufficient windows (n = 6, structural gap)
 
 **480 commits · 6 quarterly windows · 2018-10 → 2025-08**
@@ -254,6 +313,57 @@ antirez was active 2018–2020 (3 windows), then completely absent from his trac
 - Post-return (2025-Q3): `files/commit` = 3.0, `cpw` = 0.23, `inter_h` = 335.9 h  
 
 The contrast is striking but the 4-year gap is a structural confounder that cannot be controlled. A returning developer's behavior after a long absence reflects accumulated change in context, tools, and priorities — not a drift trajectory. **Reported for transparency; no causal attribution possible.**
+
+---
+
+## LLM Instruction Files as a Confound
+
+A post-hoc check across the corpus: do repos contain explicit AI coding-instruction files (`CLAUDE.md`, `.github/copilot-instructions.md`, `AGENTS.md`)? The presence and content of those files correlates with the Fisher p in a directionally consistent way:
+
+| Developer | Fisher p | Instruction files | Content type |
+|-----------|--------:|-------------------|-------------|
+| Rich Harris | 0.2483 | sveltejs/kit: CLAUDE.md + AGENTS.md + copilot-instr (4.3 KB each) | Full style + workflow guide |
+| Ryan Dahl | 0.0775 | denoland/deno: copilot-instr (12 KB) + CLAUDE.md (11.9 KB) | Full coding style guide |
+| DHH | 0.0301 | rails/rails: AGENTS.md (6.8 KB) | Style + setup |
+| Evan You | 0.0457 | vitejs/vite: copilot-instr (1.6 KB) | Lightweight guide |
+| Karpathy | 0.0495 | none | — |
+| van Rossum | 0.0022 | none | — |
+| Sorhus | 0.0022 | none | — |
+| Abramov | 0.0002 | none | — |
+| simonw | 0.7473 | none (llm: 425B setup-only AGENTS.md) | — |
+
+The developers with the largest, most detailed instruction files (Rich Harris, Ryan Dahl) have the highest Fisher p (least detected drift). Those without instruction files span the full range — from strong drift (Abramov, van Rossum, Sorhus) to complete null (simonw).
+
+**The implication:** When AI tools are given explicit style guides, they produce code that follows project conventions — statistically indistinguishable from the developer's manual commits. This is validated more cleanly in the companion [copilot-signal](https://github.com/riadmaouchi/copilot-signal) case-control study, where repos with detailed copilot-instructions.md showed 0/15 significant signals vs. 5/15 for repos without.
+
+simonw remains the anomaly in this pattern: no substantial instruction files, yet the strongest null result. His explanation is different — AI tools adapt to his established style across a decade of open-source work, and the Level B patch signal (comment density, p = 0.048) is the only measurable trace.
+
+---
+
+## Level B Patch Signals: What They Add
+
+Two patch-content signals were added based on validation in the [copilot-signal](https://github.com/riadmaouchi/copilot-signal) study: `patch_comment_density` (comment lines / added code lines) and `patch_blank_line_ratio` (blank added lines / total added lines). These are extracted from the diff — measuring only lines the developer wrote in each commit, not surrounding existing code.
+
+Results on the full corpus (not included in Fisher p — Level B only):
+
+| Developer | patch_comment_density p | Direction | patch_blank_line_ratio p | Direction |
+|-----------|:-----------------------:|-----------|:------------------------:|-----------|
+| simonw | **0.048** | **increase** | 0.664 | stable |
+| karpathy | **0.023** | decrease | **0.023** | decrease |
+| gvanrossum | **0.007** | decrease | **0.045** | decrease |
+| Rich Harris | 0.098 | increase | 0.142 | increase |
+| sindresorhus | 1.000 | stable | 0.708 | increase |
+| ry | 0.505 | increase | 0.532 | stable |
+| dhh | 0.446 | stable | 0.561 | stable |
+| gaearon | 0.966 | increase | 1.000 | stable |
+| yyx990803 | 0.569 | increase | 0.109 | increase |
+
+Three developers show significant patch signals, but the directions contradict a simple "AI adoption → more comments" hypothesis:
+- **simonw**: comments increased (consistent with AI, but only signal for him)
+- **karpathy**: comments *decreased* (genre shift: research → C/systems code)
+- **van Rossum**: comments *decreased* (CPython role narrowing, less documentation work)
+
+The signal detects real style evolution but is not directionally specific to AI adoption.
 
 ---
 

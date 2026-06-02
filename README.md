@@ -102,14 +102,17 @@ The data detects real behavioral change. The cause isn't written in the commits.
 
 | Level | What we measure | Defensibility | Role in this analysis |
 |-------|----------------|:---:|---|
-| **A — Process** | files/commit · large-commit ratio · cross-module ratio · refactor ratio · inter-commit hours · commits/week | ★★★ | Primary — drives all statistical tests |
-| **B — Secondary** | test-touch ratio · median net lines | ★★ | Supporting context |
-| **C — Style** | comment density · docstring coverage · identifier verbosity · error handling | ★ | Baseline comparison only — see [`CRITIQUE.md`](CRITIQUE.md) |
-| **D — Content (new files only)** | type annotation density · docstring coverage · error handling density — computed exclusively on `status=added` files | ★ (experimental) | Informational only — not included in Fisher test |
+| **A — Process** | files/commit · large-commit ratio · cross-module ratio · refactor ratio · inter-commit hours · commits/week | ★★★ | Primary — drives all statistical tests and Fisher p |
+| **B — Secondary process** | test-touch ratio · median net lines · merge ratio | ★★ | Supporting context |
+| **B — Patch content** | `patch_comment_density` · `patch_blank_line_ratio` — extracted from added lines in the diff, not full file | ★★ | Validated in [copilot-signal](https://github.com/riadmaouchi/copilot-signal); included in drift analysis but not in Fisher p |
+| **C — Style** | comment density · docstring coverage · identifier verbosity · error handling (full-file AST) | ★ | Baseline comparison only — see [`CRITIQUE.md`](CRITIQUE.md) |
+| **D — Content (new files only)** | type annotation density · docstring coverage · error handling density — exclusively on `status=added` files | ★ (experimental) | Informational only — not included in Fisher test |
 
-Level-C signals measure output appearance, not working process. They are sensitive to coding convention changes, linter adoption, and project maturity — all of which can shift style scores without any change in how a developer actually works. We include them for comparison; see [`CRITIQUE.md`](CRITIQUE.md) for a detailed analysis of their failure modes.
+**Level B patch signals** (`patch_comment_density`, `patch_blank_line_ratio`) are extracted from the added lines of each commit's diff — measuring only what the developer actually wrote, not the surrounding existing code. Validated as the most consistent patch signals in the companion [copilot-signal](https://github.com/riadmaouchi/copilot-signal) case-control study (147 pairs, 11 repos). On this longitudinal corpus: simonw shows `patch_comment_density` increase p = 0.048 (baseline 0.017 → recent 0.039) — the **only signal to reach significance for the documented heaviest AI user** in the corpus. Level A signals for simonw remain flat (Fisher p = 0.75).
 
-Level-D signals attempt to isolate the content quality of newly created files specifically, to avoid the project-convention confound that affects existing files. On the simonw corpus (a documented heavy AI user), all Level-D signals remain flat at zero throughout 2018–2025 — consistent with the Level-A and Level-C results. The signal is too sparse (most commits edit existing files, not create new ones) and too style-dependent to be useful in a mature codebase.
+Level-C signals measure output appearance, not working process. They are sensitive to coding convention changes, linter adoption, and project maturity. We include them for comparison; see [`CRITIQUE.md`](CRITIQUE.md) for a detailed analysis of their failure modes.
+
+Level-D signals isolate newly created files to avoid project-convention confounds. On the simonw corpus, all Level-D signals remain flat — consistent with Level-A and Level-C results.
 
 ---
 
@@ -121,6 +124,7 @@ GitHub API (2018–2025)
       ▼
 Per-commit extraction
       ├── Level A: commit metadata (files, lines, timing, topology)
+      ├── Level B: patch-level content (comment density, blank-line ratio — added lines only)
       ├── Level C: AST/tree-sitter style analysis (all files)
       └── Level D: annotation/docstring/error-handling analysis (new files only)
       │
@@ -162,6 +166,18 @@ jupyter notebook notebooks/exploration.ipynb
 ```
 
 All profiles are committed to [`reports/real/`](reports/real/). You can read the data without re-fetching.
+
+---
+
+## Companion Study
+
+[**copilot-signal**](https://github.com/riadmaouchi/copilot-signal) attacks the same question with a fundamentally different design: case-control rather than longitudinal. For each GitHub Copilot-tagged commit (ground truth: `Co-Authored-By: Copilot` trailer), it finds the nearest untagged commit from the **same author, same repo, within 14 days**. 147 matched pairs, 11 repos, 13 authors.
+
+Key finding that cross-validates this study: **repos with explicit LLM coding-style instruction files (`.github/copilot-instructions.md`, `CLAUDE.md` with style rules) show 0/15 significant signals between Copilot-tagged and control commits.** Repos without such instructions show 5/15 significant signals. When AI tools are given explicit style guides, they produce code statistically indistinguishable from the developer's manual style — by design.
+
+The same pattern is visible here: **Rich Harris** (sveltejs/kit has `CLAUDE.md` + `AGENTS.md` + `.github/copilot-instructions.md`) and **Ryan Dahl** (denoland/deno has `copilot-instructions.md` at 12 KB + `CLAUDE.md` at 11.9 KB) are the most instrumented developers in the corpus. Rich Harris: Fisher p = 0.248 (null). Dahl: Fisher p = 0.078 (borderline). Developers without instruction files (Abramov, van Rossum, Sorhus, Karpathy) show the strongest drift — though their drift has documented non-AI explanations.
+
+**Meta-finding: the better the AI integration (proper instruction files), the harder it is to detect statistically.**
 
 ---
 
