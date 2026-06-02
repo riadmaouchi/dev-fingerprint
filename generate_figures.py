@@ -80,6 +80,21 @@ DEV_STYLE_INSTRUCTIONS: set[str] = {"Rich-Harris", "ry"}
 DEV_AI_DECLARED_USER: set[str] = {"simonw", "karpathy"}
 DEV_AI_DECLARED_NON:  set[str] = {"dhh", "torvalds"}
 
+# Real explanations for each developer's drift (or non-drift).
+# False = non-AI explanation confirmed. True = plausibly AI-related. None = unclear.
+# Displayed in fig1 so readers don't misattribute statistical significance to AI adoption.
+DRIFT_CONFOUNDS: dict[str, tuple[str, bool | None]] = {
+    "gaearon":      ("role exit — left React core, drastically reduced activity", False),
+    "gvanrossum":   ("BDFL exit — stepped down 2018, workflow change at Microsoft", False),
+    "sindresorhus": ("portfolio shift — hundreds of npm pkgs → large macOS apps", False),
+    "dhh":          ("role evolution — less hands-on Rails coding, more management", False),
+    "yyx990803":    ("caution: only 12 windows — thin baseline, fragile test", None),
+    "karpathy":     ("genre shift — Python ML research → C systems (terse by convention)", False),
+    "ry":           ("no significant drift detected", None),
+    "Rich-Harris":  ("no significant drift detected", None),
+    "simonw":       ("null — heavy AI user, no detectable change (strongest control)", None),
+}
+
 C_AI_USER    = "#56d364"   # green  — declared AI user
 C_AI_NON     = "#f85149"   # red    — declared non-user
 C_INSTR_STYLE = "#6e7681"  # grey   — coding style instructions
@@ -204,18 +219,32 @@ def fig1_significance(profiles: list[dict]) -> None:
     n_nt = len(non_testable)
     total_rows = n_t + n_nt + 0.5
 
-    fig, ax = plt.subplots(figsize=(12, max(5, total_rows * 0.72)), facecolor=BG)
+    fig, ax = plt.subplots(figsize=(16, max(5, total_rows * 0.78)), facecolor=BG)
     _ax_dark(ax)
 
     # ── Bars ─────────────────────────────────────────────────────────────────
     bars = ax.barh(range(n_t), logps, color=colors, alpha=0.88,
                    height=0.55, zorder=3)
 
-    for i, (bar, p, lp) in enumerate(zip(bars, ps, logps)):
+    x_pval = max(logps) * 1.02   # p-value column x
+    x_conf = max(logps) * 1.38   # confound label column x
+
+    for i, (bar, p, lp, login) in enumerate(zip(bars, ps, logps, logins)):
         stars = "★★★" if p < 0.01 else ("★" if p < 0.05 else ("~" if p < 0.10 else "—"))
-        ax.text(lp + 0.12, i, f"p = {p:.4f}  {stars}",
+        ax.text(x_pval, i, f"p = {p:.4f}  {stars}",
                 va="center", ha="left", color=_sig_color(p),
                 fontsize=11, fontweight="bold")
+        # Confound explanation — why the drift happened (or didn't)
+        confound = DRIFT_CONFOUNDS.get(login)
+        if confound:
+            label, is_ai = confound
+            ai_tag = ""
+            if is_ai is False:
+                ai_tag = "  [not AI]"
+            conf_color = "#6e7681" if is_ai is False else TEXT_LO
+            ax.text(x_conf, i, f"{label}{ai_tag}",
+                    va="center", ha="left", color=conf_color,
+                    fontsize=9.5, style="italic", alpha=0.88)
 
     # Significance thresholds
     for thresh, lbl in [(1.30, "p = 0.05"), (2.0, "p = 0.01")]:
@@ -244,7 +273,7 @@ def fig1_significance(profiles: list[dict]) -> None:
     ax.set_ylim(-0.65, n_t + n_nt + 0.1)
     ax.invert_yaxis()
     ax.set_xlabel("− log₁₀ (Fisher combined p-value)", color=TEXT_LO, fontsize=11)
-    ax.set_xlim(0, max(logps) * 1.60)
+    ax.set_xlim(0, max(logps) * 2.55)
     ax.grid(axis="x", color=GRID, lw=0.5, alpha=0.8, zorder=0)
     ax.set_axisbelow(True)
 
@@ -270,14 +299,14 @@ def fig1_significance(profiles: list[dict]) -> None:
     ax.set_title(
         "Mann-Whitney U per Level-A signal · Fisher combined p · "
         "self-baseline comparison (historical vs. last 4 quarters)\n"
-        "[AI]/[~AI] = public declaration of AI use/non-use · "
-        "⚙ = explicit LLM coding-instruction file in primary repo\n"
-        "Note: declared AI users ([AI]) show no consistent drift pattern — "
-        "simonw p = 0.75 (null), karpathy p = 0.05 (genre shift, not AI signal)",
+        "[AI]/[~AI] = public AI use declaration · ⚙ = LLM instruction file in primary repo · "
+        "[not AI] = non-AI explanation identified for the detected drift",
         color=TEXT_LO, fontsize=9.5, pad=8,
     )
-    fig.suptitle("How much did each developer's commit process change?",
-                 color=TEXT_HI, fontsize=14, fontweight="bold", y=1.02)
+    fig.suptitle(
+        "How much did each developer's commit process change?  "
+        "— and why",
+        color=TEXT_HI, fontsize=14, fontweight="bold", y=1.02)
 
     _watermark(fig, sum(p.get("total_commits_analyzed", 0) for p in profiles))
     _save(fig, "fig1_significance.png")
