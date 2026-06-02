@@ -15,9 +15,9 @@ The answer is more nuanced than it looks.
 
 ---
 
-![Level-A Signal Heatmap](docs/img/level_a_heatmap.png)
+![Who drifted?](docs/img/fig1_significance.png)
 
-*Each cell = Δ% change in a Level-A process signal between historical baseline and the last 4 quarters. ★ = significant at α = 0.05 (Mann-Whitney U[^mw]). Right bar = Fisher combined p-value[^fisher]. Source: [`reports/real/`](reports/real/).*
+*Each bar = Fisher combined p-value (−log₁₀ scale) for one developer. Color = significance level. Non-testable developers listed with reason. Source: [`reports/real/`](reports/real/).*
 
 ---
 
@@ -51,9 +51,9 @@ The v1 signal was a confound. A plausible explanation consistent with our data: 
 
 ---
 
-![Commit Activity Timeline](docs/img/activity_timeline.png)
+![Three stories](docs/img/fig2_stories.png)
 
-*commits/week per developer, 2018–2025. Line weight ∝ statistical significance. ▼ = detected change point on the `commits_per_week` signal.*
+*Three representative trajectories (commits/week, 2018–2025): activity withdrawal (Abramov), process stability (Rich Harris), moderate decline (Ryan Dahl). Dotted verticals = detected change points on commits/week. Dashed lines = LLM milestones, shown for temporal reference only.*
 
 ---
 
@@ -71,21 +71,15 @@ The data detects real behavioral change. The cause isn't written in the commits.
 
 ---
 
-![Change-Point Calendar](docs/img/changepoint_calendar.png)
+![Annual change-point calendar](docs/img/fig3_calendar.png)
 
-*When did process shifts occur? Each dot = one Level-A change point, size ∝ magnitude, color = signal type. Dashed lines = LLM release milestones.*
-
----
-
-![Drift vs. LLM Timeline](docs/img/drift_vs_llm_timeline.png)
-
-*Swimlane view: each needle = one Level-A change point, colored by signal type. ↑ signal increased, ↓ decreased. Height ∝ log(magnitude). Shaded bands = LLM release eras (for temporal reference only — correlation is not causation; each change point has a documented non-AI explanation in [FINDINGS.md](FINDINGS.md)). Bottom panel: quarterly count of Level-A change points across all developers.*
+*Number of Level-A change points per developer per year. Shaded columns = LLM release years (for temporal reference — correlation is not causation). antirez 2025 = return from 3-year gap, not a continuous drift signal.*
 
 ---
 
-![Process Scatter](docs/img/process_scatter.png)
+![Before vs. after](docs/img/fig4_dumbbell.png)
 
-*Baseline vs. recent commits/week. Everything below the diagonal declined. Rich Harris sits on the diagonal. Source: [`reports/real/summary.json`](reports/real/summary.json).*
+*commits/week: historical baseline (open circle) vs. last 4 quarters (filled circle). Color = Fisher p significance. Note: data collection capped at 120 commits/year — direction is reliable, absolute values are lower bounds. Full signal breakdown: [`reports/real/`](reports/real/).*
 
 ---
 
