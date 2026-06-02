@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -30,6 +31,132 @@ _TEST_PATH = re.compile(
     r"[^/]+\.(spec|test)\.(js|ts|jsx|tsx|mjs)$",
     re.IGNORECASE,
 )
+
+# ── Level-D: new-file content signal patterns ─────────────────────────────────
+
+# Python
+_PY_FUNC_DEF  = re.compile(r"^\s*(?:async\s+)?def\s+\w+\s*\(")
+_PY_RETURN_T  = re.compile(r"\)\s*->\s*\S")           # has return type annotation
+_PY_DOCSTRING = re.compile(r'^\s*(?:"""|\'\'\')')
+_PY_TRY       = re.compile(r"^\s*try\s*:")
+_PY_DECORATOR = re.compile(r"^\s*@")
+
+# TypeScript / JavaScript
+_TS_FUNC_DEF  = re.compile(
+    r"^\s*(?:export\s+)?(?:async\s+)?function\s+\w+"            # function keyword
+    r"|^\s*(?:export\s+)?(?:const|let|var)\s+\w+\s*=\s*(?:async\s+)?\("  # arrow
+    r"|^\s*(?:public|private|protected|static|async|override).*\w+\s*\("  # method
+)
+_TS_RETURN_T  = re.compile(r"\)\s*:\s*\w")             # ): ReturnType
+_TS_JSDOC     = re.compile(r"^\s*/\*\*")
+_TS_TRY       = re.compile(r"^\s*try\s*\{")
+
+_SUPPORTED_LANGUAGES = {Language.PYTHON, Language.TYPESCRIPT, Language.JAVASCRIPT}
+
+
+@dataclass
+class _NewFileStats:
+    fn_count: int = 0
+    typed_fn_count: int = 0
+    docstring_fn_count: int = 0
+    try_count: int = 0
+    total_lines: int = 0
+
+
+def _analyze_new_file(lines: list[str], language: Language) -> _NewFileStats:
+    """
+    Count annotation quality signals in lines extracted from a newly created file.
+
+    Operates on added lines from the patch (which for a new file is the full content).
+    Uses conservative heuristics: only counts return-type annotations (not param-only),
+    so the signal is systematic rather than noisy.
+    """
+    stats = _NewFileStats(total_lines=sum(1 for l in lines if l.strip()))
+    pending_fn = False           # True after a function def line, waiting for docstring
+    pending_fn_py = False        # Python-specific: need to skip decorators
+    prev_jsdoc = False           # TS/JS: previous non-continuation line was /**
+
+    if language == Language.PYTHON:
+        for line in lines:
+            stripped = line.rstrip()
+            bare = stripped.lstrip()
+
+            if _PY_TRY.match(bare):
+                stats.try_count += 1
+
+            if _PY_FUNC_DEF.match(bare):
+                stats.fn_count += 1
+                if _PY_RETURN_T.search(bare):
+                    stats.typed_fn_count += 1
+                pending_fn = True
+                continue
+
+            if pending_fn and bare:
+                if _PY_DOCSTRING.match(bare):
+                    stats.docstring_fn_count += 1
+                # decorator after def is unusual but reset regardless
+                pending_fn = False
+
+    elif language in (Language.TYPESCRIPT, Language.JAVASCRIPT):
+        for line in lines:
+            bare = line.strip()
+
+            if _TS_TRY.match(bare):
+                stats.try_count += 1
+
+            is_jsdoc = bool(_TS_JSDOC.match(bare))
+            is_fn = bool(_TS_FUNC_DEF.match(bare))
+
+            if is_fn:
+                stats.fn_count += 1
+                if _TS_RETURN_T.search(bare):
+                    stats.typed_fn_count += 1
+                if prev_jsdoc:
+                    stats.docstring_fn_count += 1
+                prev_jsdoc = False
+            elif is_jsdoc:
+                prev_jsdoc = True
+            elif bare and not bare.startswith("*") and not bare.startswith("*/"):
+                prev_jsdoc = False
+
+    return stats
+
+
+def _extract_level_d(commit: Commit) -> dict[str, float | int]:
+    """
+    Extract Level-D content signals from newly created files in this commit.
+
+    Returns a dict of per-commit Level-D values, all 0 if no new source files exist.
+    """
+    new_files = [
+        f for f in commit.files
+        if f.status == "added" and f.language in _SUPPORTED_LANGUAGES and f.patch
+    ]
+    if not new_files:
+        return {"new_file_count": 0, "new_file_fn_count": 0,
+                "new_file_typed_fn_ratio": 0.0, "new_file_docstring_fn_ratio": 0.0,
+                "new_file_try_per_100": 0.0}
+
+    totals = _NewFileStats()
+    for f in new_files:
+        added = _extract_added_lines(f.patch)
+        s = _analyze_new_file(added, f.language)
+        totals.fn_count         += s.fn_count
+        totals.typed_fn_count   += s.typed_fn_count
+        totals.docstring_fn_count += s.docstring_fn_count
+        totals.try_count        += s.try_count
+        totals.total_lines      += s.total_lines
+
+    fn = max(totals.fn_count, 1)
+    lines = max(totals.total_lines, 1)
+    return {
+        "new_file_count": len(new_files),
+        "new_file_fn_count": totals.fn_count,
+        "new_file_typed_fn_ratio": totals.typed_fn_count / fn,
+        "new_file_docstring_fn_ratio": totals.docstring_fn_count / fn,
+        "new_file_try_per_100": totals.try_count * 100.0 / lines,
+    }
+
 
 _LANG_MAP: dict[Language, str] = {
     Language.PYTHON:     "python",
@@ -117,6 +244,8 @@ def extract_metrics(
             if added:
                 code_parts.extend(added)
 
+    level_d = _extract_level_d(commit)
+
     if not code_parts:
         return StyleMetrics(
             commit_sha=commit.sha,
@@ -134,6 +263,7 @@ def extract_metrics(
             inter_commit_hours=inter_commit_hours,
             commit_message_length=len(msg_first_line),
             has_conventional_commit=bool(_CONVENTIONAL_COMMIT.match(msg_first_line)),
+            **level_d,
         )
 
     code_text = "\n".join(code_parts)
@@ -176,6 +306,8 @@ def extract_metrics(
         n_code_lines=len([line for line in code_parts if line.strip()]),
         n_comment_lines=int(features.get("comment_density", 0.0) * max(len(code_parts), 1)),
         style_score=style_score,
+        # Level D — content signals on new files
+        **level_d,
     )
 
 

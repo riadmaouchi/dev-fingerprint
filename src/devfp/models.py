@@ -28,6 +28,9 @@ class CommitFile(BaseModel):
     additions: int = 0
     deletions: int = 0
     patch: Optional[str] = None
+    # "added" | "modified" | "removed" | "renamed" | "copied" — from GitHub API.
+    # Default "modified" preserves backward compat with cached data that lacks this field.
+    status: str = "modified"
 
 
 class Commit(BaseModel):
@@ -97,6 +100,18 @@ class StyleMetrics(BaseModel):
     # Renamed from llm_score to be honest about what it measures.
     style_score: float = 0.0
 
+    # === Level D — Content signals on newly created files only ===
+    # Computed exclusively on files with status="added", to avoid project-convention
+    # confounds that affect existing files. New files are authored without surrounding
+    # context, making them more sensitive to changes in generation habits.
+    #
+    # All fields are 0 when a commit creates no new source files.
+    new_file_count: int = 0              # number of new source files in this commit
+    new_file_fn_count: int = 0           # total function defs across new files (weight)
+    new_file_typed_fn_ratio: float = 0.0 # fraction of new function defs with return type
+    new_file_docstring_fn_ratio: float = 0.0  # fraction of new functions with docstrings
+    new_file_try_per_100: float = 0.0    # try/except blocks per 100 lines in new files
+
 
 # Maps each BehaviorWindow field to its scientific evidence level.
 # A = strongly defensible process signals
@@ -122,6 +137,11 @@ SIGNAL_LEVELS: dict[str, str] = {
     "error_handling_score": "C",
     "commit_style_score": "C",
     "function_style_score": "C",
+    # Level D — content signals on new files only (experimental)
+    "new_file_commits_ratio": "D",
+    "new_file_type_annotation_density": "D",
+    "new_file_docstring_density": "D",
+    "new_file_error_density": "D",
 }
 
 # Human-readable labels for display
@@ -142,6 +162,11 @@ SIGNAL_LABELS: dict[str, str] = {
     "error_handling_score": "Error handling",
     "commit_style_score": "Conventional commits",
     "function_style_score": "Function brevity",
+    # Level D
+    "new_file_commits_ratio": "New-file commit rate",
+    "new_file_type_annotation_density": "Type annotation density (new files)",
+    "new_file_docstring_density": "Docstring coverage (new files)",
+    "new_file_error_density": "Error handling density (new files)",
 }
 
 
@@ -205,6 +230,12 @@ class BehaviorWindow(BaseModel):
 
     # Composite style score (0-100), formerly "llm_score" — renamed for honesty
     style_score: float = 0.0
+
+    # === Level D — Content signals (new files only, quarterly weighted mean) ===
+    new_file_commits_ratio: float = 0.0        # fraction of commits that create new source files
+    new_file_type_annotation_density: float = 0.0  # weighted mean typed_fn_ratio (weight=fn_count)
+    new_file_docstring_density: float = 0.0    # weighted mean docstring_fn_ratio
+    new_file_error_density: float = 0.0        # weighted mean try_per_100
 
 
 class SignalDrift(BaseModel):

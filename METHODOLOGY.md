@@ -28,10 +28,15 @@ Per-commit metric extraction (StyleMetrics)
      │   ├── is_refactor
      │   └── touches_tests / test_file_ratio
      │
-     └── Style signals (Level C) — via AST/tree-sitter
-         ├── comment_density, docstring_coverage
-         ├── avg_identifier_length, error_handling_density
-         └── style_score (CodeAnalyzer.copilot_score)
+     ├── Style signals (Level C) — via AST/tree-sitter (all files)
+     │   ├── comment_density, docstring_coverage
+     │   ├── avg_identifier_length, error_handling_density
+     │   └── style_score (CodeAnalyzer.copilot_score)
+     │
+     └── Content signals (Level D) — regex on status=added files only
+         ├── new_file_type_annotation_density
+         ├── new_file_docstring_density
+         └── new_file_error_density
                     │
                     ▼
          Quarterly aggregation (BehaviorWindow)
@@ -101,6 +106,34 @@ They must NOT be used as primary evidence. See [CRITIQUE.md](CRITIQUE.md).**
 | `error_handling_score` | Error-handling density | Domain-dependent |
 | `commit_style_score` | Fraction of conventional commits | Pre-AI standard (commitizen, etc.) |
 | `function_style_score` | Inverse of function length | Varies by task type |
+
+### Level D — Content Signals on New Files Only (experimental, not in Fisher test)
+
+**Motivation**: Level-C signals are confounded by project conventions — the existing
+codebase sets the style, and both the developer and any AI tool follow it. Level-D
+attempts to isolate newly created files (`status=added` from GitHub API) where no
+prior convention exists, making the signal theoretically more sensitive to a change
+in generation habits.
+
+| Signal | Description | Extraction |
+|--------|-------------|------------|
+| `new_file_commits_ratio` | Fraction of commits that create at least one new source file | Commit-level |
+| `new_file_type_annotation_density` | Fraction of function defs with a return-type annotation in new files (Python `->`, TypeScript `: T`) | Regex on added lines |
+| `new_file_docstring_density` | Fraction of function defs with a docstring/JSDoc in new files | Regex on added lines |
+| `new_file_error_density` | `try` blocks per 100 lines in new files | Regex on added lines |
+
+**Empirical result**: On the simonw corpus (documented daily Claude user, 960 commits,
+2018–2025), Level-D signals remain near zero throughout, consistent with the Level-A
+and Level-C null results. Two structural problems limit this approach:
+
+1. **Sparsity**: in a mature codebase, fewer than 10% of commits create new source
+   files. Many quarters have no data at all, making change-point detection unreliable.
+2. **Style persistence**: AI tools adapt to the developer's existing conventions.
+   A developer who has never used return-type annotations will not produce them with AI
+   assistance — the model follows the project's style.
+
+Level-D signals are stored in `BehaviorWindow` and can be inspected in `reports/real/`,
+but they are not included in the Fisher combined p-value or `_DEFAULT_SIGNALS`.
 
 ---
 

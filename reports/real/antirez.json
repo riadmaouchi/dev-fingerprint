@@ -30,7 +30,11 @@
       "error_handling_score": 0.014266666666666667,
       "commit_style_score": 0.041666666666666664,
       "function_style_score": 0.0,
-      "style_score": 6.0
+      "style_score": 6.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "antirez",
@@ -52,7 +56,11 @@
       "error_handling_score": 0.009333333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 8.7
+      "style_score": 8.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "antirez",
@@ -74,7 +82,11 @@
       "error_handling_score": 0.0272,
       "commit_style_score": 0.03333333333333333,
       "function_style_score": 0.0,
-      "style_score": 7.0
+      "style_score": 7.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "antirez",
@@ -96,7 +108,11 @@
       "error_handling_score": 0.03493333333333334,
       "commit_style_score": 0.05714285714285714,
       "function_style_score": 0.0,
-      "style_score": 8.5
+      "style_score": 8.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "antirez",
@@ -118,7 +134,11 @@
       "error_handling_score": 0.21326666666666666,
       "commit_style_score": 0.08333333333333333,
       "function_style_score": 0.0,
-      "style_score": 15.6
+      "style_score": 15.6,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "antirez",
@@ -140,7 +160,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 16.5
+      "style_score": 16.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     }
   ],
   "change_points": [

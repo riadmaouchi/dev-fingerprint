@@ -31,7 +31,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.1
+      "style_score": 0.1,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "karpathy",
@@ -53,7 +57,11 @@
       "error_handling_score": 0.02206666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.7
+      "style_score": 4.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "karpathy",
@@ -75,7 +83,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.4
+      "style_score": 4.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "karpathy",
@@ -97,7 +109,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.8
+      "style_score": 4.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "karpathy",
@@ -119,7 +135,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 5.0
+      "style_score": 5.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "karpathy",
@@ -141,7 +161,11 @@
       "error_handling_score": 0.0026,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 3.0
+      "style_score": 3.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "karpathy",
@@ -163,7 +187,11 @@
       "error_handling_score": 0.015133333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.4
+      "style_score": 2.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "karpathy",
@@ -185,7 +213,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "karpathy",
@@ -207,7 +239,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "karpathy",
@@ -229,7 +265,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     }
   ],
   "change_points": [

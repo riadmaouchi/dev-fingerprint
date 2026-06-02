@@ -31,7 +31,11 @@
       "error_handling_score": 0.0352,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.7
+      "style_score": 1.7,
+      "new_file_commits_ratio": 0.038,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -53,7 +57,11 @@
       "error_handling_score": 0.0208,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.1
+      "style_score": 1.1,
+      "new_file_commits_ratio": 0.042,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -75,7 +83,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -97,7 +109,11 @@
       "error_handling_score": 0.016066666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 3.4
+      "style_score": 3.4,
+      "new_file_commits_ratio": 0.1,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.868
     },
     {
       "author": "simonw",
@@ -119,7 +135,11 @@
       "error_handling_score": 0.0007333333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.5
+      "style_score": 0.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -141,7 +161,11 @@
       "error_handling_score": 0.024133333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.7
+      "style_score": 1.7,
+      "new_file_commits_ratio": 0.015,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -163,7 +187,11 @@
       "error_handling_score": 0.041,
       "commit_style_score": 0.008333333333333333,
       "function_style_score": 0.0,
-      "style_score": 1.5
+      "style_score": 1.5,
+      "new_file_commits_ratio": 0.042,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.395
     },
     {
       "author": "simonw",
@@ -185,7 +213,11 @@
       "error_handling_score": 0.019733333333333332,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.8
+      "style_score": 0.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -207,7 +239,11 @@
       "error_handling_score": 0.0037333333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.1
+      "style_score": 2.1,
+      "new_file_commits_ratio": 0.032,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.01,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -229,7 +265,11 @@
       "error_handling_score": 0.02493333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.2
+      "style_score": 2.2,
+      "new_file_commits_ratio": 0.008,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -251,7 +291,11 @@
       "error_handling_score": 0.09986666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.8
+      "style_score": 2.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -273,7 +317,11 @@
       "error_handling_score": 0.0088,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.5
+      "style_score": 1.5,
+      "new_file_commits_ratio": 0.133,
+      "new_file_type_annotation_density": 0.1,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -295,7 +343,11 @@
       "error_handling_score": 0.08053333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.1
+      "style_score": 4.1,
+      "new_file_commits_ratio": 0.014,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -317,7 +369,11 @@
       "error_handling_score": 0.06353333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 3.1
+      "style_score": 3.1,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -339,7 +395,11 @@
       "error_handling_score": 0.0256,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 3.0
+      "style_score": 3.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -361,7 +421,11 @@
       "error_handling_score": 0.14033333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.2
+      "style_score": 4.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -383,7 +447,11 @@
       "error_handling_score": 0.018333333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.5
+      "style_score": 2.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -405,7 +473,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "simonw",
@@ -427,7 +499,11 @@
       "error_handling_score": 0.043000000000000003,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 10.4
+      "style_score": 10.4,
+      "new_file_commits_ratio": 0.033,
+      "new_file_type_annotation_density": 0.263,
+      "new_file_docstring_density": 0.667,
+      "new_file_error_density": 0.173
     }
   ],
   "change_points": [

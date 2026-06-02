@@ -31,7 +31,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.0
+      "style_score": 1.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -53,7 +57,11 @@
       "error_handling_score": 0.0178,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 3.5
+      "style_score": 3.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -75,7 +83,11 @@
       "error_handling_score": 0.08166666666666668,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.8
+      "style_score": 1.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -97,7 +109,11 @@
       "error_handling_score": 0.0322,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.2
+      "style_score": 1.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -119,7 +135,11 @@
       "error_handling_score": 0.033933333333333336,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 5.4
+      "style_score": 5.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -141,7 +161,11 @@
       "error_handling_score": 0.006333333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.9
+      "style_score": 2.9,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -163,7 +187,11 @@
       "error_handling_score": 0.04386666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.5
+      "style_score": 4.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -185,7 +213,11 @@
       "error_handling_score": 0.05586666666666666,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.0
+      "style_score": 4.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -207,7 +239,11 @@
       "error_handling_score": 0.05553333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.1
+      "style_score": 2.1,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -229,7 +265,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.3
+      "style_score": 1.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -251,7 +291,11 @@
       "error_handling_score": 0.0178,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 5.9
+      "style_score": 5.9,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -273,7 +317,11 @@
       "error_handling_score": 0.06413333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.8
+      "style_score": 4.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -295,7 +343,11 @@
       "error_handling_score": 0.03546666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.4
+      "style_score": 4.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -317,7 +369,11 @@
       "error_handling_score": 0.06766666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.5
+      "style_score": 2.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -339,7 +395,11 @@
       "error_handling_score": 0.09093333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 3.7
+      "style_score": 3.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -361,7 +421,11 @@
       "error_handling_score": 0.14813333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 8.9
+      "style_score": 8.9,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -383,7 +447,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.1
+      "style_score": 2.1,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -405,7 +473,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -427,7 +499,11 @@
       "error_handling_score": 0.007,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.9
+      "style_score": 1.9,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -449,7 +525,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -471,7 +551,11 @@
       "error_handling_score": 0.028,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.7
+      "style_score": 4.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -493,7 +577,11 @@
       "error_handling_score": 0.0286,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.2
+      "style_score": 2.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -515,7 +603,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -537,7 +629,11 @@
       "error_handling_score": 0.078,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 3.6
+      "style_score": 3.6,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -559,7 +655,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -581,7 +681,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.7
+      "style_score": 0.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -603,7 +707,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -625,7 +733,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -647,7 +759,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -669,7 +785,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.3
+      "style_score": 1.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -691,7 +811,11 @@
       "error_handling_score": 0.07780000000000001,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 9.3
+      "style_score": 9.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "sindresorhus",
@@ -713,7 +837,11 @@
       "error_handling_score": 0.06926666666666666,
       "commit_style_score": 0.05813953488372093,
       "function_style_score": 0.0,
-      "style_score": 7.2
+      "style_score": 7.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     }
   ],
   "change_points": [

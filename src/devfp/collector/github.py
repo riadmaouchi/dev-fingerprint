@@ -209,6 +209,7 @@ class GitHubClient:
                     additions=f.get("additions", 0),
                     deletions=f.get("deletions", 0),
                     patch=f.get("patch"),
+                    status=f.get("status", "modified"),
                 )
             )
 

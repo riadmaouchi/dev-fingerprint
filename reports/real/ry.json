@@ -30,7 +30,11 @@
       "error_handling_score": 0.0828,
       "commit_style_score": 0.016666666666666666,
       "function_style_score": 0.0,
-      "style_score": 9.1
+      "style_score": 9.1,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -52,7 +56,11 @@
       "error_handling_score": 0.12473333333333333,
       "commit_style_score": 0.017241379310344827,
       "function_style_score": 0.0,
-      "style_score": 9.6
+      "style_score": 9.6,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -74,7 +82,11 @@
       "error_handling_score": 0.05386666666666667,
       "commit_style_score": 0.04838709677419355,
       "function_style_score": 0.0,
-      "style_score": 6.3
+      "style_score": 6.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -96,7 +108,11 @@
       "error_handling_score": 0.125,
       "commit_style_score": 0.22,
       "function_style_score": 0.0,
-      "style_score": 7.3
+      "style_score": 7.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -118,7 +134,11 @@
       "error_handling_score": 0.10853333333333333,
       "commit_style_score": 0.14754098360655737,
       "function_style_score": 0.0,
-      "style_score": 7.0
+      "style_score": 7.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -140,7 +160,11 @@
       "error_handling_score": 0.10579999999999999,
       "commit_style_score": 0.23809523809523808,
       "function_style_score": 0.0,
-      "style_score": 4.4
+      "style_score": 4.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -162,7 +186,11 @@
       "error_handling_score": 0.10613333333333334,
       "commit_style_score": 0.19047619047619047,
       "function_style_score": 0.0,
-      "style_score": 4.2
+      "style_score": 4.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -184,7 +212,11 @@
       "error_handling_score": 0.07980000000000001,
       "commit_style_score": 0.39285714285714285,
       "function_style_score": 0.0,
-      "style_score": 3.4
+      "style_score": 3.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -206,7 +238,11 @@
       "error_handling_score": 0.10646666666666667,
       "commit_style_score": 0.5238095238095238,
       "function_style_score": 0.0,
-      "style_score": 8.8
+      "style_score": 8.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -228,7 +264,11 @@
       "error_handling_score": 0.1732,
       "commit_style_score": 0.6470588235294118,
       "function_style_score": 0.0,
-      "style_score": 11.5
+      "style_score": 11.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -250,7 +290,11 @@
       "error_handling_score": 0.0906,
       "commit_style_score": 0.5789473684210527,
       "function_style_score": 0.0,
-      "style_score": 8.4
+      "style_score": 8.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -272,7 +316,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.25,
       "function_style_score": 0.0,
-      "style_score": 2.5
+      "style_score": 2.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -294,7 +342,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.5,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -316,7 +368,11 @@
       "error_handling_score": 0.3333333333333333,
       "commit_style_score": 1.0,
       "function_style_score": 0.0,
-      "style_score": 5.0
+      "style_score": 5.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -338,7 +394,11 @@
       "error_handling_score": 0.05206666666666667,
       "commit_style_score": 0.375,
       "function_style_score": 0.0,
-      "style_score": 11.8
+      "style_score": 11.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -360,7 +420,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 1.0,
       "function_style_score": 0.0,
-      "style_score": 17.0
+      "style_score": 17.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -382,7 +446,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 1.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -404,7 +472,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 1.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -426,7 +498,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 1.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -448,7 +524,11 @@
       "error_handling_score": 0.4444666666666667,
       "commit_style_score": 1.0,
       "function_style_score": 0.0,
-      "style_score": 15.0
+      "style_score": 15.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -470,7 +550,11 @@
       "error_handling_score": 0.07293333333333334,
       "commit_style_score": 0.8,
       "function_style_score": 0.0,
-      "style_score": 14.6
+      "style_score": 14.6,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -492,7 +576,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 1.0,
       "function_style_score": 0.0,
-      "style_score": 17.4
+      "style_score": 17.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -514,7 +602,11 @@
       "error_handling_score": 0.5,
       "commit_style_score": 1.0,
       "function_style_score": 0.0,
-      "style_score": 7.5
+      "style_score": 7.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "ry",
@@ -536,7 +628,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 1.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     }
   ],
   "change_points": [

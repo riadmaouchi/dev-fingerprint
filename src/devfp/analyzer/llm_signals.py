@@ -90,6 +90,28 @@ def aggregate_windows(
 
         merge_ratio = sum(1 for m in items if m.is_merge) / max(len(items), 1)
 
+        # ── Level D: Content signals on new files only ───────────────────────
+
+        new_file_commits_ratio = sum(
+            1 for m in items if m.new_file_count > 0
+        ) / max(len(items), 1)
+
+        # Weighted mean: weight each commit by its function count so that
+        # commits with many new functions dominate over single-function files.
+        def _weighted_mean(ratio_attr: str) -> float:
+            total_w = sum(m.new_file_fn_count for m in items)
+            if total_w == 0:
+                return 0.0
+            return sum(
+                getattr(m, ratio_attr) * m.new_file_fn_count for m in items
+            ) / total_w
+
+        new_file_type_annotation_density = _weighted_mean("new_file_typed_fn_ratio")
+        new_file_docstring_density = _weighted_mean("new_file_docstring_fn_ratio")
+
+        # error density is weighted by total lines in new files; approximate with fn_count
+        new_file_error_density = _weighted_mean("new_file_try_per_100")
+
         # ── Level C: Style signals ────────────────────────────────────────────
 
         def avg(attr: str) -> float:
@@ -115,6 +137,11 @@ def aggregate_windows(
                 # Level B
                 test_touch_ratio=round(test_touch_ratio, 3),
                 merge_ratio=round(merge_ratio, 3),
+                # Level D
+                new_file_commits_ratio=round(new_file_commits_ratio, 3),
+                new_file_type_annotation_density=round(new_file_type_annotation_density, 3),
+                new_file_docstring_density=round(new_file_docstring_density, 3),
+                new_file_error_density=round(new_file_error_density, 3),
                 # Level C
                 comment_score=avg("comment_density"),
                 docstring_score=avg("docstring_coverage"),

@@ -30,7 +30,11 @@
       "error_handling_score": 0.014733333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.4
+      "style_score": 1.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -52,7 +56,11 @@
       "error_handling_score": 0.0246,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.5
+      "style_score": 2.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -74,7 +82,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -96,7 +108,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -118,7 +134,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -140,7 +160,11 @@
       "error_handling_score": 0.034466666666666666,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 2.7
+      "style_score": 2.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -162,7 +186,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.1
+      "style_score": 0.1,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -184,7 +212,11 @@
       "error_handling_score": 0.005866666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 6.4
+      "style_score": 6.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -206,7 +238,11 @@
       "error_handling_score": 0.06806666666666666,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 17.6
+      "style_score": 17.6,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -228,7 +264,11 @@
       "error_handling_score": 0.08413333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 12.8
+      "style_score": 12.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -250,7 +290,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 18.0
+      "style_score": 18.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -272,7 +316,11 @@
       "error_handling_score": 0.12006666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 16.3
+      "style_score": 16.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -294,7 +342,11 @@
       "error_handling_score": 0.030933333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 10.3
+      "style_score": 10.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -316,7 +368,11 @@
       "error_handling_score": 0.013866666666666666,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 7.3
+      "style_score": 7.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -338,7 +394,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 7.5
+      "style_score": 7.5,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -360,7 +420,11 @@
       "error_handling_score": 0.04806666666666667,
       "commit_style_score": 0.5047619047619047,
       "function_style_score": 0.0,
-      "style_score": 12.2
+      "style_score": 12.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -382,7 +446,11 @@
       "error_handling_score": 0.005,
       "commit_style_score": 0.8620689655172413,
       "function_style_score": 0.0,
-      "style_score": 12.0
+      "style_score": 12.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -404,7 +472,11 @@
       "error_handling_score": 0.006,
       "commit_style_score": 0.7528089887640449,
       "function_style_score": 0.0,
-      "style_score": 8.6
+      "style_score": 8.6,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -426,7 +498,11 @@
       "error_handling_score": 0.02666666666666667,
       "commit_style_score": 0.9122807017543859,
       "function_style_score": 0.0,
-      "style_score": 11.1
+      "style_score": 11.1,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "Rich-Harris",
@@ -448,7 +524,11 @@
       "error_handling_score": 0.026000000000000002,
       "commit_style_score": 0.9047619047619048,
       "function_style_score": 0.0,
-      "style_score": 17.6
+      "style_score": 17.6,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     }
   ],
   "change_points": [

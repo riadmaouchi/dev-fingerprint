@@ -105,8 +105,11 @@ The data detects real behavioral change. The cause isn't written in the commits.
 | **A — Process** | files/commit · large-commit ratio · cross-module ratio · refactor ratio · inter-commit hours · commits/week | ★★★ | Primary — drives all statistical tests |
 | **B — Secondary** | test-touch ratio · median net lines | ★★ | Supporting context |
 | **C — Style** | comment density · docstring coverage · identifier verbosity · error handling | ★ | Baseline comparison only — see [`CRITIQUE.md`](CRITIQUE.md) |
+| **D — Content (new files only)** | type annotation density · docstring coverage · error handling density — computed exclusively on `status=added` files | ★ (experimental) | Informational only — not included in Fisher test |
 
 Level-C signals measure output appearance, not working process. They are sensitive to coding convention changes, linter adoption, and project maturity — all of which can shift style scores without any change in how a developer actually works. We include them for comparison; see [`CRITIQUE.md`](CRITIQUE.md) for a detailed analysis of their failure modes.
+
+Level-D signals attempt to isolate the content quality of newly created files specifically, to avoid the project-convention confound that affects existing files. On the simonw corpus (a documented heavy AI user), all Level-D signals remain flat at zero throughout 2018–2025 — consistent with the Level-A and Level-C results. The signal is too sparse (most commits edit existing files, not create new ones) and too style-dependent to be useful in a mature codebase.
 
 ---
 
@@ -118,7 +121,8 @@ GitHub API (2018–2025)
       ▼
 Per-commit extraction
       ├── Level A: commit metadata (files, lines, timing, topology)
-      └── Level C: AST/tree-sitter style analysis
+      ├── Level C: AST/tree-sitter style analysis (all files)
+      └── Level D: annotation/docstring/error-handling analysis (new files only)
       │
       ▼
 Quarterly aggregation → BehaviorWindow
@@ -185,13 +189,14 @@ dev-fingerprint/
 │   ├── analyzer/
 │   │   ├── temporal.py      PELT · CUSUM · EWMA · BOCPD · Mann-Whitney · Fisher
 │   │   ├── fingerprint.py   Pipeline orchestration
-│   │   └── style.py         Level-C AST analysis (tree-sitter)
+│   │   ├── style.py         Level-C AST analysis (tree-sitter) + Level-D new-file signals
+│   │   └── llm_signals.py   Quarterly aggregation (Level A/B/C/D → BehaviorWindow)
 │   ├── collector/           GitHub API client · SQLite cache (TTL 7 days)
 │   ├── validation/          Ground truth · LODO cross-validation
 │   └── models.py            Pydantic models (BehaviorWindow, DriftResult, …)
 ├── configs/developers.yaml  Developer registry + LLM release milestones
 ├── data/ground_truth/       Verified public AI-tool declarations
-├── reports/real/            9 profiles + summary.json — auditable, committed
+├── reports/real/            11 profiles + summary.json — auditable, committed
 ├── docs/img/                4 figures generated from real data
 ├── notebooks/               Interactive exploration (synthetic + real data)
 ├── run_analysis.py          Fetch + analyze all developers

@@ -29,7 +29,11 @@
       "error_handling_score": 0.06886666666666666,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 13.2
+      "style_score": 13.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "torvalds",
@@ -51,7 +55,11 @@
       "error_handling_score": 0.10386666666666668,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 11.9
+      "style_score": 11.9,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "torvalds",
@@ -73,7 +81,11 @@
       "error_handling_score": 0.0642,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 11.7
+      "style_score": 11.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "torvalds",
@@ -95,7 +107,11 @@
       "error_handling_score": 0.06566666666666666,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 9.8
+      "style_score": 9.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "torvalds",
@@ -117,7 +133,11 @@
       "error_handling_score": 0.0738,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 13.2
+      "style_score": 13.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "torvalds",
@@ -139,7 +159,11 @@
       "error_handling_score": 0.07933333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 12.3
+      "style_score": 12.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "torvalds",
@@ -161,7 +185,11 @@
       "error_handling_score": 0.081,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 9.2
+      "style_score": 9.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "torvalds",
@@ -183,7 +211,11 @@
       "error_handling_score": 0.08626666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 11.1
+      "style_score": 11.1,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     }
   ],
   "change_points": [

@@ -165,7 +165,44 @@ that includes prose, which is rare in real software development.
 
 ---
 
-## 7. Single-Commit Detection
+## 7. Detection by New-File Content Quality (Level D)
+
+### Description
+Restricting style analysis to newly created files (`status=added`) to avoid
+project-convention confounds. The hypothesis: AI-generated new files would show
+higher type annotation density, docstring coverage, and error handling than files
+written without AI.
+
+### Why It Fails in Practice
+
+**Sparsity**: in a mature repository, fewer than 10% of commits create new source
+files. Most quarters have no data at all. This makes per-quarter aggregation
+unreliable and change-point detection statistically underpowered.
+
+**Style persistence**: AI coding assistants read the surrounding codebase before
+generating new files. A developer who has never used return-type annotations will
+not get them from an AI assistant — the model matches existing project conventions.
+The signal being measured (annotation density) is as much a property of the project
+as of the developer.
+
+**Empirical result**: On Simon Willison (documented heavy AI adopter since 2023,
+960 commits, 2018–2025), all four Level-D signals remain near zero throughout the
+entire time window, including the post-adoption period. The null result is consistent
+with the Level-A and Level-C findings.
+
+### What This Means
+The "new files only" filter removes the project-convention confound partially but
+not completely, because AI tools still infer convention from the surrounding codebase.
+The only scenario where Level-D would be useful is a developer who creates many
+entirely new projects post-AI adoption — a pattern not observable with a 120-commit/year
+cap across mature repositories.
+
+Level-D signals are implemented and stored in `BehaviorWindow` for inspection, but
+are not included in the primary statistical test.
+
+---
+
+## 8. Single-Commit Detection
 
 ### Fundamental Invalidity
 A single commit can never provide statistical evidence of anything.
@@ -204,3 +241,8 @@ This project abandons the approaches above and focuses on:
 
 5. **Acknowledgment of limits** — without ground truth data (developers' explicit
    declarations), no calibration is possible.
+
+Level-C and Level-D signals are implemented and stored for comparison, but the
+central claim of this project rests exclusively on Level-A. The failure of Level-D
+(§7) reinforces the same conclusion as Level-C: detecting AI adoption from code
+content is not currently feasible with publicly observable commit data.

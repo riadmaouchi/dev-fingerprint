@@ -29,7 +29,11 @@
       "error_handling_score": 0.81,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 15.0
+      "style_score": 15.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -51,7 +55,11 @@
       "error_handling_score": 0.21913333333333332,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 6.8
+      "style_score": 6.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -73,7 +81,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.7
+      "style_score": 0.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -95,7 +107,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -117,7 +133,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.7
+      "style_score": 1.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -139,7 +159,11 @@
       "error_handling_score": 0.04786666666666666,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 6.2
+      "style_score": 6.2,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -161,7 +185,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -183,7 +211,11 @@
       "error_handling_score": 0.06233333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 25.6
+      "style_score": 25.6,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -205,7 +237,11 @@
       "error_handling_score": 0.049,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 8.8
+      "style_score": 8.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -227,7 +263,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 15.0
+      "style_score": 15.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -249,7 +289,11 @@
       "error_handling_score": 0.041133333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 7.9
+      "style_score": 7.9,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -271,7 +315,11 @@
       "error_handling_score": 0.16340000000000002,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 7.8
+      "style_score": 7.8,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -293,7 +341,11 @@
       "error_handling_score": 0.1818,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 5.3
+      "style_score": 5.3,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -315,7 +367,11 @@
       "error_handling_score": 0.14720000000000003,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 7.1
+      "style_score": 7.1,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -337,7 +393,11 @@
       "error_handling_score": 0.13686666666666666,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 10.0
+      "style_score": 10.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -359,7 +419,11 @@
       "error_handling_score": 0.11666666666666667,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 8.6
+      "style_score": 8.6,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -381,7 +445,11 @@
       "error_handling_score": 0.08339999999999999,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 9.7
+      "style_score": 9.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -403,7 +471,11 @@
       "error_handling_score": 0.10193333333333333,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 8.4
+      "style_score": 8.4,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -425,7 +497,11 @@
       "error_handling_score": 0.08726666666666666,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 5.7
+      "style_score": 5.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -447,7 +523,11 @@
       "error_handling_score": 0.08113333333333334,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 4.0
+      "style_score": 4.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -469,7 +549,11 @@
       "error_handling_score": 0.0628,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 1.7
+      "style_score": 1.7,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -491,7 +575,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -513,7 +601,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     },
     {
       "author": "gvanrossum",
@@ -535,7 +627,11 @@
       "error_handling_score": 0.0,
       "commit_style_score": 0.0,
       "function_style_score": 0.0,
-      "style_score": 0.0
+      "style_score": 0.0,
+      "new_file_commits_ratio": 0.0,
+      "new_file_type_annotation_density": 0.0,
+      "new_file_docstring_density": 0.0,
+      "new_file_error_density": 0.0
     }
   ],
   "change_points": [
