@@ -105,6 +105,36 @@ developers:
       Moins actif depuis 2019. Bon exemple de style pré-LLM bien établi.
       GitHub login filter returns 0 commits — requires client-side name filtering.
 
+  # ── AI-declared developers (positive control group) ──────────────────────────
+
+  - github_login: simonw
+    display_name: "Simon Willison"
+    primary_language: python
+    repos:
+      - simonw/datasette
+      - simonw/llm
+      - simonw/sqlite-utils
+    notes: >
+      Creator of Datasette and the `llm` CLI tool. Has documented his AI tool
+      adoption extensively on simonwillison.net. Publicly stated he uses Claude
+      and other LLMs on "an almost daily basis" for coding. One of the most
+      transparent public documenters of AI-assisted development workflows.
+      Strong pre-2022 baseline (active since 2016+, 965+ public repos).
+
+  - github_login: karpathy
+    display_name: "Andrej Karpathy"
+    primary_language: python
+    repos:
+      - karpathy/nanoGPT
+      - karpathy/micrograd
+      - karpathy/llm.c
+    notes: >
+      Former OpenAI / Tesla AI director. Coined "vibe coding" (Feb 2025 tweet).
+      Has publicly described fully surrendering to AI-assisted development.
+      Warning: most pre-2022 work may be in private repos (OpenAI, Tesla) —
+      public commit volume may be insufficient for full statistical analysis.
+      Include for completeness; flag if < 10 windows.
+
 # LLM milestones pour annotation des graphes
 llm_milestones:
   - date: "2021-06-29"

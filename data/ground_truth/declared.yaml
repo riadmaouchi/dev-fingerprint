@@ -113,6 +113,40 @@ declarations:
       Rich Harris (creator of Svelte) has not made confirmed public declarations
       about AI-assisted code generation in his personal commit workflow.
 
+  # ── Simon Willison (simonw) — POSITIVE CONTROL ───────────────────────────────
+  # One of the most publicly documented AI adopters in the OSS community.
+  - developer: simonw
+    type: ai_assisted
+    period_start: "2023-01-01"
+    period_end: null
+    source: "https://www.heavybit.com/library/podcasts/high-leverage/ep-9-the-ai-coding-paradigm-shift-with-simon-willison"
+    notes: >
+      Simon Willison has documented his AI tool adoption across dozens of blog posts
+      at simonwillison.net. In the Heavybit podcast (2025), he stated he uses Claude
+      Code "on an almost daily basis" and described spending "three 12+ hour days"
+      with it. He also built the `llm` CLI tool specifically to integrate LLMs into
+      his own development workflow — the tool itself is evidence of deep, sustained
+      AI adoption. His blog tag https://simonwillison.net/tags/claude-code/ contains
+      a running log of his Claude-assisted work. Declaration period: 2023 onward
+      (earliest documented usage of LLMs for coding found in his blog).
+
+  # ── Andrej Karpathy (@karpathy) — POSITIVE CONTROL ───────────────────────────
+  # Coined the term "vibe coding" — the practice of fully delegating code generation
+  # to AI and not reading the resulting code.
+  - developer: karpathy
+    type: ai_assisted
+    period_start: "2025-02-01"
+    period_end: null
+    source: "https://x.com/karpathy/status/1886192184808149383"
+    notes: >
+      Andrej Karpathy posted on X (formerly Twitter) on February 2, 2025:
+      "There's a new kind of coding I call 'vibe coding', where you fully give in
+      to the vibes, embrace exponentials, and forget that the code even exists."
+      He described using voice-to-text to dictate prompts and accepting AI output
+      wholesale. This is the earliest verifiable date of his explicit declaration.
+      Note: his public GitHub activity may be insufficient for statistical analysis
+      (most work was in private repos at OpenAI 2015-2022 and Tesla 2017-2022).
+
   # ── Guido van Rossum (gvanrossum) ────────────────────────────────────────────
   - developer: gvanrossum
     type: none_declared

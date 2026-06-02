@@ -4,916 +4,703 @@
     "display_name": "Linus Torvalds",
     "commits_analyzed": 960,
     "windows_analyzed": 8,
-    "first_commit_date": "2018-12-21T17:05:28Z",
-    "last_commit_date": "2025-12-31T20:25:22Z",
+    "latest_style_score": 11.1,
+    "style_drift_pre_post": -0.2,
+    "latest_median_files": 5.0,
+    "latest_large_commit_ratio": 0.158,
+    "latest_refactor_ratio": 0.15,
     "drift_combined_p": null,
-    "interpretation": "Insufficient data for statistical test.",
-    "n_level_a_change_points": 1,
+    "interpretation": "Insufficient data.",
     "level_a_change_points": [
       {
         "date": "2025-10",
         "signal": "cross_module_ratio",
         "magnitude": 0.0784,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       }
-    ],
-    "level_a_signals": {}
+    ]
   },
   {
     "login": "dhh",
     "display_name": "David Heinemeier Hansson (DHH)",
     "commits_analyzed": 429,
     "windows_analyzed": 23,
-    "first_commit_date": "2018-09-18T00:16:06Z",
-    "last_commit_date": "2025-12-28T16:34:49Z",
+    "latest_style_score": 10.3,
+    "style_drift_pre_post": -4.31,
+    "latest_median_files": 3.0,
+    "latest_large_commit_ratio": 0.333,
+    "latest_refactor_ratio": 0.111,
     "drift_combined_p": 0.0301,
     "interpretation": "dhh: Moderate behavioral drift detected (Fisher p=0.0301). 1/6 Level A signals show nominal significance. The evidence is consistent with a process change but is not conclusive. AI assistance cannot be confirmed or excluded from this signal alone.",
-    "n_level_a_change_points": 1,
     "level_a_change_points": [
       {
         "date": "2023-07",
         "signal": "cross_module_ratio",
         "magnitude": 0.0349,
-        "detection_method": "cusum",
-        "nearest_known_event": "GPT-4 Release (2023-03)"
+        "method": "cusum",
+        "nearest_event": "GPT-4 Release (2023-03)"
       }
-    ],
-    "level_a_signals": {
-      "median_files_per_commit": {
-        "baseline_mean": 4.6842,
-        "recent_mean": 3.875,
-        "delta_pct": -17.3,
-        "p_value": 0.1865,
-        "significant": false
-      },
-      "large_commit_ratio": {
-        "baseline_mean": 0.0377,
-        "recent_mean": 0.0833,
-        "delta_pct": 120.6,
-        "p_value": 0.962,
-        "significant": false
-      },
-      "cross_module_ratio": {
-        "baseline_mean": 0.0941,
-        "recent_mean": 0.0272,
-        "delta_pct": -71.0,
-        "p_value": 0.1785,
-        "significant": false
-      },
-      "refactor_ratio": {
-        "baseline_mean": 0.1003,
-        "recent_mean": 0.0278,
-        "delta_pct": -72.3,
-        "p_value": 0.2041,
-        "significant": false
-      },
-      "median_inter_commit_hours": {
-        "baseline_mean": 231.2211,
-        "recent_mean": 956.875,
-        "delta_pct": 313.8,
-        "p_value": 0.0315,
-        "significant": true
-      },
-      "commits_per_week": {
-        "baseline_mean": 1.6832,
-        "recent_mean": 0.29,
-        "delta_pct": -82.8,
-        "p_value": 0.0563,
-        "significant": false
-      }
-    }
+    ]
   },
   {
     "login": "antirez",
     "display_name": "Salvatore Sanfilippo (antirez)",
     "commits_analyzed": 480,
     "windows_analyzed": 6,
-    "first_commit_date": "2018-10-09T16:02:56Z",
-    "last_commit_date": "2025-08-12T03:45:35Z",
+    "latest_style_score": 16.5,
+    "style_drift_pre_post": 6.3,
+    "latest_median_files": 3.0,
+    "latest_large_commit_ratio": 0.0,
+    "latest_refactor_ratio": 0.0,
     "drift_combined_p": null,
-    "interpretation": "Insufficient data for statistical test.",
-    "n_level_a_change_points": 11,
+    "interpretation": "Insufficient data.",
     "level_a_change_points": [
       {
         "date": "2025-01",
         "signal": "commits_per_week",
         "magnitude": 6.1233,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-01",
         "signal": "median_inter_commit_hours",
         "magnitude": 167.7,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-01",
         "signal": "refactor_ratio",
         "magnitude": 0.017,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-04",
         "signal": "commits_per_week",
         "magnitude": 8.4325,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-04",
         "signal": "median_files_per_commit",
         "magnitude": 2.0,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-04",
         "signal": "median_inter_commit_hours",
         "magnitude": 250.4,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-04",
         "signal": "refactor_ratio",
         "magnitude": 0.0368,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-07",
         "signal": "commits_per_week",
         "magnitude": 7.166,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-07",
         "signal": "median_files_per_commit",
         "magnitude": 1.6,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-07",
         "signal": "median_inter_commit_hours",
         "magnitude": 302.02,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-07",
         "signal": "refactor_ratio",
         "magnitude": 0.0294,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       }
-    ],
-    "level_a_signals": {}
+    ]
   },
   {
     "login": "gaearon",
     "display_name": "Dan Abramov",
     "commits_analyzed": 465,
     "windows_analyzed": 22,
-    "first_commit_date": "2018-08-01T19:29:05Z",
-    "last_commit_date": "2025-12-09T18:35:15Z",
+    "latest_style_score": 15.0,
+    "style_drift_pre_post": -1.46,
+    "latest_median_files": 1.0,
+    "latest_large_commit_ratio": 0.0,
+    "latest_refactor_ratio": 0.0,
     "drift_combined_p": 0.0002,
     "interpretation": "gaearon: Strong behavioral drift detected (Fisher p=0.0002). 4/6 Level A process signals shifted: cross_module_ratio, refactor_ratio, median_inter_commit_hours, commits_per_week. The recent development pattern is statistically inconsistent with historical baseline. AI assistance is one compatible hypothesis \u2014 confounds include role change, project phase, new tooling, team size, and natural career evolution.",
-    "n_level_a_change_points": 17,
     "level_a_change_points": [
       {
         "date": "2021-07",
         "signal": "commits_per_week",
         "magnitude": 2.6518,
-        "detection_method": "pelt",
-        "nearest_known_event": "GitHub Copilot Technical Preview (2021-06)"
+        "method": "pelt",
+        "nearest_event": "GitHub Copilot Technical Preview (2021-06)"
       },
       {
         "date": "2021-07",
         "signal": "refactor_ratio",
         "magnitude": 0.1073,
-        "detection_method": "pelt",
-        "nearest_known_event": "GitHub Copilot Technical Preview (2021-06)"
+        "method": "pelt",
+        "nearest_event": "GitHub Copilot Technical Preview (2021-06)"
       },
       {
         "date": "2022-04",
         "signal": "refactor_ratio",
         "magnitude": 0.0849,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot GA (2022-06)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot GA (2022-06)"
       },
       {
         "date": "2022-07",
         "signal": "median_inter_commit_hours",
         "magnitude": 2391.2714,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot GA (2022-06)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot GA (2022-06)"
       },
       {
         "date": "2023-01",
         "signal": "commits_per_week",
         "magnitude": 2.1187,
-        "detection_method": "cusum",
-        "nearest_known_event": "ChatGPT Launch (2022-11)"
+        "method": "cusum",
+        "nearest_event": "ChatGPT Launch (2022-11)"
       },
       {
         "date": "2023-01",
         "signal": "cross_module_ratio",
         "magnitude": 0.0325,
-        "detection_method": "cusum",
-        "nearest_known_event": "ChatGPT Launch (2022-11)"
+        "method": "cusum",
+        "nearest_event": "ChatGPT Launch (2022-11)"
       },
       {
         "date": "2023-01",
         "signal": "median_inter_commit_hours",
         "magnitude": 2207.2343,
-        "detection_method": "pelt+cusum",
-        "nearest_known_event": "ChatGPT Launch (2022-11)"
+        "method": "pelt+cusum",
+        "nearest_event": "ChatGPT Launch (2022-11)"
       },
       {
         "date": "2023-04",
         "signal": "median_inter_commit_hours",
         "magnitude": 2109.4125,
-        "detection_method": "cusum",
-        "nearest_known_event": "GPT-4 Release (2023-03)"
+        "method": "cusum",
+        "nearest_event": "GPT-4 Release (2023-03)"
       },
       {
         "date": "2023-04",
         "signal": "refactor_ratio",
         "magnitude": 0.0521,
-        "detection_method": "cusum",
-        "nearest_known_event": "GPT-4 Release (2023-03)"
+        "method": "cusum",
+        "nearest_event": "GPT-4 Release (2023-03)"
       },
       {
         "date": "2024-01",
         "signal": "median_inter_commit_hours",
         "magnitude": 2386.7388,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot Chat GA (2023-12)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot Chat GA (2023-12)"
       },
       {
         "date": "2024-07",
         "signal": "median_inter_commit_hours",
         "magnitude": 3067.9528,
-        "detection_method": "cusum",
-        "nearest_known_event": "Claude 3 Opus (2024-03)"
+        "method": "cusum",
+        "nearest_event": "Claude 3 Opus (2024-03)"
       },
       {
         "date": "2025-01",
         "signal": "large_commit_ratio",
         "magnitude": 0.1793,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-01",
         "signal": "median_inter_commit_hours",
         "magnitude": 3445.0667,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-07",
         "signal": "commits_per_week",
         "magnitude": 1.71,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-07",
         "signal": "median_inter_commit_hours",
         "magnitude": 2544.1,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-07",
         "signal": "refactor_ratio",
         "magnitude": 0.0823,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-10",
         "signal": "median_inter_commit_hours",
         "magnitude": 2450.5048,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       }
-    ],
-    "level_a_signals": {
-      "median_files_per_commit": {
-        "baseline_mean": 2.5278,
-        "recent_mean": 1.75,
-        "delta_pct": -30.8,
-        "p_value": 0.3276,
-        "significant": false
-      },
-      "large_commit_ratio": {
-        "baseline_mean": 0.1348,
-        "recent_mean": 0.375,
-        "delta_pct": 178.2,
-        "p_value": 0.8305,
-        "significant": false
-      },
-      "cross_module_ratio": {
-        "baseline_mean": 0.0492,
-        "recent_mean": 0.0,
-        "delta_pct": -100.0,
-        "p_value": 0.0164,
-        "significant": true
-      },
-      "refactor_ratio": {
-        "baseline_mean": 0.0915,
-        "recent_mean": 0.0,
-        "delta_pct": -100.0,
-        "p_value": 0.0356,
-        "significant": true
-      },
-      "median_inter_commit_hours": {
-        "baseline_mean": 321.0722,
-        "recent_mean": 3389.025,
-        "delta_pct": 955.5,
-        "p_value": 0.0043,
-        "significant": true
-      },
-      "commits_per_week": {
-        "baseline_mean": 1.9761,
-        "recent_mean": 0.0975,
-        "delta_pct": -95.1,
-        "p_value": 0.009,
-        "significant": true
-      }
-    }
+    ]
   },
   {
     "login": "Rich-Harris",
     "display_name": "Rich Harris",
     "commits_analyzed": 960,
     "windows_analyzed": 20,
-    "first_commit_date": "2018-12-15T23:14:06Z",
-    "last_commit_date": "2025-12-26T16:47:32Z",
+    "latest_style_score": 17.6,
+    "style_drift_pre_post": 5.84,
+    "latest_median_files": 5.0,
+    "latest_large_commit_ratio": 0.111,
+    "latest_refactor_ratio": 0.159,
     "drift_combined_p": 0.2483,
     "interpretation": "Rich-Harris: No statistically significant behavioral drift detected (Fisher p=0.248, 1/6 Level A signals significant). H\u2080 (author behaves consistently with historical baseline) cannot be rejected.",
-    "n_level_a_change_points": 3,
     "level_a_change_points": [
       {
         "date": "2020-10",
         "signal": "cross_module_ratio",
         "magnitude": 0.1555,
-        "detection_method": "pelt",
-        "nearest_known_event": null
+        "method": "pelt",
+        "nearest_event": null
       },
       {
         "date": "2023-04",
         "signal": "cross_module_ratio",
         "magnitude": 0.0788,
-        "detection_method": "cusum",
-        "nearest_known_event": "GPT-4 Release (2023-03)"
+        "method": "cusum",
+        "nearest_event": "GPT-4 Release (2023-03)"
       },
       {
         "date": "2023-10",
         "signal": "median_files_per_commit",
         "magnitude": 1.3333,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot Chat GA (2023-12)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot Chat GA (2023-12)"
       }
-    ],
-    "level_a_signals": {
-      "median_files_per_commit": {
-        "baseline_mean": 2.5625,
-        "recent_mean": 3.75,
-        "delta_pct": 46.3,
-        "p_value": 0.1141,
-        "significant": false
-      },
-      "large_commit_ratio": {
-        "baseline_mean": 0.0481,
-        "recent_mean": 0.049,
-        "delta_pct": 2.0,
-        "p_value": 1.0,
-        "significant": false
-      },
-      "cross_module_ratio": {
-        "baseline_mean": 0.1601,
-        "recent_mean": 0.215,
-        "delta_pct": 34.3,
-        "p_value": 0.3686,
-        "significant": false
-      },
-      "refactor_ratio": {
-        "baseline_mean": 0.0668,
-        "recent_mean": 0.1663,
-        "delta_pct": 148.8,
-        "p_value": 0.0379,
-        "significant": true
-      },
-      "median_inter_commit_hours": {
-        "baseline_mean": 336.95,
-        "recent_mean": 10.725,
-        "delta_pct": -96.8,
-        "p_value": 1.0,
-        "significant": false
-      },
-      "commits_per_week": {
-        "baseline_mean": 3.445,
-        "recent_mean": 4.5775,
-        "delta_pct": 32.9,
-        "p_value": 0.3692,
-        "significant": false
-      }
-    }
+    ]
   },
   {
     "login": "yyx990803",
     "display_name": "Evan You",
     "commits_analyzed": 841,
     "windows_analyzed": 12,
-    "first_commit_date": "2018-10-04T21:33:20Z",
-    "last_commit_date": "2025-01-08T10:07:44Z",
+    "latest_style_score": 3.0,
+    "style_drift_pre_post": -0.68,
+    "latest_median_files": 2.0,
+    "latest_large_commit_ratio": 0.0,
+    "latest_refactor_ratio": 0.0,
     "drift_combined_p": 0.0457,
     "interpretation": "yyx990803: Moderate behavioral drift detected (Fisher p=0.0457). 1/6 Level A signals show nominal significance. The evidence is consistent with a process change but is not conclusive. AI assistance cannot be confirmed or excluded from this signal alone.",
-    "n_level_a_change_points": 3,
     "level_a_change_points": [
       {
         "date": "2024-10",
         "signal": "median_inter_commit_hours",
         "magnitude": 648.7,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2024-10",
         "signal": "refactor_ratio",
         "magnitude": 0.1531,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-01",
         "signal": "median_inter_commit_hours",
         "magnitude": 1289.7636,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       }
-    ],
-    "level_a_signals": {
-      "median_files_per_commit": {
-        "baseline_mean": 2.0,
-        "recent_mean": 1.875,
-        "delta_pct": -6.2,
-        "p_value": 0.2159,
-        "significant": false
-      },
-      "large_commit_ratio": {
-        "baseline_mean": 0.0281,
-        "recent_mean": 0.0152,
-        "delta_pct": -45.8,
-        "p_value": 0.4884,
-        "significant": false
-      },
-      "cross_module_ratio": {
-        "baseline_mean": 0.0835,
-        "recent_mean": 0.0418,
-        "delta_pct": -50.0,
-        "p_value": 0.2688,
-        "significant": false
-      },
-      "refactor_ratio": {
-        "baseline_mean": 0.168,
-        "recent_mean": 0.0467,
-        "delta_pct": -72.2,
-        "p_value": 0.0084,
-        "significant": true
-      },
-      "median_inter_commit_hours": {
-        "baseline_mean": 1.025,
-        "recent_mean": 325.3,
-        "delta_pct": 31636.6,
-        "p_value": 0.2004,
-        "significant": false
-      },
-      "commits_per_week": {
-        "baseline_mean": 5.7737,
-        "recent_mean": 4.635,
-        "delta_pct": -19.7,
-        "p_value": 0.4892,
-        "significant": false
-      }
-    }
+    ]
   },
   {
     "login": "sindresorhus",
     "display_name": "Sindre Sorhus",
     "commits_analyzed": 521,
     "windows_analyzed": 32,
-    "first_commit_date": "2018-01-11T23:29:45Z",
-    "last_commit_date": "2025-12-30T12:01:43Z",
+    "latest_style_score": 7.2,
+    "style_drift_pre_post": -1.13,
+    "latest_median_files": 2.0,
+    "latest_large_commit_ratio": 0.07,
+    "latest_refactor_ratio": 0.035,
     "drift_combined_p": 0.0022,
     "interpretation": "sindresorhus: Strong behavioral drift detected (Fisher p=0.0022). 1/6 Level A process signals shifted: large_commit_ratio. The recent development pattern is statistically inconsistent with historical baseline. AI assistance is one compatible hypothesis \u2014 confounds include role change, project phase, new tooling, team size, and natural career evolution.",
-    "n_level_a_change_points": 13,
     "level_a_change_points": [
       {
         "date": "2021-10",
         "signal": "commits_per_week",
         "magnitude": 0.5773,
-        "detection_method": "pelt",
-        "nearest_known_event": "GitHub Copilot Technical Preview (2021-06)"
+        "method": "pelt",
+        "nearest_event": "GitHub Copilot Technical Preview (2021-06)"
       },
       {
         "date": "2022-04",
         "signal": "median_inter_commit_hours",
         "magnitude": 225.2863,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot GA (2022-06)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot GA (2022-06)"
       },
       {
         "date": "2024-01",
         "signal": "median_inter_commit_hours",
         "magnitude": 343.7,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot Chat GA (2023-12)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot Chat GA (2023-12)"
       },
       {
         "date": "2024-04",
         "signal": "cross_module_ratio",
         "magnitude": 0.0808,
-        "detection_method": "cusum",
-        "nearest_known_event": "Claude 3 Opus (2024-03)"
+        "method": "cusum",
+        "nearest_event": "Claude 3 Opus (2024-03)"
       },
       {
         "date": "2024-07",
         "signal": "median_inter_commit_hours",
         "magnitude": 324.5949,
-        "detection_method": "cusum",
-        "nearest_known_event": "Claude 3 Opus (2024-03)"
+        "method": "cusum",
+        "nearest_event": "Claude 3 Opus (2024-03)"
       },
       {
         "date": "2024-10",
         "signal": "median_inter_commit_hours",
         "magnitude": 239.9644,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-01",
         "signal": "commits_per_week",
         "magnitude": 1.2029,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-01",
         "signal": "median_inter_commit_hours",
         "magnitude": 211.5143,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-04",
         "signal": "refactor_ratio",
         "magnitude": 0.0846,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-07",
         "signal": "large_commit_ratio",
         "magnitude": 0.0905,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-10",
         "signal": "commits_per_week",
         "magnitude": 5.5329,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-10",
         "signal": "cross_module_ratio",
         "magnitude": 0.3865,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-10",
         "signal": "large_commit_ratio",
         "magnitude": 0.0664,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       }
-    ],
-    "level_a_signals": {
-      "median_files_per_commit": {
-        "baseline_mean": 1.1607,
-        "recent_mean": 1.5,
-        "delta_pct": 29.2,
-        "p_value": 0.1443,
-        "significant": false
-      },
-      "large_commit_ratio": {
-        "baseline_mean": 0.0,
-        "recent_mean": 0.0452,
-        "delta_pct": 4525000000.0,
-        "p_value": 0.0002,
-        "significant": true
-      },
-      "cross_module_ratio": {
-        "baseline_mean": 0.1199,
-        "recent_mean": 0.3013,
-        "delta_pct": 151.2,
-        "p_value": 0.1164,
-        "significant": false
-      },
-      "refactor_ratio": {
-        "baseline_mean": 0.138,
-        "recent_mean": 0.0365,
-        "delta_pct": -73.6,
-        "p_value": 0.0797,
-        "significant": false
-      },
-      "median_inter_commit_hours": {
-        "baseline_mean": 152.3107,
-        "recent_mean": 363.825,
-        "delta_pct": 138.9,
-        "p_value": 0.8047,
-        "significant": false
-      },
-      "commits_per_week": {
-        "baseline_mean": 1.1096,
-        "recent_mean": 2.3125,
-        "delta_pct": 108.4,
-        "p_value": 1.0,
-        "significant": false
-      }
-    }
+    ]
   },
   {
     "login": "gvanrossum",
     "display_name": "Guido van Rossum",
     "commits_analyzed": 230,
     "windows_analyzed": 24,
-    "first_commit_date": "2018-01-26T16:20:18Z",
-    "last_commit_date": "2025-11-19T20:30:01Z",
+    "latest_style_score": 0.0,
+    "style_drift_pre_post": -2.74,
+    "latest_median_files": 1.0,
+    "latest_large_commit_ratio": 0.0,
+    "latest_refactor_ratio": 0.0,
     "drift_combined_p": 0.0022,
     "interpretation": "gvanrossum: Strong behavioral drift detected (Fisher p=0.0022). 2/6 Level A process signals shifted: median_files_per_commit, cross_module_ratio. The recent development pattern is statistically inconsistent with historical baseline. AI assistance is one compatible hypothesis \u2014 confounds include role change, project phase, new tooling, team size, and natural career evolution.",
-    "n_level_a_change_points": 4,
     "level_a_change_points": [
       {
         "date": "2022-10",
         "signal": "commits_per_week",
         "magnitude": 1.063,
-        "detection_method": "cusum",
-        "nearest_known_event": "ChatGPT Launch (2022-11)"
+        "method": "cusum",
+        "nearest_event": "ChatGPT Launch (2022-11)"
       },
       {
         "date": "2023-01",
         "signal": "commits_per_week",
         "magnitude": 0.9198,
-        "detection_method": "cusum",
-        "nearest_known_event": "ChatGPT Launch (2022-11)"
+        "method": "cusum",
+        "nearest_event": "ChatGPT Launch (2022-11)"
       },
       {
         "date": "2023-07",
         "signal": "commits_per_week",
         "magnitude": 0.6796,
-        "detection_method": "cusum",
-        "nearest_known_event": "GPT-4 Release (2023-03)"
+        "method": "cusum",
+        "nearest_event": "GPT-4 Release (2023-03)"
       },
       {
         "date": "2024-01",
         "signal": "commits_per_week",
         "magnitude": 0.1906,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot Chat GA (2023-12)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot Chat GA (2023-12)"
       }
-    ],
-    "level_a_signals": {
-      "median_files_per_commit": {
-        "baseline_mean": 3.875,
-        "recent_mean": 1.5,
-        "delta_pct": -61.3,
-        "p_value": 0.0276,
-        "significant": true
-      },
-      "large_commit_ratio": {
-        "baseline_mean": 0.1679,
-        "recent_mean": 0.0,
-        "delta_pct": -100.0,
-        "p_value": 0.0695,
-        "significant": false
-      },
-      "cross_module_ratio": {
-        "baseline_mean": 0.4176,
-        "recent_mean": 0.0927,
-        "delta_pct": -77.8,
-        "p_value": 0.0296,
-        "significant": true
-      },
-      "refactor_ratio": {
-        "baseline_mean": 0.1235,
-        "recent_mean": 0.0177,
-        "delta_pct": -85.6,
-        "p_value": 0.2994,
-        "significant": false
-      },
-      "median_inter_commit_hours": {
-        "baseline_mean": 726.79,
-        "recent_mean": 3260.9,
-        "delta_pct": 348.7,
-        "p_value": 0.0811,
-        "significant": false
-      },
-      "commits_per_week": {
-        "baseline_mean": 0.825,
-        "recent_mean": 0.3325,
-        "delta_pct": -59.7,
-        "p_value": 0.1555,
-        "significant": false
-      }
-    }
+    ]
   },
   {
     "login": "ry",
     "display_name": "Ryan Dahl",
     "commits_analyzed": 540,
     "windows_analyzed": 24,
-    "first_commit_date": "2018-10-25T15:00:14Z",
-    "last_commit_date": "2025-10-06T16:56:37Z",
+    "latest_style_score": 0.0,
+    "style_drift_pre_post": 0.48,
+    "latest_median_files": 1.0,
+    "latest_large_commit_ratio": 0.0,
+    "latest_refactor_ratio": 0.0,
     "drift_combined_p": 0.0775,
     "interpretation": "ry: Moderate behavioral drift detected (Fisher p=0.0775). 1/6 Level A signals show nominal significance. The evidence is consistent with a process change but is not conclusive. AI assistance cannot be confirmed or excluded from this signal alone.",
-    "n_level_a_change_points": 17,
     "level_a_change_points": [
       {
         "date": "2022-01",
         "signal": "commits_per_week",
         "magnitude": 3.372,
-        "detection_method": "pelt",
-        "nearest_known_event": "GitHub Copilot GA (2022-06)"
+        "method": "pelt",
+        "nearest_event": "GitHub Copilot GA (2022-06)"
       },
       {
         "date": "2022-07",
         "signal": "median_files_per_commit",
         "magnitude": 0.5,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot GA (2022-06)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot GA (2022-06)"
       },
       {
         "date": "2022-07",
         "signal": "median_inter_commit_hours",
         "magnitude": 1310.55,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot GA (2022-06)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot GA (2022-06)"
       },
       {
         "date": "2022-10",
         "signal": "median_inter_commit_hours",
         "magnitude": 1247.6448,
-        "detection_method": "cusum",
-        "nearest_known_event": "ChatGPT Launch (2022-11)"
+        "method": "cusum",
+        "nearest_event": "ChatGPT Launch (2022-11)"
       },
       {
         "date": "2023-04",
         "signal": "median_inter_commit_hours",
         "magnitude": 1372.9333,
-        "detection_method": "cusum",
-        "nearest_known_event": "GPT-4 Release (2023-03)"
+        "method": "cusum",
+        "nearest_event": "GPT-4 Release (2023-03)"
       },
       {
         "date": "2023-07",
         "signal": "commits_per_week",
         "magnitude": 2.3456,
-        "detection_method": "cusum",
-        "nearest_known_event": "GPT-4 Release (2023-03)"
+        "method": "cusum",
+        "nearest_event": "GPT-4 Release (2023-03)"
       },
       {
         "date": "2023-07",
         "signal": "median_inter_commit_hours",
         "magnitude": 1512.0438,
-        "detection_method": "cusum",
-        "nearest_known_event": "GPT-4 Release (2023-03)"
+        "method": "cusum",
+        "nearest_event": "GPT-4 Release (2023-03)"
       },
       {
         "date": "2023-10",
         "signal": "median_inter_commit_hours",
         "magnitude": 1159.8286,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot Chat GA (2023-12)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot Chat GA (2023-12)"
       },
       {
         "date": "2024-01",
         "signal": "median_inter_commit_hours",
         "magnitude": 877.2667,
-        "detection_method": "cusum",
-        "nearest_known_event": "GitHub Copilot Chat GA (2023-12)"
+        "method": "cusum",
+        "nearest_event": "GitHub Copilot Chat GA (2023-12)"
       },
       {
         "date": "2024-04",
         "signal": "median_inter_commit_hours",
         "magnitude": 931.4232,
-        "detection_method": "cusum",
-        "nearest_known_event": "Claude 3 Opus (2024-03)"
+        "method": "cusum",
+        "nearest_event": "Claude 3 Opus (2024-03)"
       },
       {
         "date": "2024-04",
         "signal": "refactor_ratio",
         "magnitude": 0.0669,
-        "detection_method": "cusum",
-        "nearest_known_event": "Claude 3 Opus (2024-03)"
+        "method": "cusum",
+        "nearest_event": "Claude 3 Opus (2024-03)"
       },
       {
         "date": "2025-01",
         "signal": "large_commit_ratio",
         "magnitude": 0.0101,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-01",
         "signal": "median_inter_commit_hours",
         "magnitude": 999.1048,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-04",
         "signal": "commits_per_week",
         "magnitude": 1.7673,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-04",
         "signal": "median_inter_commit_hours",
         "magnitude": 1650.1273,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-10",
         "signal": "cross_module_ratio",
         "magnitude": 0.2579,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       },
       {
         "date": "2025-10",
         "signal": "median_inter_commit_hours",
         "magnitude": 3612.8522,
-        "detection_method": "cusum",
-        "nearest_known_event": null
+        "method": "cusum",
+        "nearest_event": null
       }
-    ],
-    "level_a_signals": {
-      "median_files_per_commit": {
-        "baseline_mean": 3.725,
-        "recent_mean": 2.125,
-        "delta_pct": -43.0,
-        "p_value": 0.1084,
-        "significant": false
-      },
-      "large_commit_ratio": {
-        "baseline_mean": 0.0493,
-        "recent_mean": 0.1,
-        "delta_pct": 102.6,
-        "p_value": 0.5964,
-        "significant": false
-      },
-      "cross_module_ratio": {
-        "baseline_mean": 0.2713,
-        "recent_mean": 0.1265,
-        "delta_pct": -53.4,
-        "p_value": 0.0398,
-        "significant": true
-      },
-      "refactor_ratio": {
-        "baseline_mean": 0.1396,
-        "recent_mean": 0.1,
-        "delta_pct": -28.4,
-        "p_value": 0.7784,
-        "significant": false
-      },
-      "median_inter_commit_hours": {
-        "baseline_mean": 588.135,
-        "recent_mean": 1195.025,
-        "delta_pct": 103.2,
-        "p_value": 0.2101,
-        "significant": false
-      },
-      "commits_per_week": {
-        "baseline_mean": 2.0375,
-        "recent_mean": 0.2525,
-        "delta_pct": -87.6,
-        "p_value": 0.1398,
-        "significant": false
+    ]
+  },
+  {
+    "login": "tj",
+    "display_name": "TJ Holowaychuk",
+    "status": "skipped",
+    "reason": "too_few_commits",
+    "commits_analyzed": 0
+  },
+  {
+    "login": "simonw",
+    "display_name": "Simon Willison",
+    "commits_analyzed": 960,
+    "windows_analyzed": 19,
+    "latest_style_score": 10.4,
+    "style_drift_pre_post": 1.96,
+    "latest_median_files": 2.0,
+    "latest_large_commit_ratio": 0.05,
+    "latest_refactor_ratio": 0.142,
+    "drift_combined_p": 0.7473,
+    "interpretation": "simonw: No statistically significant behavioral drift detected (Fisher p=0.747, 0/6 Level A signals significant). H\u2080 (author behaves consistently with historical baseline) cannot be rejected.",
+    "level_a_change_points": [
+      {
+        "date": "2024-10",
+        "signal": "median_inter_commit_hours",
+        "magnitude": 155.9471,
+        "method": "cusum",
+        "nearest_event": null
       }
-    }
+    ]
+  },
+  {
+    "login": "karpathy",
+    "display_name": "Andrej Karpathy",
+    "commits_analyzed": 284,
+    "windows_analyzed": 10,
+    "latest_style_score": 0.0,
+    "style_drift_pre_post": 2.6,
+    "latest_median_files": 1.0,
+    "latest_large_commit_ratio": 0.0,
+    "latest_refactor_ratio": 0.0,
+    "drift_combined_p": 0.0495,
+    "interpretation": "karpathy: Moderate behavioral drift detected (Fisher p=0.0495). 1/6 Level A signals show nominal significance. The evidence is consistent with a process change but is not conclusive. AI assistance cannot be confirmed or excluded from this signal alone.",
+    "level_a_change_points": [
+      {
+        "date": "2024-04",
+        "signal": "refactor_ratio",
+        "magnitude": 0.0376,
+        "method": "cusum",
+        "nearest_event": "Claude 3 Opus (2024-03)"
+      },
+      {
+        "date": "2024-07",
+        "signal": "median_files_per_commit",
+        "magnitude": 0.25,
+        "method": "cusum",
+        "nearest_event": "Claude 3 Opus (2024-03)"
+      },
+      {
+        "date": "2024-10",
+        "signal": "median_inter_commit_hours",
+        "magnitude": 3050.8952,
+        "method": "cusum",
+        "nearest_event": null
+      },
+      {
+        "date": "2025-04",
+        "signal": "median_inter_commit_hours",
+        "magnitude": 3922.7,
+        "method": "cusum",
+        "nearest_event": null
+      },
+      {
+        "date": "2025-10",
+        "signal": "median_inter_commit_hours",
+        "magnitude": 3938.5111,
+        "method": "cusum",
+        "nearest_event": null
+      }
+    ]
   }
 ]

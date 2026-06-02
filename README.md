@@ -9,9 +9,9 @@
 
 ---
 
-We tracked **5,426 commits from 9 prominent open-source developers** across 8 years (2018–2025) and applied statistical change-point detection to their process signals — files per commit, commit frequency, cross-module reach, refactoring patterns. Then we asked: who changed, when, and does it correlate with the LLM era?
+We tracked **6,670 commits from 11 open-source developers** across 8 years (2018–2025) and applied statistical change-point detection to their process signals — files per commit, commit frequency, cross-module reach, refactoring patterns. Then we asked: who changed, when, and does it correlate with the LLM era?
 
-The answer is more nuanced than it looks.
+The answer cuts both ways.
 
 ---
 
@@ -25,29 +25,44 @@ The answer is more nuanced than it looks.
 
 The naive approach — measuring style signals like comment density, docstring coverage, identifier verbosity — produced a Rich Harris drift of **+6.8 points** post-Copilot in our own v1 analysis (see [`CRITIQUE.md`](CRITIQUE.md), §Level-C confounds). It looked like a clean finding.
 
-Our process-level analysis, using commit metadata instead of AST style heuristics, says the opposite: **Rich Harris is the most statistically stable developer in the corpus** (Fisher p = 0.248, 960 commits, 20 quarterly windows — [`reports/real/Rich-Harris.json`](reports/real/Rich-Harris.json)). No significant drift at Level A.
+Our process-level analysis, using commit metadata instead of AST style heuristics, says the opposite: **Rich Harris is the most statistically stable developer in the original corpus** (Fisher p = 0.248, 960 commits, 20 quarterly windows — [`reports/real/Rich-Harris.json`](reports/real/Rich-Harris.json)). No significant drift at Level A.
 
 The v1 signal was a confound. A plausible explanation consistent with our data: Svelte's adoption of JSDoc type annotations[^svelte] moved the style score without any corresponding process change. The commits stayed the same; the annotation style around them changed.
 
 ---
 
+## The Central Negative Result
+
+We then added two developers who have **publicly and verifiably declared heavy AI usage** — a deliberate attempt to find a positive signal:
+
+**Simon Willison** ([@simonw](https://github.com/simonw)) built the [`llm` CLI tool](https://github.com/simonw/llm), has documented his AI-assisted workflow across dozens of blog posts, and stated in a [2025 podcast interview](https://www.heavybit.com/library/podcasts/high-leverage/ep-9-the-ai-coding-paradigm-shift-with-simon-willison) that he uses Claude Code "on an almost daily basis." 960 commits, 19 quarterly windows. **Fisher p = 0.7473** — no detectable drift. He is the most stable developer in the entire corpus, despite being one of the most documented AI adopters in open source.
+
+**Andrej Karpathy** ([@karpathy](https://github.com/karpathy)) coined the term "vibe coding" in [a February 2025 post](https://x.com/karpathy/status/1886192184808149383): *"There's a new kind of coding I call 'vibe coding', where you fully give in to the vibes, embrace exponentials, and forget that the code even exists."* 284 commits, 10 quarterly windows (minimum for testing). **Fisher p = 0.0495** — marginal. However: his public commit history is sparse before 2022 (most work was in private repos at OpenAI and Tesla), so the baseline is fragile. The 5 change points detected all fall in 2024–2025 — plausible, but barely above the minimum data threshold.
+
+**The comparison is unambiguous:** Simon Willison — verified heavy AI adopter since 2023 — shows p = 0.75. Dan Abramov — no declared AI usage — shows p = 0.0002. **The developers who drifted most in our corpus are not the ones using AI; they are the ones who changed career roles.** The method detects behavioral change. It cannot identify its cause.
+
+---
+
 ## Results
 
-| Developer | Commits | Windows | Fisher p | | Level-A CPs | Source |
-|-----------|--------:|--------:|---------:|:---:|:-----------:|--------|
-| Dan Abramov | 465 | 22 | **0.0002** | ★★★ | 17 | [profile](reports/real/gaearon.json) |
-| Guido van Rossum | 230 | 24 | **0.0022** | ★★★ | 4 | [profile](reports/real/gvanrossum.json) |
-| Sindre Sorhus | 521 | 32 | **0.0022** | ★★★ | 13 | [profile](reports/real/sindresorhus.json) |
-| DHH | 429 | 23 | **0.0301** | ★ | 1 | [profile](reports/real/dhh.json) |
-| Evan You | 841 | 12 | **0.0457** | ★ | 3 | [profile](reports/real/yyx990803.json) |
-| Ryan Dahl | 540 | 24 | 0.0775 | ~ | 17 | [profile](reports/real/ry.json) |
-| Rich Harris | 960 | 20 | 0.2483 | — | 3 | [profile](reports/real/Rich-Harris.json) |
-| Linus Torvalds | 960 | 8 | n/a | | 1 | [profile](reports/real/torvalds.json) |
-| Salvatore Sanfilippo | 480 | 6 | n/a | | 11 | [profile](reports/real/antirez.json) |
+| Developer | Commits | Windows | Fisher p | | Level-A CPs | AI declared | Source |
+|-----------|--------:|--------:|---------:|:---:|:-----------:|:-----------:|--------|
+| Dan Abramov | 465 | 22 | **0.0002** | ★★★ | 17 | — | [profile](reports/real/gaearon.json) |
+| Guido van Rossum | 230 | 24 | **0.0022** | ★★★ | 4 | — | [profile](reports/real/gvanrossum.json) |
+| Sindre Sorhus | 521 | 32 | **0.0022** | ★★★ | 13 | — | [profile](reports/real/sindresorhus.json) |
+| DHH | 429 | 23 | **0.0301** | ★ | 1 | ❌ no[^dhh_noai] | [profile](reports/real/dhh.json) |
+| Evan You | 841 | 12 | **0.0457** | ★ | 3 | — | [profile](reports/real/yyx990803.json) |
+| Andrej Karpathy | 284 | 10 | **0.0495** | ★ | 5 | ✅ "vibe coding"[^karpathy] | [profile](reports/real/karpathy.json) |
+| Ryan Dahl | 540 | 24 | 0.0775 | ~ | 17 | — | [profile](reports/real/ry.json) |
+| Rich Harris | 960 | 20 | 0.2483 | — | 3 | — | [profile](reports/real/Rich-Harris.json) |
+| **Simon Willison** | **960** | **19** | **0.7473** | **—** | **1** | **✅ heavy user[^simonw]** | [profile](reports/real/simonw.json) |
+| Linus Torvalds | 960 | 8 | n/a | | 1 | ❌ skeptic[^torvalds_noai] | [profile](reports/real/torvalds.json) |
+| Salvatore Sanfilippo | 480 | 6 | n/a | | 11 | — | [profile](reports/real/antirez.json) |
 
-`★★★ p<0.01  ★ p<0.05  ~ p<0.10  — not significant  n/a insufficient windows`
+`★★★ p<0.01  ★ p<0.05  ~ p<0.10  — not significant  n/a insufficient windows`  
+`✅ publicly declared AI usage  ❌ publicly declared non-usage  — no declaration found`
 
-*Fisher's method[^fisher] combines 6 Mann-Whitney U[^mw] tests on Level-A process signals. Minimum 10 quarterly windows required. All raw data in [`reports/real/`](reports/real/).*
+*Fisher's method[^fisher] combines 6 Mann-Whitney U[^mw] tests on Level-A process signals. Minimum 10 quarterly windows required. All raw data in [`reports/real/`](reports/real/). Karpathy: 10-window minimum, sparse pre-2022 baseline — interpret with caution.*
 
 ---
 
@@ -214,6 +229,14 @@ Add a signal in [src/devfp/analyzer/llm_signals.py](src/devfp/analyzer/llm_signa
 [^svelte]: This is a data-derived hypothesis, not a directly confirmed fact. In 2023, the Svelte project's source transitioned *away* from TypeScript (.ts files) *toward* JavaScript with JSDoc type annotations — the opposite direction from what one might assume. Rich Harris has discussed this approach publicly. This shift would increase comment/docstring Level-C scores in our metrics without reflecting any change in working process. Observable from the sveltejs/svelte commit history; no causal claim is made.
 
 [^sindre]: Sindre Sorhus maintains a large number of npm packages documented on his GitHub profile (github.com/sindresorhus). The portfolio shift hypothesis — fewer but larger projects in recent years — is derived from our own commit data ([`reports/real/sindresorhus.json`](reports/real/sindresorhus.json)) and has not been independently verified or confirmed by Sorhus.
+
+[^simonw]: Simon Willison stated in the Heavybit podcast *"AI Coding Paradigm Shift"* (2025) that he uses Claude Code "on an almost daily basis" and described "three 12+ hour days" with it. He built the `llm` CLI tool (github.com/simonw/llm) to integrate LLMs into his own development workflow. Extensive documentation at simonwillison.net/tags/claude-code/. Declaration of systematic AI usage credibly dated to 2023.
+
+[^karpathy]: Andrej Karpathy posted on X (formerly Twitter) on February 2, 2025 (https://x.com/karpathy/status/1886192184808149383): *"There's a new kind of coding I call 'vibe coding', where you fully give in to the vibes, embrace exponentials, and forget that the code even exists."* This is his earliest verifiable public declaration of this approach. Note: his public GitHub activity before 2022 is sparse — most work during 2015–2022 was in private repositories at OpenAI and Tesla. The resulting thin baseline (10 windows, minimum for testing) makes the p = 0.0495 result fragile.
+
+[^dhh_noai]: DHH wrote publicly in June 2022 that he does not use GitHub Copilot and is skeptical of AI code generation, citing concerns about training data provenance. Source: https://world.hey.com/dhh/github-copilot-is-not-infringing-your-copyright-6b8a9e90
+
+[^torvalds_noai]: Linus Torvalds expressed skepticism about AI-generated code in multiple public forums, including the 2024 Open Source Summit North America, stating that AI-generated code often looks plausible but introduces subtle bugs. Source: coverage in The Register (January 2024).
 
 ---
 
