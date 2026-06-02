@@ -75,6 +75,37 @@ DEV_LLM_INSTRUCTIONS: dict[str, str] = {
 # Full coding-style guides — strongest suppression effect.
 DEV_STYLE_INSTRUCTIONS: set[str] = {"Rich-Harris", "ry"}
 
+# Public AI-use declarations (from blog posts, talks, interviews — June 2026).
+# [AI] = declared heavy user  [~AI] = declared non-user  absent = no public declaration
+DEV_AI_DECLARED_USER: set[str] = {"simonw", "karpathy"}
+DEV_AI_DECLARED_NON:  set[str] = {"dhh", "torvalds"}
+
+C_AI_USER    = "#56d364"   # green  — declared AI user
+C_AI_NON     = "#f85149"   # red    — declared non-user
+C_INSTR_STYLE = "#6e7681"  # grey   — coding style instructions
+C_INSTR_PROC  = "#79c0ff"  # blue   — process/lightweight instructions
+
+
+def _dev_label_and_color(login: str, name: str) -> tuple[str, str]:
+    """Return (annotated label, label color) for developer name tick labels."""
+    parts = [name]
+    color = TEXT_HI
+    if login in DEV_AI_DECLARED_USER:
+        parts.append("[AI]")
+        color = C_AI_USER
+    elif login in DEV_AI_DECLARED_NON:
+        parts.append("[~AI]")
+        color = C_AI_NON
+    if login in DEV_STYLE_INSTRUCTIONS:
+        parts.append("⚙ style")
+        if color == TEXT_HI:
+            color = C_INSTR_STYLE
+    elif login in DEV_LLM_INSTRUCTIONS:
+        parts.append("⚙ instr.")
+        if color == TEXT_HI:
+            color = C_INSTR_PROC
+    return "  ".join(parts), color
+
 
 # ── Helpers ─────────────────────────────────────────────────────────────────────
 def _dq(iso: str) -> float:
@@ -160,17 +191,11 @@ def fig1_significance(profiles: list[dict]) -> None:
     ]
     testable.sort(key=lambda x: x[1])   # most significant first
 
-    def _annotated_dev_name(profile: dict) -> str:
-        login = profile.get("github_login", profile.get("login", ""))
-        name  = _name(profile)
-        if login in DEV_STYLE_INSTRUCTIONS:
-            return f"{name}  ⚙ style"
-        if login in DEV_LLM_INSTRUCTIONS:
-            return f"{name}  ⚙ instr."
-        return name
-
-    names   = [_annotated_dev_name(p) for p, _ in testable]
     logins  = [p.get("github_login", "") for p, _ in testable]
+    labels_colors = [_dev_label_and_color(p.get("github_login", ""), _name(p))
+                     for p, _ in testable]
+    names   = [lc[0] for lc in labels_colors]
+    lbl_col = [lc[1] for lc in labels_colors]
     ps      = [v for _, v in testable]
     logps   = [-np.log10(v) for v in ps]
     colors  = [_sig_color(v) for v in ps]
@@ -214,43 +239,45 @@ def fig1_significance(profiles: list[dict]) -> None:
     # ── Axes & labels ─────────────────────────────────────────────────────────
     ax.set_yticks(range(n_t))
     ax.set_yticklabels(names, fontsize=12.5)
-    # Color labels by instruction-file presence
-    C_INSTR_STYLE = "#6e7681"
-    C_INSTR_PROC  = "#79c0ff"
-    for lbl, login in zip(ax.get_yticklabels(), logins):
-        if login in DEV_STYLE_INSTRUCTIONS:
-            lbl.set_color(C_INSTR_STYLE)
-        elif login in DEV_LLM_INSTRUCTIONS:
-            lbl.set_color(C_INSTR_PROC)
-        else:
-            lbl.set_color(TEXT_HI)
+    for lbl, col in zip(ax.get_yticklabels(), lbl_col):
+        lbl.set_color(col)
     ax.set_ylim(-0.65, n_t + n_nt + 0.1)
     ax.invert_yaxis()
     ax.set_xlabel("− log₁₀ (Fisher combined p-value)", color=TEXT_LO, fontsize=11)
-    ax.set_xlim(0, max(logps) * 1.55)
+    ax.set_xlim(0, max(logps) * 1.60)
     ax.grid(axis="x", color=GRID, lw=0.5, alpha=0.8, zorder=0)
     ax.set_axisbelow(True)
+
+    # Highlight the two declared AI users with a faint band
+    for i, login in enumerate(logins):
+        if login in DEV_AI_DECLARED_USER:
+            ax.axhspan(i - 0.38, i + 0.38, color=C_AI_USER, alpha=0.07, zorder=0)
 
     legend_items = [
         mpatches.Patch(color=SIG["p001"], label="p < 0.01  ★★★  strong drift"),
         mpatches.Patch(color=SIG["p005"], label="p < 0.05  ★    moderate drift"),
         mpatches.Patch(color=SIG["p010"], label="p < 0.10  ~    marginal"),
-        mpatches.Patch(color=SIG["ns"],   label="p > 0.10  —    no significant drift"),
-        mpatches.Patch(color=C_INSTR_STYLE, label="⚙ full style instructions → suppressed"),
+        mpatches.Patch(color=SIG["ns"],   label="p ≥ 0.10  —    no significant drift"),
+        mpatches.Patch(color=C_AI_USER,    label="[AI] publicly declared AI user"),
+        mpatches.Patch(color=C_AI_NON,     label="[~AI] publicly declared non-user"),
+        mpatches.Patch(color=C_INSTR_STYLE, label="⚙ full style instructions"),
         mpatches.Patch(color=C_INSTR_PROC,  label="⚙ process/lightweight instructions"),
     ]
     ax.legend(handles=legend_items, loc="lower right",
               facecolor=SURFACE, edgecolor=BORDER,
-              labelcolor=TEXT_LO, fontsize=9.5, framealpha=0.9)
+              labelcolor=TEXT_LO, fontsize=9.5, framealpha=0.9, ncol=2)
 
     ax.set_title(
         "Mann-Whitney U per Level-A signal · Fisher combined p · "
         "self-baseline comparison (historical vs. last 4 quarters)\n"
-        "⚙ = explicit LLM coding-instruction file in primary repo",
+        "[AI]/[~AI] = public declaration of AI use/non-use · "
+        "⚙ = explicit LLM coding-instruction file in primary repo\n"
+        "Note: declared AI users ([AI]) show no consistent drift pattern — "
+        "simonw p = 0.75 (null), karpathy p = 0.05 (genre shift, not AI signal)",
         color=TEXT_LO, fontsize=9.5, pad=8,
     )
     fig.suptitle("How much did each developer's commit process change?",
-                 color=TEXT_HI, fontsize=14, fontweight="bold", y=1.015)
+                 color=TEXT_HI, fontsize=14, fontweight="bold", y=1.02)
 
     _watermark(fig, sum(p.get("total_commits_analyzed", 0) for p in profiles))
     _save(fig, "fig1_significance.png")
@@ -536,35 +563,21 @@ def fig4_dumbbell(profiles: list[dict]) -> None:
                     fontsize=9.5, fontweight="bold")
 
     ax.set_yticks(y_pos)
-    C_INSTR_STYLE = "#6e7681"
-    C_INSTR_PROC  = "#79c0ff"
+    labels_colors = [_dev_label_and_color(r["login"], r["name"]) for r in rows]
+    ax.set_yticklabels([lc[0] for lc in labels_colors], fontsize=11.5)
+    for lbl, lc in zip(ax.get_yticklabels(), labels_colors):
+        lbl.set_color(lc[1])
 
-    # Annotate names with ⚙ and color by instruction-file presence
-    annotated_names = []
-    for row in rows:
-        login = row["login"]
-        name  = row["name"]
-        if login in DEV_STYLE_INSTRUCTIONS:
-            annotated_names.append(f"{name}  ⚙ style")
-        elif login in DEV_LLM_INSTRUCTIONS:
-            annotated_names.append(f"{name}  ⚙ instr.")
-        else:
-            annotated_names.append(name)
-    ax.set_yticklabels(annotated_names, fontsize=11.5)
-    for lbl, row in zip(ax.get_yticklabels(), rows):
-        login = row["login"]
-        if login in DEV_STYLE_INSTRUCTIONS:
-            lbl.set_color(C_INSTR_STYLE)
-        elif login in DEV_LLM_INSTRUCTIONS:
-            lbl.set_color(C_INSTR_PROC)
-        else:
-            lbl.set_color(TEXT_HI)
+    # Faint band for declared AI users
+    for i, row in enumerate(rows):
+        if row["login"] in DEV_AI_DECLARED_USER:
+            ax.axhspan(i - 0.42, i + 0.42, color=C_AI_USER, alpha=0.07, zorder=0)
 
     ax.invert_yaxis()
     ax.set_xlabel("commits / week  (quarterly median)", color=TEXT_LO, fontsize=11)
     ax.grid(axis="x", color=GRID, lw=0.5, alpha=0.7, zorder=0)
     ax.set_axisbelow(True)
-    ax.set_xlim(-0.15, max(r["baseline"] for r in rows) * 1.45)
+    ax.set_xlim(-0.15, max(r["baseline"] for r in rows) * 1.50)
 
     legend_items = [
         plt.Line2D([0], [0], marker="o", color="none",
@@ -579,6 +592,8 @@ def fig4_dumbbell(profiles: list[dict]) -> None:
         mpatches.Patch(color=SIG["p005"], label="p < 0.05"),
         mpatches.Patch(color=SIG["p010"], label="p < 0.10"),
         mpatches.Patch(color=SIG["ns"],   label="no significant drift"),
+        mpatches.Patch(color=C_AI_USER,    label="[AI] declared AI user"),
+        mpatches.Patch(color=C_AI_NON,     label="[~AI] declared non-user"),
         mpatches.Patch(color=C_INSTR_STYLE, label="⚙ full style instr."),
         mpatches.Patch(color=C_INSTR_PROC,  label="⚙ lightweight instr."),
     ]
@@ -595,11 +610,12 @@ def fig4_dumbbell(profiles: list[dict]) -> None:
 
     ax.set_title(
         "Open circle = historical baseline · Filled = last 4 quarters · "
-        "Color = Fisher p significance",
+        "Color = Fisher p significance\n"
+        "[AI] = declared AI user · [~AI] = declared non-user · ⚙ = LLM instruction file",
         color=TEXT_LO, fontsize=9.5, pad=8,
     )
     fig.suptitle("Commits / week: historical baseline vs. recent",
-                 color=TEXT_HI, fontsize=14, fontweight="bold", y=1.01)
+                 color=TEXT_HI, fontsize=14, fontweight="bold", y=1.02)
 
     _watermark(fig, sum(p.get("total_commits_analyzed", 0) for p in profiles))
     _save(fig, "fig4_dumbbell.png")
