@@ -64,6 +64,17 @@ LLM_MILESTONES = [
 PROFILES_DIR = Path("reports/real")
 IMG_DIR      = Path("docs/img")
 
+# Developers whose primary repos contain explicit LLM coding-instruction files.
+# Presence correlates with suppressed drift detection (AI follows the style guide).
+DEV_LLM_INSTRUCTIONS: dict[str, str] = {
+    "Rich-Harris": "sveltejs/kit: CLAUDE.md + AGENTS.md + copilot-instr (full style guide)",
+    "ry":          "denoland/deno: copilot-instr 12 KB + CLAUDE.md 11.9 KB (full style guide)",
+    "dhh":         "rails/rails: AGENTS.md 6.8 KB (style + setup)",
+    "yyx990803":   "vitejs/vite: copilot-instr 1.6 KB (lightweight guide)",
+}
+# Full coding-style guides — strongest suppression effect.
+DEV_STYLE_INSTRUCTIONS: set[str] = {"Rich-Harris", "ry"}
+
 
 # ── Helpers ─────────────────────────────────────────────────────────────────────
 def _dq(iso: str) -> float:
@@ -149,7 +160,17 @@ def fig1_significance(profiles: list[dict]) -> None:
     ]
     testable.sort(key=lambda x: x[1])   # most significant first
 
-    names   = [_name(p) for p, _ in testable]
+    def _annotated_dev_name(profile: dict) -> str:
+        login = profile.get("github_login", profile.get("login", ""))
+        name  = _name(profile)
+        if login in DEV_STYLE_INSTRUCTIONS:
+            return f"{name}  ⚙ style"
+        if login in DEV_LLM_INSTRUCTIONS:
+            return f"{name}  ⚙ instr."
+        return name
+
+    names   = [_annotated_dev_name(p) for p, _ in testable]
+    logins  = [p.get("github_login", "") for p, _ in testable]
     ps      = [v for _, v in testable]
     logps   = [-np.log10(v) for v in ps]
     colors  = [_sig_color(v) for v in ps]
@@ -192,7 +213,17 @@ def fig1_significance(profiles: list[dict]) -> None:
 
     # ── Axes & labels ─────────────────────────────────────────────────────────
     ax.set_yticks(range(n_t))
-    ax.set_yticklabels(names, fontsize=12.5, color=TEXT_HI)
+    ax.set_yticklabels(names, fontsize=12.5)
+    # Color labels by instruction-file presence
+    C_INSTR_STYLE = "#6e7681"
+    C_INSTR_PROC  = "#79c0ff"
+    for lbl, login in zip(ax.get_yticklabels(), logins):
+        if login in DEV_STYLE_INSTRUCTIONS:
+            lbl.set_color(C_INSTR_STYLE)
+        elif login in DEV_LLM_INSTRUCTIONS:
+            lbl.set_color(C_INSTR_PROC)
+        else:
+            lbl.set_color(TEXT_HI)
     ax.set_ylim(-0.65, n_t + n_nt + 0.1)
     ax.invert_yaxis()
     ax.set_xlabel("− log₁₀ (Fisher combined p-value)", color=TEXT_LO, fontsize=11)
@@ -205,6 +236,8 @@ def fig1_significance(profiles: list[dict]) -> None:
         mpatches.Patch(color=SIG["p005"], label="p < 0.05  ★    moderate drift"),
         mpatches.Patch(color=SIG["p010"], label="p < 0.10  ~    marginal"),
         mpatches.Patch(color=SIG["ns"],   label="p > 0.10  —    no significant drift"),
+        mpatches.Patch(color=C_INSTR_STYLE, label="⚙ full style instructions → suppressed"),
+        mpatches.Patch(color=C_INSTR_PROC,  label="⚙ process/lightweight instructions"),
     ]
     ax.legend(handles=legend_items, loc="lower right",
               facecolor=SURFACE, edgecolor=BORDER,
@@ -212,7 +245,8 @@ def fig1_significance(profiles: list[dict]) -> None:
 
     ax.set_title(
         "Mann-Whitney U per Level-A signal · Fisher combined p · "
-        "self-baseline comparison (historical vs. last 4 quarters)",
+        "self-baseline comparison (historical vs. last 4 quarters)\n"
+        "⚙ = explicit LLM coding-instruction file in primary repo",
         color=TEXT_LO, fontsize=9.5, pad=8,
     )
     fig.suptitle("How much did each developer's commit process change?",
@@ -502,8 +536,30 @@ def fig4_dumbbell(profiles: list[dict]) -> None:
                     fontsize=9.5, fontweight="bold")
 
     ax.set_yticks(y_pos)
-    ax.set_yticklabels([r["name"] for r in rows],
-                       fontsize=11.5, color=TEXT_HI)
+    C_INSTR_STYLE = "#6e7681"
+    C_INSTR_PROC  = "#79c0ff"
+
+    # Annotate names with ⚙ and color by instruction-file presence
+    annotated_names = []
+    for row in rows:
+        login = row["login"]
+        name  = row["name"]
+        if login in DEV_STYLE_INSTRUCTIONS:
+            annotated_names.append(f"{name}  ⚙ style")
+        elif login in DEV_LLM_INSTRUCTIONS:
+            annotated_names.append(f"{name}  ⚙ instr.")
+        else:
+            annotated_names.append(name)
+    ax.set_yticklabels(annotated_names, fontsize=11.5)
+    for lbl, row in zip(ax.get_yticklabels(), rows):
+        login = row["login"]
+        if login in DEV_STYLE_INSTRUCTIONS:
+            lbl.set_color(C_INSTR_STYLE)
+        elif login in DEV_LLM_INSTRUCTIONS:
+            lbl.set_color(C_INSTR_PROC)
+        else:
+            lbl.set_color(TEXT_HI)
+
     ax.invert_yaxis()
     ax.set_xlabel("commits / week  (quarterly median)", color=TEXT_LO, fontsize=11)
     ax.grid(axis="x", color=GRID, lw=0.5, alpha=0.7, zorder=0)
@@ -523,6 +579,8 @@ def fig4_dumbbell(profiles: list[dict]) -> None:
         mpatches.Patch(color=SIG["p005"], label="p < 0.05"),
         mpatches.Patch(color=SIG["p010"], label="p < 0.10"),
         mpatches.Patch(color=SIG["ns"],   label="no significant drift"),
+        mpatches.Patch(color=C_INSTR_STYLE, label="⚙ full style instr."),
+        mpatches.Patch(color=C_INSTR_PROC,  label="⚙ lightweight instr."),
     ]
     ax.legend(handles=legend_items, loc="lower right",
               facecolor=SURFACE, edgecolor=BORDER,
