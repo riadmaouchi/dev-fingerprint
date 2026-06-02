@@ -112,6 +112,12 @@ class StyleMetrics(BaseModel):
     new_file_docstring_fn_ratio: float = 0.0  # fraction of new functions with docstrings
     new_file_try_per_100: float = 0.0    # try/except blocks per 100 lines in new files
 
+    # === Level B patch-content signals (all modified files, added lines only) ===
+    # Validated in copilot-signal as the most consistent patch signals:
+    # higher in Copilot-tagged commits in 2/3 testable repos (p < 0.05).
+    patch_comment_density: float = 0.0   # comment lines / added code lines
+    patch_blank_line_ratio: float = 0.0  # blank added lines / total added lines
+
 
 # Maps each BehaviorWindow field to its scientific evidence level.
 # A = strongly defensible process signals
@@ -129,6 +135,9 @@ SIGNAL_LEVELS: dict[str, str] = {
     "test_touch_ratio": "B",
     "median_net_lines": "B",
     "merge_ratio": "B",
+    # Level B patch-content — from added lines only (validated in copilot-signal)
+    "patch_comment_density": "B",
+    "patch_blank_line_ratio": "B",
     # Level C — style signals, weak evidence
     "style_score": "C",
     "comment_score": "C",
@@ -155,6 +164,8 @@ SIGNAL_LABELS: dict[str, str] = {
     "test_touch_ratio": "Test-touching ratio",
     "median_net_lines": "Net lines/commit (median)",
     "merge_ratio": "Merge commit ratio",
+    "patch_comment_density": "Comment density (patch lines)",
+    "patch_blank_line_ratio": "Blank-line ratio (patch lines)",
     "style_score": "Style score (Level C)",
     "comment_score": "Comment density",
     "docstring_score": "Docstring coverage",
@@ -218,6 +229,11 @@ class BehaviorWindow(BaseModel):
 
     # Fraction of merge commits (low code authorship signal, high integration signal)
     merge_ratio: float = 0.0
+
+    # Patch-content signals: mean across commits in the window (added lines only).
+    # Validated as most consistent in copilot-signal case-control study.
+    patch_comment_density: float = 0.0
+    patch_blank_line_ratio: float = 0.0
 
     # === Level C — Style signals (kept for baseline, NOT primary evidence) ===
 

@@ -53,6 +53,17 @@ _TS_TRY       = re.compile(r"^\s*try\s*\{")
 
 _SUPPORTED_LANGUAGES = {Language.PYTHON, Language.TYPESCRIPT, Language.JAVASCRIPT}
 
+# Comment-line patterns for patch-level signal extraction (all modified files).
+# Used by _extract_patch_signals() — validated in companion study copilot-signal.
+_COMMENT_RE: dict[Language, re.Pattern] = {
+    Language.PYTHON:     re.compile(r"^\s*#"),
+    Language.JAVASCRIPT: re.compile(r"^\s*(//|/\*|\*)"),
+    Language.TYPESCRIPT: re.compile(r"^\s*(//|/\*|\*)"),
+    Language.GO:         re.compile(r"^\s*//"),
+    Language.RUST:       re.compile(r"^\s*//"),
+    Language.C:          re.compile(r"^\s*(//|/\*|\*)"),
+}
+
 
 @dataclass
 class _NewFileStats:
@@ -158,6 +169,45 @@ def _extract_level_d(commit: Commit) -> dict[str, float | int]:
     }
 
 
+def _extract_patch_signals(commit: Commit) -> dict[str, float]:
+    """
+    Compute comment density and blank-line ratio from added lines across ALL
+    modified files (not just new files).
+
+    These patch-level signals are more targeted than the full-file CodeAnalyzer
+    metrics because they only measure what the developer actually wrote in this
+    commit, not the surrounding existing code.
+
+    Validated as the most consistent Level B signals in copilot-signal
+    (github.com/riadmaouchi/copilot-signal): higher in Copilot-tagged commits
+    in 2/3 testable repos (comment_density p=0.004–0.024; blank_line_ratio
+    p=0.008 across two independent repos).
+    """
+    total_added = 0
+    blank_added = 0
+    comment_lines = 0
+
+    for f in commit.files:
+        if not f.patch or f.language not in _COMMENT_RE:
+            continue
+        pattern = _COMMENT_RE[f.language]
+        for line in f.patch.splitlines():
+            if not (line.startswith("+") and not line.startswith("+++")):
+                continue
+            raw = line[1:]
+            total_added += 1
+            if not raw.strip():
+                blank_added += 1
+            elif pattern.match(raw):
+                comment_lines += 1
+
+    code_lines = total_added - blank_added
+    return {
+        "patch_comment_density": comment_lines / max(code_lines, 1),
+        "patch_blank_line_ratio": blank_added / max(total_added, 1),
+    }
+
+
 _LANG_MAP: dict[Language, str] = {
     Language.PYTHON:     "python",
     Language.JAVASCRIPT: "javascript",
@@ -245,6 +295,7 @@ def extract_metrics(
                 code_parts.extend(added)
 
     level_d = _extract_level_d(commit)
+    patch_sigs = _extract_patch_signals(commit)
 
     if not code_parts:
         return StyleMetrics(
@@ -264,6 +315,7 @@ def extract_metrics(
             commit_message_length=len(msg_first_line),
             has_conventional_commit=bool(_CONVENTIONAL_COMMIT.match(msg_first_line)),
             **level_d,
+            **patch_sigs,
         )
 
     code_text = "\n".join(code_parts)
@@ -308,6 +360,8 @@ def extract_metrics(
         style_score=style_score,
         # Level D — content signals on new files
         **level_d,
+        # Level B — patch-level content signals (all files)
+        **patch_sigs,
     )
 
 

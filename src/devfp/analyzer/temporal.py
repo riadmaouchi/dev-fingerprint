@@ -50,6 +50,8 @@ _DEFAULT_SIGNALS = [
     "test_touch_ratio",
     "median_net_lines",
     "merge_ratio",
+    "patch_comment_density",
+    "patch_blank_line_ratio",
     # Level C (kept for baseline comparison)
     "style_score",
 ]

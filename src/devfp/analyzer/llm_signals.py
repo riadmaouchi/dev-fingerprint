@@ -90,6 +90,9 @@ def aggregate_windows(
 
         merge_ratio = sum(1 for m in items if m.is_merge) / max(len(items), 1)
 
+        patch_comment_density = float(np.mean([m.patch_comment_density for m in items]))
+        patch_blank_line_ratio = float(np.mean([m.patch_blank_line_ratio for m in items]))
+
         # ── Level D: Content signals on new files only ───────────────────────
 
         new_file_commits_ratio = sum(
@@ -137,6 +140,8 @@ def aggregate_windows(
                 # Level B
                 test_touch_ratio=round(test_touch_ratio, 3),
                 merge_ratio=round(merge_ratio, 3),
+                patch_comment_density=round(patch_comment_density, 4),
+                patch_blank_line_ratio=round(patch_blank_line_ratio, 4),
                 # Level D
                 new_file_commits_ratio=round(new_file_commits_ratio, 3),
                 new_file_type_annotation_density=round(new_file_type_annotation_density, 3),
